@@ -1,0 +1,33 @@
+.dashboard-box {
+    height: 140px;
+    text-align: center;
+    cursor: pointer;
+    color: white !important;
+    transition: 0.3s all ease !important;
+}
+
+.dashboard-box:hover {
+    transform: scale(1.015);
+}
+
+.members {
+    background-color: blueviolet !important;
+}
+
+.received {
+    background-color: darkcyan !important;
+}
+
+.donated {
+    background-color: #a77b00 !important;
+}
+
+
+.balance {
+    background-color: indigo !important;
+}
+
+.box-list {
+    font-weight: 400;
+    margin: 0.25rem 0;
+}

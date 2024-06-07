@@ -1,0 +1,35 @@
+.box-1 {
+    padding: 1rem;
+}
+
+.box-content {
+    padding: 1rem;
+    min-height: 170px;
+    /* background-color: var(--bs-success-bg-subtle); */
+    border: solid 1px #ccc;
+}
+
+.card-heading {
+    color: forestgreen;
+    font-size: 1.5rem;
+}
+
+.card-subheading {
+    color: darkgreen
+}
+
+.card-body-text {
+    color: dimgray
+}
+
+.div-heading {
+    color: green;
+}
+
+.home-page {
+    color: darkgreen;
+}
+
+.box-text {
+    margin-top: 0.5rem;
+}
