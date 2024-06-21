@@ -1,6 +1,6 @@
-import React, {useState, useRef, useEffect} from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./styles.css";
-import {states} from "./IndianStates";
+import { states } from "./IndianStates";
 import MembersAPI from "./../../../../api/firebase/MembersAPI";
 //Firebase
 import {
@@ -9,12 +9,13 @@ import {
   getDownloadURL,
   deleteObject,
 } from "firebase/storage";
-import {storage} from "../../../../firebase";
+import { storage } from "../../../../firebase";
 // Image Libraries
 import CompressAPI from "./../../../../api/compressImage/CompressAPI";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
-const NewMemberForm = ({memberData = null}) => {
+
+const NewMemberForm = ({ memberData = null }) => {
   const initMemberForm = {
     name: "",
     fathers_name: "",
@@ -25,9 +26,21 @@ const NewMemberForm = ({memberData = null}) => {
     pincode: "",
     contact_no: "",
     alternate_contact_no: "",
-    aadhaar_photo_front: "",
-    aadhaar_photo_back: "",
-    latest_photo: "",
+    latest_photo: {
+      base64: "",
+      type: "",
+      url: "",
+    },
+    aadhaar_photo_front: {
+      base64: "",
+      type: "",
+      url: "",
+    },
+    aadhaar_photo_back: {
+      base64: "",
+      type: "",
+      url: "",
+    },
     work_group: "",
     work_detail: "",
     unique_code: "",
@@ -79,7 +92,7 @@ const NewMemberForm = ({memberData = null}) => {
   const membersAPI = new MembersAPI();
   useEffect(() => {
     if (memberData !== null) {
-      setMemberForm({...memberData});
+      setMemberForm({ ...memberData });
       populateFormValues(memberData);
     }
   }, [memberData]);
@@ -91,7 +104,7 @@ const NewMemberForm = ({memberData = null}) => {
     othersRadioRef.current.checked = false;
     formCheckRef.current.checked = false;
     setFormChecked(false);
-    setMemberForm({...initMemberForm});
+    setMemberForm({ ...initMemberForm });
     setImageData([]);
     setProgress(0);
     // set all reference value to empty
@@ -155,15 +168,15 @@ const NewMemberForm = ({memberData = null}) => {
       alert("पिनकोड 6 अक्षरों का होना अनिवार्य है ");
       pincodeRef.current.focus();
       return false;
-    } else if (memberForm.aadhaar_photo_front === "") {
+    } else if (memberForm.aadhaar_photo_front.url === "") {
       alert("आधार कार्ड की सामने व पीछे की फोटो संलग्न करना अनिवार्य है ");
       aadhaar_photo_frontRef.current.focus();
       return false;
-    } else if (memberForm.aadhaar_photo_back === "") {
+    } else if (memberForm.aadhaar_photo_back.url === "") {
       alert("आधार कार्ड की सामने व पीछे की फोटो संलग्न करना अनिवार्य है ");
       aadhaar_photo_backRef.current.focus();
       return false;
-    } else if (memberForm.latest_photo === "") {
+    } else if (memberForm.latest_photo.url === "") {
       alert("कृप्या अपनी हाल ही की फोटो संलग्न करें");
       latest_photoRef.current.focus();
       return false;
@@ -235,6 +248,8 @@ const NewMemberForm = ({memberData = null}) => {
             file,
             fileName,
             imgFor: imgFor,
+            base64str: base64str,
+            imgExt: imgExt,
           });
         })
         .catch((ex) => {
@@ -242,7 +257,14 @@ const NewMemberForm = ({memberData = null}) => {
         });
     }
   }
-  const handleFileUpload = ({path, file, fileName, imgFor}) => {
+  const handleFileUpload = ({
+    path,
+    file,
+    fileName,
+    imgFor,
+    base64str,
+    imgExt,
+  }) => {
     // console.log("path:", path, " file:", file);
     fileName = fileName.replace(/[()]/g, "");
     const storageRef = ref(storage, `${path}/${fileName}`);
@@ -301,15 +323,29 @@ const NewMemberForm = ({memberData = null}) => {
         getDownloadURL(uploadTask.snapshot.ref)
           .then((downloadURL) => {
             console.log("File available at", downloadURL);
+            const imgObject = {
+              base64: base64str,
+              type: imgExt,
+              url: downloadURL,
+            };
             if (imgFor === "front") {
               setIsUploadingFront(false);
-              setMemberForm({...memberForm, aadhaar_photo_front: downloadURL});
+              setMemberForm({
+                ...memberForm,
+                aadhaar_photo_front: imgObject,
+              });
             } else if (imgFor === "back") {
               setIsUploadingBack(false);
-              setMemberForm({...memberForm, aadhaar_photo_back: downloadURL});
+              setMemberForm({
+                ...memberForm,
+                aadhaar_photo_back: imgObject,
+              });
             } else if (imgFor === "self") {
               setIsUploadingSelf(false);
-              setMemberForm({...memberForm, latest_photo: downloadURL});
+              setMemberForm({
+                ...memberForm,
+                latest_photo: imgObject,
+              });
             }
           })
           .catch((ex) => {
@@ -395,7 +431,7 @@ const NewMemberForm = ({memberData = null}) => {
           uniqueCode += serialNo;
           console.log("unique Code :", uniqueCode);
           const dataToSend = {
-            payload: {...memberForm, unique_code: uniqueCode},
+            payload: { ...memberForm, unique_code: uniqueCode },
             id: uniqueCode,
           };
           membersAPI
@@ -413,7 +449,7 @@ const NewMemberForm = ({memberData = null}) => {
                     " सुरक्षित कर लें ",
                   show: true,
                 };
-                setAlertMsg({...alertOptions});
+                setAlertMsg({ ...alertOptions });
                 // alert("registered with id: " + uniqueCode);
               } else {
                 // Failure
@@ -422,7 +458,7 @@ const NewMemberForm = ({memberData = null}) => {
                   title: "Registration failed",
                   show: true,
                 };
-                setAlertMsg({...alertOptions});
+                setAlertMsg({ ...alertOptions });
               }
             })
             .catch((err) => {
@@ -433,7 +469,7 @@ const NewMemberForm = ({memberData = null}) => {
                 title: "Registration failed",
                 show: true,
               };
-              setAlertMsg({...alertOptions});
+              setAlertMsg({ ...alertOptions });
             });
         })
         .catch((err) => {
@@ -443,7 +479,7 @@ const NewMemberForm = ({memberData = null}) => {
             title: "Registration failed",
             show: true,
           };
-          setAlertMsg({...alertOptions});
+          setAlertMsg({ ...alertOptions });
         });
     } else {
       console.log("incorrect input");
@@ -452,7 +488,7 @@ const NewMemberForm = ({memberData = null}) => {
   const updateForm = () => {
     if (validate()) {
       const dataToSend = {
-        payload: {...memberForm},
+        payload: { ...memberForm },
         id: memberData.unique_code,
       };
       membersAPI
@@ -469,7 +505,7 @@ const NewMemberForm = ({memberData = null}) => {
               show: true,
             };
             formCheckRef.current.checked = false;
-            setAlertMsg({...alertOptions});
+            setAlertMsg({ ...alertOptions });
             handleClick();
             // alert("registered with id: " + uniqueCode);
           } else {
@@ -479,7 +515,7 @@ const NewMemberForm = ({memberData = null}) => {
               title: "Updation failed",
               show: true,
             };
-            setAlertMsg({...alertOptions});
+            setAlertMsg({ ...alertOptions });
           }
         })
         .catch((err) => {
@@ -490,7 +526,7 @@ const NewMemberForm = ({memberData = null}) => {
             title: "Updation failed",
             show: true,
           };
-          setAlertMsg({...alertOptions});
+          setAlertMsg({ ...alertOptions });
         });
     } else {
       console.log("incorrect input");
@@ -638,6 +674,7 @@ const NewMemberForm = ({memberData = null}) => {
             </label>
 
             <select
+              id="state"
               ref={stateRef}
               className="form-select"
               aria-label="Select State"
@@ -741,12 +778,12 @@ const NewMemberForm = ({memberData = null}) => {
 
           <div
             className={`col-sm-6 mt-2 mb-2 uploaded-image-box ${
-              memberForm.aadhaar_photo_front !== "" && !isUploadingFront
+              memberForm.aadhaar_photo_front.url !== "" && !isUploadingFront
                 ? "show"
                 : ""
             }`}
             style={{
-              backgroundImage: `url("${memberForm.aadhaar_photo_front}")`,
+              backgroundImage: `url("${memberForm.aadhaar_photo_front.url}")`,
             }}
           ></div>
           {isUploadingBack && (
@@ -758,11 +795,13 @@ const NewMemberForm = ({memberData = null}) => {
           )}
           <div
             className={`col-sm-6 mt-2 mb-2 uploaded-image-box ${
-              memberForm.aadhaar_photo_back !== "" && !isUploadingBack
+              memberForm.aadhaar_photo_back.url !== "" && !isUploadingBack
                 ? "show"
                 : ""
             }`}
-            style={{backgroundImage: `url("${memberForm.aadhaar_photo_back}")`}}
+            style={{
+              backgroundImage: `url("${memberForm.aadhaar_photo_back.url}")`,
+            }}
           ></div>
         </div>
         <div className="row mb-3">
@@ -790,16 +829,16 @@ const NewMemberForm = ({memberData = null}) => {
           )}
           <div
             className={`col-sm-6 mt-2 mb-2 uploaded-image-box ${
-              memberForm.latest_photo !== "" && !isUploadingSelf ? "show" : ""
+              memberForm.latest_photo.url !== "" && !isUploadingSelf
+                ? "show"
+                : ""
             }`}
-            style={{backgroundImage: `url("${memberForm.latest_photo}")`}}
+            style={{ backgroundImage: `url("${memberForm.latest_photo.url}")` }}
           ></div>
         </div>
         <div className="row">
           <div className="col-12">
-            <label htmlFor="name" className="form-label">
-              कार्यक्षेत्र *
-            </label>
+            <label className="form-label">कार्यक्षेत्र *</label>
           </div>
         </div>
         <div className="row mb-2">
@@ -962,7 +1001,7 @@ const NewMemberForm = ({memberData = null}) => {
           data-bs-dismiss="alert"
           aria-label="Close"
           onClick={() => {
-            setAlertMsg({...alertMsg, show: false});
+            setAlertMsg({ ...alertMsg, show: false });
           }}
         ></button>
       </div>
@@ -971,7 +1010,7 @@ const NewMemberForm = ({memberData = null}) => {
           onClose={handleClose}
           severity={alertMsg.type}
           variant="filled"
-          sx={{width: "100%"}}
+          sx={{ width: "100%" }}
         >
           {alertMsg.title}
         </Alert>

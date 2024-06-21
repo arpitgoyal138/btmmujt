@@ -1,15 +1,16 @@
-import {ArrowBack} from "@mui/icons-material";
-import {Avatar, Box, Button, IconButton, Typography} from "@mui/material";
-import React, {useEffect, useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import { ArrowBack } from "@mui/icons-material";
+import { Avatar, Box, Button, IconButton, Typography } from "@mui/material";
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import MembersAPI from "../../../api/firebase/MembersAPI";
 import NewMemberForm from "../../../components/app/forms/new-member";
-
+import IdentityCard from "../../../components/admin/identity-card";
 const MemberDetail = () => {
-  const {memberId} = useParams();
+  const { memberId } = useParams();
   const navigate = useNavigate();
   const [memberData, setMemberData] = useState(null);
   const membersAPI = new MembersAPI();
+
   //console.log("memberId:", memberId);
 
   useEffect(() => {
@@ -28,9 +29,9 @@ const MemberDetail = () => {
   }, [memberId]);
 
   return (
-    <div className="container">
-      <IconButton sx={{ml: "-2rem"}} onClick={() => navigate(-1)}>
-        <ArrowBack sx={{fontSize: 32}} />
+    <div className="container-fluid">
+      <IconButton sx={{ ml: "-2rem" }} onClick={() => navigate(-1)}>
+        <ArrowBack sx={{ fontSize: 32 }} />
       </IconButton>
       <Box component="div">
         <Typography
@@ -42,6 +43,7 @@ const MemberDetail = () => {
         >
           Member Detail
         </Typography>
+
         <Typography
           sx={{
             marginBottom: "2rem",
@@ -53,19 +55,24 @@ const MemberDetail = () => {
         </Typography>
       </Box>
       <div className="row justify-content-around">
+        <div className="col-12 col-md-12">
+          {/*  identity card if memberData is not null*/}
+          {memberData && <IdentityCard memberData={memberData} />}
+        </div>
         <div className="col-12 col-md-8">
           <Avatar
             alt={memberData ? memberData.name : ""}
-            src={memberData ? memberData.latest_photo : ""}
-            sx={{width: 120, height: 120}}
+            src={memberData ? memberData.latest_photo.url : ""}
+            sx={{ width: 120, height: 120 }}
             className="mx-auto mb-3 mt-3"
           />
+
           <NewMemberForm memberData={memberData} />
           <Button
             variant="outlined"
             startIcon={<ArrowBack />}
             onClick={() => navigate(-1)}
-            sx={{mt: "1rem", mb: "1rem"}}
+            sx={{ mt: "1rem", mb: "1rem" }}
             fullWidth
           >
             Go back

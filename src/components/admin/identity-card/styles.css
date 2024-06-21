@@ -1,0 +1,23 @@
+.name {
+  color: red;
+}
+
+.user-photo {
+  height: 120px;
+  width: 120px;
+}
+.logo {
+  height: 120px;
+  width: 120px;
+}
+.main-box {
+  width: 575px;
+}
+.user-detail-p {
+  border-bottom: 1px dotted;
+  width: 78%;
+}
+
+.user-detail-label {
+  width: 20%;
+}

@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useState, useMemo, useEffect} from "react";
-import {Avatar, Box, Snackbar, Typography, Grid} from "@mui/material";
+import React, { useState, useMemo, useEffect } from "react";
+import { Avatar, Box, Snackbar, Typography, Grid } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import CustomDataGrid from "../../../components/common/DataGrid/CustomDataGrid";
 import MembersAPI from "../../../api/firebase/MembersAPI";
 import "./styles.css";
 import MemberDetail from "../memberDetail";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // import DataGridActions from "../../../components/admin/datagrid-actions/DataGridActions";
 
@@ -34,7 +34,7 @@ const AllMembers = () => {
 
   // For snackbar
   const [snackbarState, setSnackbarState] = useState(false);
-  const [message, setMessage] = useState({text: "", type: ""});
+  const [message, setMessage] = useState({ text: "", type: "" });
   const showSnackbar = () => {
     setSnackbarState(true);
   };
@@ -59,30 +59,30 @@ const AllMembers = () => {
           ) {
             return (
               <Avatar
-                src={params.row.latest_photo}
-                sx={{width: 48, height: 48}}
+                src={params.row.latest_photo.url}
+                sx={{ width: 48, height: 48 }}
               />
             );
           }
           return (
             <Avatar
               src="/static/images/avatar/1.jpg"
-              sx={{width: 48, height: 48}}
+              sx={{ width: 48, height: 48 }}
             />
           );
         },
         sortable: false,
         filterable: false,
       },
-      {field: "unique_code", headerName: "Member id", width: 200},
-      {field: "contact_no", headerName: "Mobile", width: 150},
-      {field: "name", headerName: "Name", width: 150},
-      {field: "fathers_name", headerName: "Father's Name", width: 150},
-      {field: "address", headerName: "Address", width: 250},
-      {field: "district", headerName: "District", width: 120},
-      {field: "state", headerName: "State", width: 50},
-      {field: "work_detail", headerName: "Work Detail", width: 150},
-      {field: "work_group", headerName: "Work Group", width: 100},
+      { field: "unique_code", headerName: "Member id", width: 200 },
+      { field: "contact_no", headerName: "Mobile", width: 150 },
+      { field: "name", headerName: "Name", width: 150 },
+      { field: "fathers_name", headerName: "Father's Name", width: 150 },
+      { field: "address", headerName: "Address", width: 250 },
+      { field: "district", headerName: "District", width: 120 },
+      { field: "state", headerName: "State", width: 50 },
+      { field: "work_detail", headerName: "Work Detail", width: 150 },
+      { field: "work_group", headerName: "Work Group", width: 100 },
       {
         field: "createdAt",
         headerName: "Created at",
@@ -154,7 +154,7 @@ const AllMembers = () => {
   };
   return (
     <>
-      <Box component="div" sx={{display: {xs: "none", sm: "block"}}}>
+      <Box component="div" sx={{ display: { xs: "none", sm: "block" } }}>
         <Typography
           sx={{
             marginBottom: "2rem",
@@ -170,7 +170,7 @@ const AllMembers = () => {
           <CustomDataGrid
             rows={membersArr}
             columns={columns}
-            styles={{height: "540px"}}
+            styles={{ height: "540px" }}
             pageSizes={[10, 25, 50]}
             onCellEditCommit={(params) => setRowId(params.id)}
             onRowClickHandle={(params) => showMemberDetail(params.id)}
@@ -185,7 +185,7 @@ const AllMembers = () => {
         <Alert
           onClose={hideSnackbar}
           severity={message.type}
-          sx={{width: "100%"}}
+          sx={{ width: "100%" }}
         >
           {message.text}
         </Alert>

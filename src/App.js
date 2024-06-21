@@ -27,6 +27,7 @@ import AdminDashboard from "./pages/admin/dashboard";
 import AllMembers from "./pages/admin/members";
 import MemberDetail from "./pages/admin/memberDetail";
 export default function App() {
+  
   const options = {
     keyboard: true,
     ride: true,
@@ -46,7 +47,20 @@ export default function App() {
       );
     }, 2000);
   }, []);
-
+  const loader = document.getElementById("loader");
+  const root = document.getElementById("root");
+  useEffect(() => {
+    if (loader) {
+      setTimeout(() => {
+        //add class fadeout to loader
+        loader.classList.add("fadeOutLoader");
+      }, 200);
+      setTimeout(() => {
+        root.style.top = 0;
+        loader.style.display = "none";
+      }, 500);
+    }
+  }, []);
   const router = createBrowserRouter(
     createRoutesFromElements(
       <>
