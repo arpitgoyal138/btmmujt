@@ -176,11 +176,13 @@ const NewMemberForm = ({ memberData = null }) => {
       alert("आधार कार्ड की सामने व पीछे की फोटो संलग्न करना अनिवार्य है ");
       aadhaar_photo_backRef.current.focus();
       return false;
-    } else if (memberForm.latest_photo.url === "") {
-      alert("कृप्या अपनी हाल ही की फोटो संलग्न करें");
-      latest_photoRef.current.focus();
-      return false;
-    } else if (memberForm.work_group === "") {
+    }
+    // else if (memberForm.latest_photo.url === "") {
+    // alert("कृप्या अपनी हाल ही की फोटो संलग्न करें");
+    // latest_photoRef.current.focus();
+    // return false;
+    // }
+    else if (memberForm.work_group === "") {
       alert("कृप्या अपने कार्यक्षेत्र का चयन करें");
       return false;
     } else if (
@@ -391,22 +393,32 @@ const NewMemberForm = ({ memberData = null }) => {
       membersAPI
         .getMembers()
         .then((rcv_data) => {
-          console.log("rcv_data:", rcv_data);
-          // check if member mobile no. already exists
-          const memberExists = rcv_data.data.some(function (member) {
-            return member.contact_no === memberForm.contact_no;
-          });
-          if (memberExists) {
-            console.log("Member Already Exists!");
-            alert(
-              "इस व्हाट्सप्प मोबाइल नंबर से कोई और सदस्य पहले ही पंजीकृत हो चुका है| \nकृप्या किसी अन्य मोबाइल नंबर से प्रयास करें| "
-            );
-            return;
-          }
-          let totMembers = rcv_data.data.length;
           const maxChars = 7;
+          let latestSerialNo = 0;
+          const allMembers = rcv_data.data;
+          let totMembers = allMembers.length;
+          console.log("rcv_data:", allMembers);
+          if (totMembers > 0) {
+            // check if member mobile no. already exists
+            const memberExists = allMembers.some(function (member) {
+              return member.contact_no === memberForm.contact_no;
+            });
+            if (memberExists) {
+              console.log("Member Already Exists!");
+              alert(
+                "इस व्हाट्सप्प मोबाइल नंबर से कोई और सदस्य पहले ही पंजीकृत हो चुका है| \nकृप्या किसी अन्य मोबाइल नंबर से प्रयास करें| "
+              );
+              return;
+            }
+            latestSerialNo = Number(
+              allMembers[0].unique_code.split("-")[1].replace(/X/g, "")
+            );
+          }
+
+          console.log("latest serial no.:", latestSerialNo);
+
           // generate serail no.
-          let serialNo = (totMembers + 1).toString();
+          let serialNo = (latestSerialNo + 1).toString();
 
           console.log("serial No :", serialNo);
           let uniqueCode = "";
@@ -415,13 +427,13 @@ const NewMemberForm = ({ memberData = null }) => {
               memberForm.rtocode
                 .toUpperCase()
                 .trim()
-                .replace(/[&\/\\#, +()$~%.'":*?<>{}]/g, "") + "-";
+                .replace(/[&\/\\#, +()$~%.'":*?<>{}-]/g, "") + "-";
           } else if (memberForm.pincode.length === 6) {
             uniqueCode =
               memberForm.pincode
                 .toUpperCase()
                 .trim()
-                .replace(/[&\/\\#, +()$~%.'":*?<>{}]/g, "") + "-";
+                .replace(/[&\/\\#, +()$~%.'":*?<>{}-]/g, "") + "-";
           }
 
           // uniqueCode will have 7 characters having last characters as serial number and all other characters marked as X. please generate code for this
@@ -430,10 +442,24 @@ const NewMemberForm = ({ memberData = null }) => {
           }
           uniqueCode += serialNo;
           console.log("unique Code :", uniqueCode);
+          const codeExists = rcv_data.data.some(function (member) {
+            return member.unique_code === uniqueCode;
+          });
+          if (codeExists) {
+            console.log("Code Already Exists!");
+            const alertOptions = {
+              type: "warning",
+              title: "Registration failed (Code Already Exists)",
+              show: true,
+            };
+            setAlertMsg({ ...alertOptions });
+            return;
+          }
           const dataToSend = {
             payload: { ...memberForm, unique_code: uniqueCode },
             id: uniqueCode,
           };
+          console.log("data to send:", dataToSend);
           membersAPI
             .setMember(dataToSend)
             .then((res) => {
@@ -454,7 +480,7 @@ const NewMemberForm = ({ memberData = null }) => {
               } else {
                 // Failure
                 const alertOptions = {
-                  type: "daanger",
+                  type: "danger",
                   title: "Registration failed",
                   show: true,
                 };
@@ -492,7 +518,7 @@ const NewMemberForm = ({ memberData = null }) => {
         id: memberData.unique_code,
       };
       membersAPI
-        .setMember(dataToSend)
+        .setMember(dataToSend, true)
         .then((res) => {
           if (res.success) {
             //clearForm();
@@ -534,7 +560,6 @@ const NewMemberForm = ({ memberData = null }) => {
   };
   return (
     <>
-      {/* create a form */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -613,6 +638,12 @@ const NewMemberForm = ({ memberData = null }) => {
                 id="rtocode"
                 aria-describedby="rtocode"
                 maxLength={4}
+                onKeyDown={(e) => {
+                  // allow only alphanumeric characters
+                  if (!/^[a-zA-Z0-9]*$/.test(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
                 onChange={(e) => {
                   setMemberForm({
                     ...memberForm,
@@ -635,11 +666,19 @@ const NewMemberForm = ({ memberData = null }) => {
                 id="pincode"
                 aria-describedby="pincode"
                 maxLength={6}
-                onChange={(e) => {
-                  if (isNaN(e.target.value)) {
-                    pincodeRef.current.value = memberForm.pincode;
-                    return false;
+                onKeyDown={(e) => {
+                  // allow only numeric characters, backspace, delete, arrow keys
+                  if (
+                    !/^[0-9]*$/.test(e.key) &&
+                    e.key !== "Backspace" &&
+                    e.key !== "Delete" &&
+                    e.key !== "ArrowLeft" &&
+                    e.key !== "ArrowRight"
+                  ) {
+                    e.preventDefault();
                   }
+                }}
+                onChange={(e) => {
                   setMemberForm({
                     ...memberForm,
                     pincode: e.target.value,
@@ -745,7 +784,7 @@ const NewMemberForm = ({ memberData = null }) => {
               ref={aadhaar_photo_frontRef}
               className="form-control"
               type="file"
-              accept="image/png, image/jpeg, image/jpg, image/webp"
+              accept="image/*"
               id="aadhaar_front"
               onChange={(e) => handleImageChange(e, "front")}
               required
@@ -760,7 +799,7 @@ const NewMemberForm = ({ memberData = null }) => {
               ref={aadhaar_photo_backRef}
               className="form-control"
               type="file"
-              accept="image/png, image/jpeg, image/jpg, image/webp"
+              accept="image/*"
               id="aadhaar_back"
               onChange={(e) => handleImageChange(e, "back")}
               required
@@ -769,7 +808,7 @@ const NewMemberForm = ({ memberData = null }) => {
         </div>
         <div className="row mb-3 justify-content-around">
           {isUploadingFront && (
-            <div className="col-sm-6 mt-2 mb-2 upload-image-box show align-content-center text-center">
+            <div className="col mt-2 mb-2 upload-image-box show align-content-center text-center">
               <div className="spinner-grow" role="status">
                 <span className="visually-hidden">Loading...</span>
               </div>
@@ -777,7 +816,7 @@ const NewMemberForm = ({ memberData = null }) => {
           )}
 
           <div
-            className={`col-sm-6 mt-2 mb-2 uploaded-image-box ${
+            className={`col mt-2 mb-2 uploaded-image-box ${
               memberForm.aadhaar_photo_front.url !== "" && !isUploadingFront
                 ? "show"
                 : ""
@@ -787,14 +826,14 @@ const NewMemberForm = ({ memberData = null }) => {
             }}
           ></div>
           {isUploadingBack && (
-            <div className="col-sm-6 mt-2 mb-2 uploaded-image-box show align-content-center text-center">
+            <div className="col mt-2 mb-2 uploaded-image-box show align-content-center text-center">
               <div className="spinner-grow" role="status">
                 <span className="visually-hidden">Loading...</span>
               </div>
             </div>
           )}
           <div
-            className={`col-sm-6 mt-2 mb-2 uploaded-image-box ${
+            className={`col mt-2 mb-2 uploaded-image-box ${
               memberForm.aadhaar_photo_back.url !== "" && !isUploadingBack
                 ? "show"
                 : ""
@@ -807,7 +846,7 @@ const NewMemberForm = ({ memberData = null }) => {
         <div className="row mb-3">
           <div className="col-12 mb-2">
             <label htmlFor="latest_photo" className="form-label">
-              अपनी नवीनतम फोटो *
+              अपनी नवीनतम फोटो
             </label>
             <input
               ref={latest_photoRef}
@@ -815,20 +854,20 @@ const NewMemberForm = ({ memberData = null }) => {
               type="file"
               id="latest_photo"
               onChange={(e) => handleImageChange(e, "self")}
-              accept="image/png, image/jpeg, image/jpg, image/webp"
+              accept="image/*"
             />
           </div>
         </div>
         <div className="row mb-3 justify-content-around">
           {isUploadingSelf && (
-            <div className="col-sm-6 mt-2 mb-2 upload-image-box show align-content-center text-center">
+            <div className="col mt-2 mb-2 upload-image-box show align-content-center text-center">
               <div className="spinner-grow" role="status">
                 <span className="visually-hidden">Loading...</span>
               </div>
             </div>
           )}
           <div
-            className={`col-sm-6 mt-2 mb-2 uploaded-image-box ${
+            className={`col mt-2 mb-2 uploaded-image-box ${
               memberForm.latest_photo.url !== "" && !isUploadingSelf
                 ? "show"
                 : ""

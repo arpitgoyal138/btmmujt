@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import logo from "./../../../assets/images/logo.png";
 
 import ResponsiveCarousel from "../../../components/common/Carousel";
 import "./styles.css";
 import NewMemberForm from "../../../components/app/forms/new-member";
 import AppFooter from "../../../components/app/footer";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import adhyakshPhoto from "./../../../assets/images/adyaksh-photo.png";
 import noImage from "./../../../assets/images/no-image.png";
 import whatsappLogo from "./../../../assets/images/whatsapp-logo.webp";
@@ -32,16 +32,25 @@ const Homepage = () => {
 
   return (
     <div className="container home-page">
-      <div className="row" style={{marginBottom: "1rem"}}>
+      <div className="row" style={{ marginBottom: "1rem" }}>
         <div className="col">
           <h1
             className="display-5 text-center"
-            style={{color: "green", marginTop: "1rem"}}
+            style={{ color: "green", marginTop: "1rem", marginBottom: "1rem" }}
           >
             {process.env.REACT_APP_NAME}
-            <br />
-            <span style={{fontSize: "0.65em"}}>
-              अन्तर्गत (B.T.M.M / जनकल्याण ट्रस्ट)
+
+            <span
+              style={{
+                display: "block",
+                fontSize: "0.5em",
+                marginTop: "0.5rem",
+              }}
+            >
+              अन्तर्गत
+            </span>
+            <span style={{ display: "block", fontSize: "0.65em" }}>
+              (B.T.M.M / जनकल्याण ट्रस्ट)
             </span>
           </h1>
         </div>
@@ -49,8 +58,8 @@ const Homepage = () => {
 
       <div className="row">
         <div className="col-sm-6 mb-5 text-center">
-          <img src={logo} style={{maxWidth: "75%"}}></img>
-          <div style={{marginTop: "1rem", fontSize: "1.35rem"}}>
+          <img src={logo} style={{ maxWidth: "75%" }}></img>
+          <div style={{ marginTop: "1rem", fontSize: "1.35rem" }}>
             रजिस्ट्रेशन स० : 202400702011174
           </div>
         </div>
@@ -69,7 +78,7 @@ const Homepage = () => {
             <div className="col-12 col-sm-6 fs-4">
               <img
                 src={whatsappLogo}
-                style={{height: "28px", width: "28px"}}
+                style={{ height: "28px", width: "28px" }}
                 className="me-1"
               ></img>
               +91-9720060562
@@ -77,7 +86,7 @@ const Homepage = () => {
             <div className="col-12 col-sm-6 fs-4">
               <img
                 src={callUpLogo}
-                style={{height: "25px", width: "25px"}}
+                style={{ height: "25px", width: "25px" }}
                 className="me-1"
               ></img>{" "}
               +91-9720060246
@@ -188,15 +197,15 @@ const Homepage = () => {
               <li className="list-group-item list-group-item-success">
                 ७. कन्या दान
                 <br />
-                <span style={{marginLeft: "1rem"}}>
+                <span style={{ marginLeft: "1rem" }}>
                   क. कन्या के पिता व भाई दोनों होने पर
                 </span>
                 <br />
-                <span style={{marginLeft: "1rem"}}>
+                <span style={{ marginLeft: "1rem" }}>
                   ख. कन्या के पिता या भाई किसी एक के होने पर
                 </span>
                 <br />
-                <span style={{marginLeft: "1rem"}}>
+                <span style={{ marginLeft: "1rem" }}>
                   ग. कन्या के पिता व भाई दोनों में से कोई भी न होने पर
                 </span>
                 <br />
@@ -216,7 +225,8 @@ const Homepage = () => {
                 १०. ट्रस्ट किसी भी धार्मिक स्थल में दान नहीं करेगा
               </li>
               <li className="list-group-item list-group-item-success">
-                ११. अच्छी हैसियत वाले सदस्य ट्रस्ट से लाभ लेने का प्रयास न करें
+                ११. अच्छी हैसियत वाले सदस्य कृप्या ट्रस्ट से लाभ लेने का प्रयास
+                न करें | ट्रस्ट आपकी सहायता के लिए है यह बीमा कंपनी नहीं है|
               </li>
               <li className="list-group-item list-group-item-success">
                 १२. ट्रस्ट का कार्यक्षेत्र सम्पूर्ण भारतवर्ष है
@@ -296,13 +306,13 @@ const Homepage = () => {
           <h3 className="div-heading">संस्थापक एवं पदाधिकारी </h3>
         </div>
         <div className="col-12 col-sm-4 mt-2">
-          <div className="card" style={{width: "75%", margin: "auto"}}>
+          <div className="card" style={{ width: "75%", margin: "auto" }}>
             <img className="card-img-top" src={adhyakshPhoto} alt="अध्यक्ष" />
             <div className="card-body">
               <h4 className="card-title card-heading">मौ० नदीम ठेकेदार</h4>
               <h5 className="card-text card-subheading">
                 संस्थापक एवं{" "}
-                <span style={{fontSize: "1.3em", color: "darkred"}}>
+                <span style={{ fontSize: "1.3em", color: "darkred" }}>
                   (अध्यक्ष)
                 </span>
               </h5>
@@ -313,7 +323,7 @@ const Homepage = () => {
           </div>
         </div>
         <div className="col-12 col-sm-4 mt-2">
-          <div className="card" style={{width: "75%", margin: "auto"}}>
+          <div className="card" style={{ width: "75%", margin: "auto" }}>
             <img className="card-img-top" src={noImage} alt="पदाधिकारी" />
             <div className="card-body">
               <h4 className="card-title card-heading">पदाधिकारी का नाम</h4>
