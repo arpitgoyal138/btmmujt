@@ -524,7 +524,6 @@ const NewMemberForm = ({ memberData = null }) => {
             //clearForm();
             setFormChecked(false);
             // Success
-            //सफलतापूर्वक
             const alertOptions = {
               type: "success",
               title: "पंजीकरण सफलतापूर्वक हो गया है|",
