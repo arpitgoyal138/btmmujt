@@ -51,7 +51,7 @@ const AllMembers = () => {
       {
         field: "latest_photo",
         headerName: "Image",
-        width: 100,
+        width: 80,
         renderCell: (params) => {
           if (
             params.row.latest_photo !== undefined &&
@@ -74,19 +74,19 @@ const AllMembers = () => {
         sortable: false,
         filterable: false,
       },
-      { field: "unique_code", headerName: "Member id", width: 200 },
-      { field: "contact_no", headerName: "Mobile", width: 150 },
-      { field: "name", headerName: "Name", width: 150 },
-      { field: "fathers_name", headerName: "Father's Name", width: 150 },
-      { field: "address", headerName: "Address", width: 250 },
-      { field: "district", headerName: "District", width: 120 },
+      { field: "unique_code", headerName: "Member id", width: 120 },
+      { field: "contact_no", headerName: "Mobile", width: 120 },
+      { field: "name", headerName: "Name", width: 120 },
+      { field: "fathers_name", headerName: "Father's Name", width: 120 },
+      { field: "address", headerName: "Address", width: 200 },
+      { field: "district", headerName: "District", width: 100 },
       { field: "state", headerName: "State", width: 50 },
       { field: "work_detail", headerName: "Work Detail", width: 150 },
       { field: "work_group", headerName: "Work Group", width: 100 },
       {
         field: "createdAt",
         headerName: "Created at",
-        width: 250,
+        width: 180,
         renderCell: (params) => {
           let t = "";
           if (typeof params.row.createdAt === "string") {
@@ -104,6 +104,35 @@ const AllMembers = () => {
               new Date(
                 params.row.createdAt.seconds * 1000 +
                   params.row.createdAt.nanoseconds / 1000000
+              ).toLocaleTimeString();
+          }
+          return <div className="rowitem">{t}</div>;
+        },
+      },
+      {
+        field: "modifiedAt",
+        headerName: "Updated at",
+        width: 180,
+        renderCell: (params) => {
+          let t = "";
+          if (params.row.modifiedAt === undefined) {
+            return <div className="rowitem">-</div>;
+          }
+          if (typeof params.row.modifiedAt === "string") {
+            t =
+              new Date(params.row.modifiedAt).toLocaleDateString() +
+              " " +
+              new Date(params.row.modifiedAt).toLocaleTimeString();
+          } else {
+            t =
+              new Date(
+                params.row.modifiedAt.seconds * 1000 +
+                  params.row.modifiedAt.nanoseconds / 1000000
+              ).toLocaleDateString() +
+              " " +
+              new Date(
+                params.row.modifiedAt.seconds * 1000 +
+                  params.row.modifiedAt.nanoseconds / 1000000
               ).toLocaleTimeString();
           }
           return <div className="rowitem">{t}</div>;

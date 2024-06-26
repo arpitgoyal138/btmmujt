@@ -1,9 +1,9 @@
-import React, {useState} from "react";
-import {DataGrid} from "@mui/x-data-grid";
-import {Box} from "@mui/material";
-import {styled} from "@mui/material/styles";
+import React, { useState } from "react";
+import { DataGrid } from "@mui/x-data-grid";
+import { Box } from "@mui/material";
+import { styled } from "@mui/material/styles";
 
-const StyledGridOverlay = styled("div")(({theme}) => ({
+const StyledGridOverlay = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -68,7 +68,7 @@ function CustomNoRowsOverlay() {
           </g>
         </g>
       </svg>
-      <Box sx={{mt: 1}}>No Rows</Box>
+      <Box sx={{ mt: 1 }}>No Rows</Box>
     </StyledGridOverlay>
   );
 }
@@ -83,7 +83,7 @@ const CustomDataGrid = ({
 }) => {
   const [pageSize, setPageSize] = useState(pageSizes[0]);
   return (
-    <div style={{height: 300, width: "100%"}}>
+    <div style={{ height: 900, width: "100%" }}>
       <DataGrid
         components={{
           NoRowsOverlay: CustomNoRowsOverlay,

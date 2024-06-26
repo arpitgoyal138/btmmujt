@@ -44,6 +44,7 @@ const NewMemberForm = ({ memberData = null }) => {
     work_group: "",
     work_detail: "",
     unique_code: "",
+    post_name: "",
   };
   const nameRef = useRef(null);
   const fathers_nameRef = useRef(null);
@@ -63,6 +64,7 @@ const NewMemberForm = ({ memberData = null }) => {
   const othersRadioRef = useRef(null);
   const work_detailRef = useRef(null);
   const formCheckRef = useRef(null);
+  const postNameRef = useRef(null);
   const [memberForm, setMemberForm] = useState(initMemberForm);
   const [formChecked, setFormChecked] = useState(false);
   const [isUploadingFront, setIsUploadingFront] = useState(false);
@@ -121,6 +123,7 @@ const NewMemberForm = ({ memberData = null }) => {
     aadhaar_photo_backRef.current.value = "";
     latest_photoRef.current.value = "";
     work_detailRef.current.value = "";
+    postNameRef.current.value = "";
   };
   const populateFormValues = (data) => {
     // console.log("populate form with data:", data);
@@ -145,6 +148,7 @@ const NewMemberForm = ({ memberData = null }) => {
     districtRef.current.value = data.district;
     contact_noRef.current.value = data.contact_no;
     alternate_contact_noRef.current.value = data.alternate_contact_no;
+    postNameRef.current.value = data.post_name ? data.post_name : "";
   };
   const validate = () => {
     // validate form
@@ -427,13 +431,13 @@ const NewMemberForm = ({ memberData = null }) => {
               memberForm.rtocode
                 .toUpperCase()
                 .trim()
-                .replace(/[&\/\\#, +()$~%.'":*?<>{}-]/g, "") + "-";
+                .replace(/[&\\#, +()$~%.'":*?<>{}-]/g, "") + "-";
           } else if (memberForm.pincode.length === 6) {
             uniqueCode =
               memberForm.pincode
                 .toUpperCase()
                 .trim()
-                .replace(/[&\/\\#, +()$~%.'":*?<>{}-]/g, "") + "-";
+                .replace(/[&\\#, +()$~%.'":*?<>{}-]/g, "") + "-";
           }
 
           // uniqueCode will have 7 characters having last characters as serial number and all other characters marked as X. please generate code for this
@@ -992,6 +996,26 @@ const NewMemberForm = ({ memberData = null }) => {
             />
           </div>
         </div>
+        {memberData !== null && (
+          <div className="col-sm-6 mb-3">
+            <label htmlFor="name" className="form-label">
+              पद का नाम
+            </label>
+            <input
+              ref={postNameRef}
+              type="text"
+              className="form-control"
+              id="post_name"
+              aria-describedby="post_name"
+              onChange={(e) => {
+                setMemberForm({
+                  ...memberForm,
+                  post_name: e.target.value,
+                });
+              }}
+            />
+          </div>
+        )}
         <div className="mb-3 form-check">
           <input
             ref={formCheckRef}
