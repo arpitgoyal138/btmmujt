@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Drawer from "@mui/material/Drawer";
 import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
@@ -6,9 +6,9 @@ import Divider from "@mui/material/Divider";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import {drawerItems} from "./items";
-import {drawerStyles} from "./styles";
-import {useNavigate, Outlet, Link} from "react-router-dom";
+import { drawerItems } from "./items";
+import { drawerStyles } from "./styles";
+import { useNavigate, Outlet, Link } from "react-router-dom";
 import {
   AppBar,
   Box,
@@ -23,7 +23,8 @@ import AuthAPI from "../../../api/firebase/AuthAPI";
 import CustomButton from "../../common/Button/CustomButton";
 
 const LeftResponsiveDrawer = (props) => {
-  const {window} = props;
+  const isMobile = useMediaQuery("(max-width: 600px)");
+  const { window } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState("");
   const currentUser = null;
@@ -60,13 +61,13 @@ const LeftResponsiveDrawer = (props) => {
   const drawer = (
     <div>
       <Box sx={drawerStyles.topBox}>
-        <Typography variant="h5" sx={{margin: "0.5rem"}}>
+        <Typography variant="h5" sx={{ margin: "0.5rem" }}>
           <Link to="/" className="list-group-item">
             {process.env.REACT_APP_SHORT_NAME}
           </Link>
         </Typography>
         <Divider sx={drawerStyles.divider} />
-        <Box sx={{marginTop: "10px"}}>
+        <Box sx={{ marginTop: "10px" }}>
           <Avatar
             alt={currentUser !== null ? currentUser.displayName : "Admin"}
             src={
@@ -114,7 +115,7 @@ const LeftResponsiveDrawer = (props) => {
   const container =
     window !== undefined ? () => window().document.body : undefined;
   return (
-    <Box sx={{display: "flex"}}>
+    <Box sx={{ display: "flex" }}>
       <CssBaseline enableColorScheme />
       <AppBar position="fixed" sx={drawerStyles.appBar}>
         <Toolbar variant="dense">
@@ -133,30 +134,32 @@ const LeftResponsiveDrawer = (props) => {
         </Toolbar>
       </AppBar>
       <Box component="nav" sx={drawerStyles.drawerBox}>
-        <Drawer
-          container={container}
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          sx={drawerStyles.temporaryDrawer}
-        >
-          {drawer}
-        </Drawer>
+        {isMobile && (
+          <Drawer
+            container={container}
+            variant="temporary"
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{
+              keepMounted: true, // Better open performance on mobile.
+            }}
+            sx={drawerStyles.temporaryDrawer}
+          >
+            {drawer}
+          </Drawer>
+        )}
         <Drawer
           className={drawerStyles.drawer}
           variant="permanent"
           sx={drawerStyles.permanentDrawer}
-          open
+          open={!mobileOpen}
         >
           {drawer}
         </Drawer>
       </Box>
 
       <Box component="main" sx={drawerStyles.outletBox}>
-        <Toolbar sx={{display: {sm: "none", xs: "block"}}} />
+        <Toolbar sx={{ display: { sm: "none", xs: "block" } }} />
         <Outlet />
       </Box>
     </Box>

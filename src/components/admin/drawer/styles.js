@@ -1,4 +1,4 @@
-import {blue} from "@mui/material/colors";
+import { blue } from "@mui/material/colors";
 
 const drawerWidth = 230;
 const drawerBg = {
@@ -17,11 +17,11 @@ const drawerBg = {
 export const drawerStyles = {
   temporaryDrawer: {
     ...drawerBg,
-    display: {xs: "block", sm: "none"},
+    display: { xs: "block", sm: "none" },
   },
   permanentDrawer: {
     ...drawerBg,
-    display: {xs: "none", sm: "block"},
+    display: { xs: "none", sm: "block" },
   },
   listItems: {
     padding: "2px 5px",
@@ -59,18 +59,18 @@ export const drawerStyles = {
   divider: {
     bgcolor: "primary.light",
   },
-  topBox: {textAlign: "center", padding: "5px"},
+  topBox: { textAlign: "center", padding: "5px" },
   appBar: {
-    display: {sm: "none"},
-    width: {sm: `calc(100% - ${drawerWidth}px)`},
-    ml: {sm: `${drawerWidth}px`},
+    display: { sm: "none" },
+    width: { sm: `calc(100% - ${drawerWidth}px)` },
+    ml: { sm: `${drawerWidth}px` },
   },
-  appBarIcon: {mr: 0, display: {sm: "none"}},
-  drawerBox: {width: {sm: drawerWidth}, flexShrink: {sm: 0}},
+  appBarIcon: { mr: 0, display: { sm: "none" } },
+  drawerBox: { width: { sm: drawerWidth }, flexShrink: { sm: 0 } },
   outletBox: {
     flexGrow: 1,
     p: 3,
-    width: {sm: `calc(100% - ${drawerWidth}px)`},
+    width: { sm: `calc(100% - ${drawerWidth}px)` },
     minHeight: "100vh",
   },
 };

@@ -2,3 +2,35 @@
 #print-appointment-letter {
   display: none;
 }
+/* .user-photo-al {
+  height: 140px;
+  width: 130px;
+}
+.logo {
+  height: 100px;
+  width: 100px;
+}
+.main-box-al {
+  width: 770px;
+  border: solid 3px lightcoral;
+}
+
+.detail-row {
+  margin-top: 6px;
+}
+.detail-span {
+  border-bottom: 1px dotted gray;
+  color: firebrick;
+}
+.qr-photo {
+  height: 110px;
+  width: 110px;
+}
+@media print {
+  @page {
+    margin-left: 0.1in;
+    margin-right: 0.1in;
+    margin-top: 0.1in;
+    margin-bottom: 0;
+  }
+} */

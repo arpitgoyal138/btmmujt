@@ -40,8 +40,8 @@ const MemberDetail = () => {
         width: 100px;
       }
       .adyaksh-photo {
-        height: 120px;
-        width: 120px;
+        height: 160px;
+        width: 140px;
       }
       .main-box {
         width: 378px;
@@ -63,8 +63,8 @@ const MemberDetail = () => {
         font-size: 0.9rem;
       }
       .adhyaksh-photo {
-        width: 110px;
-        height: 120px;
+        width: 120px;
+        height: 130px;
       }
       .detail-row {
         margin-top: 6px;
@@ -118,7 +118,10 @@ const MemberDetail = () => {
         border-bottom: 1px dotted gray;
         color: firebrick;
         }
-
+        .qr-photo {
+  height: 100px;
+  width: 100px;
+}
       @media print {
         @page {
           margin-left: 0.1in;
@@ -132,7 +135,7 @@ const MemberDetail = () => {
     a.document.close();
     setTimeout(() => {
       a.print();
-    }, 500);
+    }, 200);
   };
   useEffect(() => {
     if (memberData === null) {
@@ -311,7 +314,7 @@ const MemberDetail = () => {
                     alt="logo"
                     className="m-0 adhyaksh-photo"
                   />
-                  <h5 className="card-text card-subheading">
+                  <h5 className="card-text card-subheading mt-1">
                     <span style={{ fontSize: "0.9em", color: "darkred" }}>
                       (अध्यक्ष)
                     </span>
@@ -360,7 +363,7 @@ const MemberDetail = () => {
                           marginRight: "4px",
                         }}
                       ></img>
-                      9720060562 , 9720060246
+                      9756365905 , 9149180927
                     </div>
                   </div>
                 </div>
@@ -369,7 +372,7 @@ const MemberDetail = () => {
               <div className="text-center mb-2 mt-2">
                 <hr style={{ width: "90%", margin: "auto" }} />
                 <h5 className="p-1 mt-2" style={{ color: "firebrick" }}>
-                  Trust bank account details
+                  ट्रस्ट में सहयोग देने के लिए
                 </h5>
               </div>
               <div className="p-2 pt-0 row-user-detail">
@@ -397,7 +400,14 @@ const MemberDetail = () => {
                       शाखा:
                     </label>
                     <label className="user-detail-p text-success">
-                      XXXXXXXXXX
+                      शेखपुरा कदीम, सहारनपुर
+                    </label>
+                  </div>
+                  <div className="row detail-row">
+                    {/* account number in hindi */}
+                    <label className="user-detail-label">धारक का नाम:</label>
+                    <label className="user-detail-p">
+                      भारतीय ठेकेदार मिस्त्री मजदूर जनकल्याण ट्रस्ट
                     </label>
                   </div>
                   <div className="row detail-row">
@@ -423,7 +433,7 @@ const MemberDetail = () => {
                 </div>
               </div>
               <div className="bottom-row mt-5 pt-0">
-                <p className="text-end mb-0">अध्यक्ष/पदाधिकारी</p>
+                {/* <p className="text-end mb-0">अध्यक्ष/पदाधिकारी</p> */}
               </div>
             </div>
           </div>
@@ -523,7 +533,7 @@ const MemberDetail = () => {
                   </p>
                 </div>
                 <div className="row detail-row">
-                  <p>
+                  <p className="m-0">
                     {process.env.REACT_APP_NAME} आपको{" "}
                     <span className="detail-span">{memberData.name}</span> पिता{" "}
                     <span className="detail-span">
@@ -538,12 +548,22 @@ const MemberDetail = () => {
                     पद पर नियुक्त किया जाता है। आपसे आशा ही नहीं बल्कि पूर्ण
                     विश्वास है की आप अपने पद की मान-मर्यादा को ध्यान में रखते
                     हुए सभी धर्मों, समुदायों, जातियों का आदर करते हुए निःस्वार्थ
-                    व बिना भेदभाव के यूनियन के सभी सदस्यों की सहायता करेंगे।
+                    व बिना भेदभाव के ट्रस्ट के सभी सदस्यों की सहायता करेंगे।
                   </p>
                 </div>
               </div>
-              <div className="bottom-row mt-5 p-2">
-                <p className="text-end mb-0">अध्यक्ष/पदाधिकारी</p>
+
+              <div className="d-flex justify-content-between mt-1 p-2">
+                <div className="col-user-photo text-start">
+                  <img
+                    src={qrCodeImg}
+                    alt="qr-code"
+                    className="m-0 border qr-photo"
+                  />
+                </div>
+                <div className="align-content-end">
+                  <p className="text-end mb-0">अध्यक्ष/पदाधिकारी</p>
+                </div>
               </div>
             </div>
           </div>

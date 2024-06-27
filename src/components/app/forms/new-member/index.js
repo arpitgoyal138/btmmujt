@@ -44,7 +44,7 @@ const NewMemberForm = ({ memberData = null }) => {
     work_group: "",
     work_detail: "",
     unique_code: "",
-    post_name: "",
+    post_name: "सदस्य",
   };
   const nameRef = useRef(null);
   const fathers_nameRef = useRef(null);
