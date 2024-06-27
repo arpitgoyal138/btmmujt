@@ -103,8 +103,8 @@ const MemberDetail = () => {
         width: 130px;
         }
         .logo {
-        height: 100px;
-        width: 100px;
+        height: 120px;
+        width: 120px;
         }
         .main-box-al {
         width: 770px;
