@@ -99,8 +99,8 @@ const MemberDetail = () => {
     var sheet = a.document.createElement("style");
     sheet.innerHTML = `
       .user-photo-al {
-        height: 110px;
-        width: 100px;
+        height: 140px;
+        width: 130px;
         }
         .logo {
         height: 100px;
@@ -135,7 +135,7 @@ const MemberDetail = () => {
     a.document.close();
     setTimeout(() => {
       a.print();
-    }, 200);
+    }, 500);
   };
   useEffect(() => {
     if (memberData === null) {
