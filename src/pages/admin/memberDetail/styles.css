@@ -2,29 +2,48 @@
 #print-appointment-letter {
   display: none;
 }
-/* .user-photo-al {
-  height: 140px;
-  width: 130px;
+/* .name {
+  color: red;
+}
+.user-photo {
+  height: 90px;
+  width: 80px;
 }
 .logo {
   height: 100px;
   width: 100px;
 }
-.main-box-al {
-  width: 770px;
+.main-box {
+  width: 380px;
   border: solid 3px lightcoral;
 }
+.user-detail-p {
+  border-bottom: 1px dotted;
+  width: 70%;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-size: 0.9rem;
+}
 
+.user-detail-label {
+  width: 28%;
+  font-weight: 500;
+  padding-left: 8px;
+  padding-right: 5px;
+  font-size: 0.9rem;
+}
+.adhyaksh-photo {
+  width: 135px;
+  height: 160px;
+}
 .detail-row {
   margin-top: 6px;
 }
-.detail-span {
-  border-bottom: 1px dotted gray;
-  color: firebrick;
-}
-.qr-photo {
-  height: 110px;
-  width: 110px;
+.id-card-back-label-name {
+  font-size: 0.85rem;
+  display: block;
+  color: darkred;
+  margin-top: -2px;
 }
 @media print {
   @page {
@@ -33,4 +52,38 @@
     margin-top: 0.1in;
     margin-bottom: 0;
   }
+}
+
+.user-photo-al {
+  height: 170px;
+  width: 170px;
+}
+.logo-al {
+  height: 140px;
+  width: 140px;
+}
+.main-box-al {
+  width: 776px;
+  border: solid 3px lightcoral;
+}
+
+.detail-row {
+  margin-top: 6px;
+}
+.detail-span {
+  border-bottom: 1px dotted gray;
+  color: darkgreen;
+  font-weight: 600;
+}
+.qr-photo {
+  height: 150px;
+  width: 150px;
+}
+.adhyaksh-sign-box-al {
+  padding-top: 7rem;
+  width: 40%;
+  float: inline-start;
+  float: right;
+  margin-top: -10rem;
+  margin-right: 5px;
 } */

@@ -7,7 +7,7 @@ import MembersAPI from "../../../api/firebase/MembersAPI";
 import NewMemberForm from "../../../components/app/forms/new-member";
 import LogoImage from "../../../assets/images/logo.png";
 import whatsappLogo from "../../../assets/images/whatsapp-logo.webp";
-import adhyakshPhoto from "../../../assets/images/adyaksh-photo.png";
+import adhyakshPhoto from "../../../assets/images/adyaksh-photo-cropped.png";
 import qrCodeImg from "../../../assets/images/qr-code.png";
 const MemberDetail = () => {
   const { memberId } = useParams();
@@ -29,46 +29,48 @@ const MemberDetail = () => {
     var sheet = a.document.createElement("style");
     sheet.innerHTML = `
       .name {
-        color: red;
-      }
-      .user-photo {
-        height: 90px;
-        width: 80px;
-      }
-      .logo {
-        height: 100px;
-        width: 100px;
-      }
-      .adyaksh-photo {
-        height: 160px;
-        width: 140px;
-      }
-      .main-box {
-        width: 378px;
-        border: solid 3px lightcoral;
-      }
-      .user-detail-p {
-        border-bottom: 1px dotted;
-        width: 70%;
-        padding-left: 5px;
-        padding-right: 5px;
-        font-size: 0.9rem;
-      }
+  color: red;
+}
+.user-photo {
+  height: 90px;
+  width: 80px;
+}
+.logo {
+  height: 100px;
+  width: 100px;
+}
+.main-box {
+  width: 380px;
+  border: solid 3px lightcoral;
+}
+.user-detail-p {
+  border-bottom: 1px dotted;
+  width: 70%;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-size: 0.9rem;
+}
 
-      .user-detail-label {
-        width: 28%;
-        font-weight: 500;
-        padding-left: 8px;
-        padding-right: 5px;
-        font-size: 0.9rem;
-      }
-      .adhyaksh-photo {
-        width: 120px;
-        height: 130px;
-      }
-      .detail-row {
-        margin-top: 6px;
-      }
+.user-detail-label {
+  width: 28%;
+  font-weight: 500;
+  padding-left: 8px;
+  padding-right: 5px;
+  font-size: 0.9rem;
+}
+.adhyaksh-photo {
+  width: 135px;
+  height: 160px;
+}
+.detail-row {
+  margin-top: 6px;
+}
+.id-card-back-label-name {
+  font-size: 0.85rem;
+  display: block;
+  color: darkred;
+  margin-top: -2px;
+}
       @media print {
         @page {
           margin-left: 0.1in;
@@ -99,29 +101,39 @@ const MemberDetail = () => {
     var sheet = a.document.createElement("style");
     sheet.innerHTML = `
       .user-photo-al {
-        height: 140px;
-        width: 130px;
-        }
-        .logo {
-        height: 120px;
-        width: 120px;
-        }
-        .main-box-al {
-        width: 770px;
-        border: solid 3px lightcoral;
-        }
-
-        .detail-row {
-        margin-top: 6px;
-        }
-        .detail-span {
-        border-bottom: 1px dotted gray;
-        color: firebrick;
-        }
-        .qr-photo {
-  height: 100px;
-  width: 100px;
+  height: 170px;
+  width: 170px;
 }
+.logo-al {
+  height: 140px;
+  width: 140px;
+}
+.main-box-al {
+  width: 776px;
+  border: solid 3px lightcoral;
+}
+
+.detail-row {
+  margin-top: 6px;
+}
+.detail-span {
+  border-bottom: 1px dotted gray;
+  color: darkgreen;
+  font-weight: 600;
+}
+.qr-photo {
+  height: 150px;
+  width: 150px;
+}
+.adhyaksh-sign-box-al {
+  padding-top: 7rem;
+  width: 40%;
+  float: inline-start;
+  float: right;
+  margin-top: -10rem;
+  margin-right: 5px;
+}
+
       @media print {
         @page {
           margin-left: 0.1in;
@@ -292,12 +304,19 @@ const MemberDetail = () => {
                     {memberData.contact_no}, {memberData.alternate_contact_no}
                   </label>
                 </div>
-
                 <div className="row detail-row">
                   <label className="user-detail-label text-success">
-                    पद का नाम:
+                    कार्यक्षेत्र:
                   </label>
                   <label className="user-detail-p text-success">
+                    {memberData.work_group === "Others"
+                      ? memberData.work_detail
+                      : memberData.work_group}
+                  </label>
+                </div>
+                <div className="row detail-row">
+                  <label className="user-detail-label">पद का नाम:</label>
+                  <label className="user-detail-p">
                     {memberData.post_name ? memberData.post_name : ""}
                   </label>
                 </div>
@@ -316,16 +335,17 @@ const MemberDetail = () => {
                   />
                   <h5 className="card-text card-subheading mt-1">
                     <span style={{ fontSize: "0.9em", color: "darkred" }}>
-                      (अध्यक्ष)
+                      (संस्थापक)
                     </span>
                   </h5>
                 </div>
 
                 <div className="col-detail text-center align-content-around p-0">
                   <div className="text-center">
-                    <h5 className="card-title card-heading">
+                    <h5 className="card-title card-heading text-success">
                       मौ० नदीम ठेकेदार
                     </h5>
+                    <label className="id-card-back-label-name">(अध्यक्ष)</label>
                     <h6 className="mt-2 mb-0 fw-semibold text-success">
                       {process.env.REACT_APP_NAME}
                     </h6>
@@ -370,7 +390,10 @@ const MemberDetail = () => {
               </div>
 
               <div className="text-center mb-2 mt-2">
-                <hr style={{ width: "90%", margin: "auto" }} />
+                <div
+                  className="border border-bottom-0 m-0 p-0 w-100"
+                  style={{ height: "1px" }}
+                ></div>
                 <h5 className="p-1 mt-2" style={{ color: "firebrick" }}>
                   ट्रस्ट में सहयोग देने के लिए
                 </h5>
@@ -432,9 +455,6 @@ const MemberDetail = () => {
                   </div>
                 </div>
               </div>
-              <div className="bottom-row mt-5 pt-0">
-                {/* <p className="text-end mb-0">अध्यक्ष/पदाधिकारी</p> */}
-              </div>
             </div>
           </div>
         </div>
@@ -445,8 +465,8 @@ const MemberDetail = () => {
             <div className="main-box-al me-2 p-1">
               <div className="top-row d-flex justify-content-between p-1">
                 <div className="col-logo text-center">
-                  <img src={LogoImage} alt="logo" className=" m-0 logo" />
-                  <p className="mt-1 mb-1 small text-start">
+                  <img src={LogoImage} alt="logo" className=" m-0 logo-al" />
+                  <p className="mt-1 mb-1  text-start">
                     Regd. no. 202400702011174
                   </p>
                 </div>
@@ -467,7 +487,7 @@ const MemberDetail = () => {
                     शेखपुरा कदीम, पत्थरों वाला कुआँ, तेलपुरा,<br></br> सहारनपुर
                     - 247001 (उo प्रo)
                   </p>
-                  <div className="col-12 small text-center mt-1 mb-1">
+                  <div className="col-12 text-center mt-2 mb-1">
                     <img
                       src={whatsappLogo}
                       style={{
@@ -483,15 +503,15 @@ const MemberDetail = () => {
                 <div className="col-detail text-center">
                   <div className="col-user-photo text-end">
                     <img
-                      src={`data:image/jpeg;base64,${memberData.latest_photo.base64}`}
-                      alt="user photo"
-                      className="m-0 border user-photo-al"
+                      src={qrCodeImg}
+                      alt="qr-code"
+                      className="m-0 border qr-photo"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="text-center mt-3 mb-3">
+              <div className="text-center mt-4 mb-3">
                 <h3 className="mb-0 fw-semibold text-success fs-1">
                   {process.env.REACT_APP_NAME}
                 </h3>
@@ -522,18 +542,31 @@ const MemberDetail = () => {
                     नियुक्ति-पत्र
                   </span>
                 </h5>
+                <div
+                  className="col-user-photo text-end"
+                  style={{ marginTop: "-7rem", paddingRight: "5px" }}
+                >
+                  <img
+                    src={`data:image/jpeg;base64,${memberData.latest_photo.base64}`}
+                    alt="user photo"
+                    className="m-0 border user-photo-al"
+                  />
+                </div>
               </div>
-              <div className="p-2 pt-0 row-user-detail">
+              <div
+                className="p-2 pb-0 pt-0 row-user-detail"
+                style={{ marginTop: "-3rem" }}
+              >
                 <div className="row detail-row">
-                  <p className="" style={{ marginBottom: "5px" }}>
-                    <span className="me-2">क्रम संख्या:</span>
-                    <span className="border-bottom">
+                  <p className="fs-5" style={{ marginBottom: "5px" }}>
+                    <span className="me-2 ">क्रम संख्या:</span>
+                    <span className="border-bottom text-success">
                       {memberData.unique_code}
                     </span>
                   </p>
                 </div>
                 <div className="row detail-row">
-                  <p className="m-0">
+                  <p className="m-0 fs-4" style={{ textAlign: "justify" }}>
                     {process.env.REACT_APP_NAME} आपको{" "}
                     <span className="detail-span">{memberData.name}</span> पिता{" "}
                     <span className="detail-span">
@@ -543,26 +576,28 @@ const MemberDetail = () => {
                     <span className="detail-span">{memberData.address}</span>{" "}
                     जिला{" "}
                     <span className="detail-span">{memberData.district}</span>{" "}
-                    को {process.env.REACT_APP_NAME} के{" "}
+                    को {process.env.REACT_APP_NAME} (जनकल्याण ट्रस्ट) के{" "}
                     <span className="detail-span">{memberData.post_name}</span>{" "}
-                    पद पर नियुक्त किया जाता है। आपसे आशा ही नहीं बल्कि पूर्ण
-                    विश्वास है की आप अपने पद की मान-मर्यादा को ध्यान में रखते
-                    हुए सभी धर्मों, समुदायों, जातियों का आदर करते हुए निःस्वार्थ
-                    व बिना भेदभाव के ट्रस्ट के सभी सदस्यों की सहायता करेंगे।
+                    पद पर नियुक्त किया जाता है।
                   </p>
                 </div>
               </div>
-
-              <div className="d-flex justify-content-between mt-1 p-2">
-                <div className="col-user-photo text-start">
-                  <img
-                    src={qrCodeImg}
-                    alt="qr-code"
-                    className="m-0 border qr-photo"
-                  />
-                </div>
+              <div className="" style={{ width: "56%" }}>
+                <p
+                  className="fs-4 mb-0 p-2 pt-0"
+                  style={{ textAlign: "justify" }}
+                >
+                  आपसे आशा ही नहीं बल्कि पूर्ण विश्वास है की आप अपने पद की
+                  मान-मर्यादा को ध्यान में रखते हुए सभी धर्मों, समुदायों,
+                  जातियों का आदर करते हुए निःस्वार्थ व बिना भेदभाव के ट्रस्ट के
+                  सभी सदस्यों की सहायता करेंगे।
+                </p>
+              </div>
+              <div className="border adhyaksh-sign-box-al">
                 <div className="align-content-end">
-                  <p className="text-end mb-0">अध्यक्ष/पदाधिकारी</p>
+                  <p className="fs-5 mb-0 pb-1 pe-2 text-end">
+                    अध्यक्ष/पदाधिकारी
+                  </p>
                 </div>
               </div>
             </div>
