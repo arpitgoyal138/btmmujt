@@ -9,6 +9,8 @@ import LogoImage from "../../../assets/images/logo.png";
 import whatsappLogo from "../../../assets/images/whatsapp-logo.webp";
 import adhyakshPhoto from "../../../assets/images/adyaksh-photo-cropped.png";
 import qrCodeImg from "../../../assets/images/qr-code.png";
+import phonePeLogo from "../../../assets/images/phonepe-logo-resized.png";
+import userProfileIcon from "../../../assets/images/user-profile-icon.png";
 const MemberDetail = () => {
   const { memberId } = useParams();
   const navigate = useNavigate();
@@ -32,15 +34,16 @@ const MemberDetail = () => {
   color: red;
 }
 .user-photo {
-  height: 90px;
-  width: 80px;
+  height: 24mm;
+  width: 22mm;
 }
 .logo {
-  height: 100px;
-  width: 100px;
+  height: 23mm;
+  width: 23mm;
 }
 .main-box {
-  width: 380px;
+  width: 50%;
+  height: 100%;
   border: solid 3px lightcoral;
 }
 .user-detail-p {
@@ -48,7 +51,7 @@ const MemberDetail = () => {
   width: 70%;
   padding-left: 5px;
   padding-right: 5px;
-  font-size: 0.9rem;
+  font-size: 11.33pt; /* 4mm */
 }
 
 .user-detail-label {
@@ -56,23 +59,34 @@ const MemberDetail = () => {
   font-weight: 500;
   padding-left: 8px;
   padding-right: 5px;
-  font-size: 0.9rem;
+  font-size: 11.33pt; /* 4mm */
 }
 .adhyaksh-photo {
-  width: 135px;
-  height: 160px;
+  width: 35mm;
+  height: 35mm;
 }
 .detail-row {
   margin-top: 6px;
 }
 .id-card-back-label-name {
-  font-size: 0.85rem;
+  font-size: 11pt;
   display: block;
   color: darkred;
   margin-top: -2px;
 }
+.text-firebrick {
+  color: firebrick !important;
+}
+#print-media {
+  width: 210mm; /* A4 Paper Width  */
+  height: 145mm; /* Half of A4 Paper Height*/
+}
+  .d-flex {
+    display: flex !important;
+  }
       @media print {
         @page {
+          size: portrait;
           margin-left: 0.1in;
           margin-right: 0.1in;
           margin-top: 0.1in;
@@ -100,17 +114,18 @@ const MemberDetail = () => {
     link.setAttribute("href", "./../../../bs.css");
     var sheet = a.document.createElement("style");
     sheet.innerHTML = `
-      .user-photo-al {
-  height: 170px;
-  width: 170px;
+.user-photo-al {
+  height: 30mm;
+  width: 30mm;
 }
 .logo-al {
-  height: 140px;
-  width: 140px;
+  height: 30mm;
+  width: 30mm;
 }
 .main-box-al {
-  width: 776px;
-  border: solid 3px lightcoral;
+  width: 100%;
+  border: solid 1mm lightcoral;
+  padding: 5mm;
 }
 
 .detail-row {
@@ -122,24 +137,45 @@ const MemberDetail = () => {
   font-weight: 600;
 }
 .qr-photo {
-  height: 150px;
-  width: 150px;
+  height: 30mm;
+  width: 30mm;
 }
 .adhyaksh-sign-box-al {
-  padding-top: 7rem;
-  width: 40%;
+  padding-top: 20mm;
+  width: 60mm;
   float: inline-start;
   float: right;
-  margin-top: -10rem;
-  margin-right: 5px;
+  margin-top: 0mm;
+  margin-right: 1.5mm;
 }
 
+#print-al-media {
+  width: 258mm; /* A4 Paper Height  */
+  height: 190mm; /* Landscape mode A4 Paper Width */
+  margin: 10mm 20mm;
+}
+.text-firebrick {
+  color: firebrick !important;
+}
+  .d-flex {
+    display: flex !important;
+  }
+  .justify-content-between {
+    justify-content: space-between !important; 
+  }
+    .text-center {
+      text-align: center !important;
+    }
+      .fw-semibold {
+    font-weight: 600 !important;
+}
       @media print {
         @page {
-          margin-left: 0.1in;
-          margin-right: 0.1in;
-          margin-top: 0.1in;
-          margin-bottom: 0;
+        size: landscape;
+          margin-left: 0mm;
+          margin-right: 0mm;
+          margin-top: 0mm;
+          margin-bottom: 0mm;
         }
       }`;
     a.document.body.appendChild(sheet);
@@ -179,72 +215,84 @@ const MemberDetail = () => {
       {memberData && (
         <div id="print-id-card">
           <div className="d-flex bg-white" id="print-media">
-            <div className="main-box front me-2 p-1">
-              <div className="top-row d-flex justify-content-between p-1">
-                <div className="col-logo text-center">
-                  <img src={LogoImage} alt="logo" className=" m-0 logo" />
-                  <p
-                    className="mt-1 mb-1 small text-start"
-                    style={{ fontSize: "0.75rem" }}
-                  >
-                    Regd. no. 202400702011174
-                  </p>
+            <div className="main-box front me-1 p-1">
+              <div className="top-row d-flex justify-content-between p-1 mb-1">
+                <div className="col-logo">
+                  <img src={LogoImage} alt="logo" className="m-0 logo" />
                 </div>
-
-                <div className="col-detail text-center align-content-around p-0">
-                  <div className="col-user-photo text-end">
+                <div className="text-center">
+                  <h6
+                    className="text-decoration-underline text-success"
+                    style={{ fontSize: "9pt", marginBottom: "5px" }}
+                  >
+                    कार्यालय
+                  </h6>
+                  <p
+                    className="mb-0 text-firebrick"
+                    style={{
+                      fontSize: "0.7rem",
+                      fontWeight: "500",
+                    }}
+                  >
+                    शेखपुरा कदीम, पत्थरों वाला कुआँ, <br />
+                    तेलपुरा, सहारनपुर - 247001 (उo प्रo)
+                  </p>
+                  <div
+                    className="col-12 small text-center mt-1 mb-1 text-firebrick"
+                    style={{ fontSize: "0.7rem" }}
+                  >
                     <img
-                      src={`data:image/jpeg;base64,${memberData.latest_photo.base64}`}
-                      alt="user photo"
-                      className="m-0 border user-photo"
-                    />
-                  </div>
-                  <div className="text-center" style={{ marginTop: "-1rem" }}>
-                    <h6
-                      className="text-decoration-underline text-success"
-                      style={{ fontSize: "0.75rem", marginBottom: "5px" }}
-                    >
-                      कार्यालय
-                    </h6>
-                    <p
-                      className="mb-0"
+                      src={whatsappLogo}
                       style={{
-                        fontSize: "0.75rem",
-                        color: "firebrick",
-                        fontWeight: "500",
+                        height: "18px",
+                        width: "18px",
+                        marginTop: "-2px",
+                        marginRight: "4px",
                       }}
+                    ></img>
+                    9720060562 , 9720060246
+                    <p
+                      className="mt-1 mb-1 small text-success"
+                      style={{ fontSize: "0.65rem" }}
                     >
-                      शेखपुरा कदीम, पत्थरों वाला कुआँ, तेलपुरा, सहारनपुर -
-                      247001 (उo प्रo)
+                      Reg. no. 202400702011174
                     </p>
-                    <div
-                      className="col-12 small text-center mt-1 mb-1"
-                      style={{ fontSize: "0.75rem" }}
-                    >
+                  </div>
+                </div>
+                <div className="col-detail text-center align-content-around p-0">
+                  <div className="text-end">
+                    {memberData.latest_photo &&
+                      memberData.latest_photo.base64 !== "" && (
+                        <img
+                          src={`data:image/jpeg;base64,${memberData.latest_photo.base64}`}
+                          alt="user photo"
+                          className="m-0 border user-photo"
+                        />
+                      )}
+                    {(!memberData.latest_photo ||
+                      memberData.latest_photo.base64 === "") && (
                       <img
-                        src={whatsappLogo}
-                        style={{
-                          height: "18px",
-                          width: "18px",
-                          marginTop: "-2px",
-                          marginRight: "4px",
-                        }}
-                      ></img>
-                      9720060562 , 9720060246
-                    </div>
+                        src={userProfileIcon}
+                        alt="user photo"
+                        className="m-0 border user-photo"
+                      />
+                    )}
                   </div>
                 </div>
               </div>
 
               <div className="text-center">
-                <h4 className="mb-0 fw-semibold text-success">
+                <h4
+                  className="mb-0 fw-semibold text-success"
+                  style={{ fontSize: "19pt" }}
+                >
                   {process.env.REACT_APP_NAME}
                 </h4>
 
                 <span
                   style={{
                     display: "block",
-                    fontSize: "0.75em",
+                    fontSize: "10pt",
                   }}
                 >
                   अन्तर्गत
@@ -253,18 +301,16 @@ const MemberDetail = () => {
                   className="text-success"
                   style={{
                     display: "block",
-                    fontSize: "0.85em",
+                    fontSize: "10pt",
                     fontWeight: "bold",
                   }}
                 >
                   (B.T.M.M / जनकल्याण ट्रस्ट)
                 </span>
 
-                <h5 className="mt-2 mb-2" style={{ color: "firebrick" }}>
-                  Identity Card
-                </h5>
+                <h5 className="mt-2 mb-2 text-firebrick">Identity Card</h5>
               </div>
-              <div className="p-2 pt-0 row-user-detail">
+              <div className="p-2 pt-0 mt-1">
                 <div className="row detail-row">
                   <label className="user-detail-label">क्रम संख्या:</label>
                   <label className="user-detail-p">
@@ -284,24 +330,15 @@ const MemberDetail = () => {
                   </label>
                 </div>
                 <div className="row detail-row">
-                  <label
-                    className="user-detail-label"
-                    style={{ color: "firebrick" }}
-                  >
+                  <label className="user-detail-label text-firebrick">
                     स्थायी पता:
                   </label>
                   <label
-                    className="user-detail-p"
-                    style={{ color: "firebrick" }}
+                    className="user-detail-p text-firebrick"
+                    style={{ minHeight: "16mm" }}
                   >
                     {memberData.address}, {memberData.district},{" "}
                     {memberData.state}
-                  </label>
-                </div>
-                <div className="row detail-row">
-                  <label className="user-detail-label">मोबाइल नंo:</label>
-                  <label className="user-detail-p">
-                    {memberData.contact_no}, {memberData.alternate_contact_no}
                   </label>
                 </div>
                 <div className="row detail-row">
@@ -315,17 +352,29 @@ const MemberDetail = () => {
                   </label>
                 </div>
                 <div className="row detail-row">
-                  <label className="user-detail-label">पद का नाम:</label>
+                  <label className="user-detail-label">मोबाइल नंo:</label>
                   <label className="user-detail-p">
+                    {memberData.contact_no}{" "}
+                    {memberData.alternate_contact_no !== ""
+                      ? `, ${memberData.alternate_contact_no}`
+                      : ""}
+                  </label>
+                </div>
+
+                <div className="row detail-row">
+                  <label className="user-detail-label text-success">
+                    पद का नाम:
+                  </label>
+                  <label className="user-detail-p text-success">
                     {memberData.post_name ? memberData.post_name : ""}
                   </label>
                 </div>
               </div>
-              <div className="bottom-row mt-5 pt-0">
+              <div className="bottom-row pt-0" style={{ marginTop: "11mm" }}>
                 <p className="text-end mb-0">अध्यक्ष/पदाधिकारी</p>
               </div>
             </div>
-            <div className="main-box back ms-2 p-1">
+            <div className="main-box back ms-1 p-1">
               <div className="top-row d-flex justify-content-between p-1">
                 <div className="col-logo text-center">
                   <img
@@ -333,16 +382,17 @@ const MemberDetail = () => {
                     alt="logo"
                     className="m-0 adhyaksh-photo"
                   />
-                  <h5 className="card-text card-subheading mt-1">
-                    <span style={{ fontSize: "0.9em", color: "darkred" }}>
-                      (संस्थापक)
-                    </span>
+                  <h5 className="card-text card-subheading text-success">
+                    <span style={{ fontSize: "13.5pt" }}>(संस्थापक)</span>
                   </h5>
                 </div>
 
                 <div className="col-detail text-center align-content-around p-0">
                   <div className="text-center">
-                    <h5 className="card-title card-heading text-success">
+                    <h5
+                      className="card-title card-heading text-success"
+                      style={{ fontSize: "19pt" }}
+                    >
                       मौ० नदीम ठेकेदार
                     </h5>
                     <label className="id-card-back-label-name">(अध्यक्ष)</label>
@@ -353,7 +403,7 @@ const MemberDetail = () => {
                     <span
                       style={{
                         display: "block",
-                        fontSize: "0.75em",
+                        fontSize: "10pt",
                         marginTop: "0.15rem",
                         marginBottom: "0.15rem",
                       }}
@@ -364,15 +414,14 @@ const MemberDetail = () => {
                       className="text-success fw-semibold"
                       style={{
                         display: "block",
-                        fontSize: "0.85em",
+                        fontSize: "10pt",
                       }}
                     >
                       (B.T.M.M / जनकल्याण ट्रस्ट)
                     </span>
-
                     <div
-                      className="col-12 small text-center mt-2 mb-2"
-                      style={{ fontSize: "0.75rem" }}
+                      className="col-12 small text-center mt-1 mb-1 text-success"
+                      style={{ fontSize: "10pt" }}
                     >
                       <img
                         src={whatsappLogo}
@@ -389,38 +438,51 @@ const MemberDetail = () => {
                 </div>
               </div>
 
-              <div className="text-center mb-2 mt-2">
+              <div className="text-center mb-0 mt-2">
                 <div
                   className="border border-bottom-0 m-0 p-0 w-100"
                   style={{ height: "1px" }}
                 ></div>
-                <h5 className="p-1 mt-2" style={{ color: "firebrick" }}>
+                <h5 className="p-1 mt-1 text-firebrick">
                   ट्रस्ट में सहयोग देने के लिए
                 </h5>
               </div>
-              <div className="p-2 pt-0 row-user-detail">
-                <div className="qr-code text-center mb-1 mt-1">
-                  <img
-                    src={qrCodeImg}
-                    alt="bank-qr-code"
-                    className="m-0 logo"
-                  />
-                  <p className="mb-0 small" style={{ fontSize: "0.75rem" }}>
-                    Scan this QR code to donate
-                  </p>
+              <div className="p-2 pt-0">
+                <div className="row">
+                  <div className="col qr-code text-center mb-1 mt-0">
+                    <img
+                      src={qrCodeImg}
+                      alt="bank-qr-code"
+                      className="m-0 logo"
+                    />
+                    <p className="mb-0 small" style={{ fontSize: "9pt" }}>
+                      Scan to Donate
+                    </p>
+                  </div>
+                  <div className="col qr-code text-center mb-1 mt-0">
+                    <img
+                      src={qrCodeImg}
+                      alt="bank-qr-code"
+                      className="m-0 logo"
+                    />
+                    <p className="mb-0 small" style={{ fontSize: "9pt" }}>
+                      visit our website
+                    </p>
+                  </div>
                 </div>
-                <div className="p-2 row-user-detail">
+
+                <div className="p-2">
                   <div className="row detail-row">
                     {/* bank name in hindi */}
-                    <label className="user-detail-label">बैंक का नाम:</label>
+                    <label className="user-detail-label">बैंक का नाम :</label>
                     <label className="user-detail-p">
-                      Punjab national bank
+                      Punjab National Bank
                     </label>
                   </div>
                   <div className="row detail-row">
                     {/* branch name in hindi */}
                     <label className="user-detail-label text-success">
-                      शाखा:
+                      शाखा :
                     </label>
                     <label className="user-detail-p text-success">
                       शेखपुरा कदीम, सहारनपुर
@@ -428,29 +490,46 @@ const MemberDetail = () => {
                   </div>
                   <div className="row detail-row">
                     {/* account number in hindi */}
-                    <label className="user-detail-label">धारक का नाम:</label>
-                    <label className="user-detail-p">
+                    <label className="user-detail-label text-firebrick">
+                      धारक का नाम :
+                    </label>
+                    <label
+                      className="user-detail-p text-firebrick"
+                      style={{ fontSize: "11pt" }}
+                    >
                       भारतीय ठेकेदार मिस्त्री मजदूर जनकल्याण ट्रस्ट
                     </label>
                   </div>
                   <div className="row detail-row">
                     {/* account number in hindi */}
-                    <label className="user-detail-label">खाता नंबर:</label>
-                    <label className="user-detail-p">XXXXXXXXXXX</label>
+                    <label className="user-detail-label">खाता नंबर :</label>
+                    <label className="user-detail-p">0375102100000375</label>
                   </div>
                   <div className="row detail-row">
                     {/* IFSC Code in hindi */}
+                    <label className="user-detail-label text-success">
+                      IFSC कोड :
+                    </label>
+                    <label className="user-detail-p text-success">
+                      PUNB0037510
+                    </label>
+                  </div>
+                  <div className="row detail-row">
                     <label
                       className="user-detail-label"
-                      style={{ color: "firebrick" }}
+                      style={{ color: "#5f249f" }}
                     >
-                      IFSC कोड:
+                      <img
+                        src={phonePeLogo}
+                        style={{ marginTop: "-2mm", height: "5.8mm" }}
+                      ></img>{" "}
+                      :
                     </label>
                     <label
                       className="user-detail-p"
-                      style={{ color: "firebrick" }}
+                      style={{ color: "#5f249f" }}
                     >
-                      XXXXXXXXXX
+                      9720060246
                     </label>
                   </div>
                 </div>
@@ -461,47 +540,53 @@ const MemberDetail = () => {
       )}
       {memberData && memberData.post_name && memberData.post_name !== "" && (
         <div id="print-appointment-letter">
-          <div className="d-flex bg-white">
-            <div className="main-box-al me-2 p-1">
-              <div className="top-row d-flex justify-content-between p-1">
+          <div className="d-flex bg-white" id="print-al-media">
+            <div className="main-box-al">
+              <div className="d-flex justify-content-between">
                 <div className="col-logo text-center">
-                  <img src={LogoImage} alt="logo" className=" m-0 logo-al" />
-                  <p className="mt-1 mb-1  text-start">
-                    Regd. no. 202400702011174
+                  <img src={LogoImage} alt="logo" className="m-0 logo-al" />
+                  <p style={{ fontSize: "13pt", margin: "3mm 0" }}>
+                    Reg. no. 202400702011174
                   </p>
                 </div>
-                <div className="col-address text-center mt-3">
+                <div
+                  className="col-address text-center"
+                  style={{ marginLeft: "-25mm" }}
+                >
                   <h6
-                    className="text-decoration-underline text-success fs-4"
-                    style={{ marginBottom: "5px" }}
+                    className="text-decoration-underline text-success"
+                    style={{ marginBottom: "5px", fontSize: "26pt" }}
                   >
                     कार्यालय
                   </h6>
                   <p
-                    className="mb-0 fs-5"
+                    className="mb-0 fs-4 text-firebrick"
                     style={{
-                      color: "firebrick",
                       fontWeight: "500",
+                      fontSize: "20pt",
                     }}
                   >
-                    शेखपुरा कदीम, पत्थरों वाला कुआँ, तेलपुरा,<br></br> सहारनपुर
-                    - 247001 (उo प्रo)
+                    शेखपुरा कदीम, पत्थरों वाला कुआँ, तेलपुरा,
+                    <br /> सहारनपुर - 247001 (उo प्रo)
                   </p>
-                  <div className="col-12 text-center mt-2 mb-1">
+                  <div
+                    className="col-12 text-center mt-2 mb-1"
+                    style={{ fontSize: "14pt" }}
+                  >
                     <img
                       src={whatsappLogo}
                       style={{
-                        height: "18px",
-                        width: "18px",
-                        marginTop: "-2px",
-                        marginRight: "4px",
+                        height: "7mm",
+                        width: "7mm",
+                        marginTop: "-1mm",
+                        marginRight: "2mm",
                       }}
                     ></img>
                     9720060562 , 9720060246
                   </div>
                 </div>
                 <div className="col-detail text-center">
-                  <div className="col-user-photo text-end">
+                  <div className="text-end">
                     <img
                       src={qrCodeImg}
                       alt="qr-code"
@@ -511,62 +596,80 @@ const MemberDetail = () => {
                 </div>
               </div>
 
-              <div className="text-center mt-4 mb-3">
-                <h3 className="mb-0 fw-semibold text-success fs-1">
+              <div
+                className="text-center mt-4 mb-3"
+                style={{ margin: "6mm 0mm 2mm 0" }}
+              >
+                <h3
+                  className="fw-semibold text-success"
+                  style={{ fontSize: "34pt", margin: "0" }}
+                >
                   {process.env.REACT_APP_NAME}
                 </h3>
 
                 <span
-                  className="fs-5"
                   style={{
                     display: "block",
+                    fontSize: "16pt",
                   }}
                 >
                   अन्तर्गत
                 </span>
                 <span
-                  className="text-success fs-3"
+                  className="text-success"
                   style={{
                     display: "block",
                     fontWeight: "bold",
+                    fontSize: "26pt",
                   }}
                 >
                   (B.T.M.M / जनकल्याण ट्रस्ट)
                 </span>
 
-                <h5 className="mt-3 mb-3 fs-4" style={{ color: "firebrick" }}>
+                <h5
+                  className="text-firebrick"
+                  style={{ fontSize: "22pt", margin: "2mm 0 4mm 0" }}
+                >
                   <span
-                    className="border-bottom p-1"
+                    className="border-bottom"
                     style={{ borderColor: "firebrick !important" }}
                   >
                     नियुक्ति-पत्र
                   </span>
                 </h5>
-                <div
-                  className="col-user-photo text-end"
-                  style={{ marginTop: "-7rem", paddingRight: "5px" }}
-                >
-                  <img
-                    src={`data:image/jpeg;base64,${memberData.latest_photo.base64}`}
-                    alt="user photo"
-                    className="m-0 border user-photo-al"
-                  />
+                <div className="text-end" style={{ marginTop: "-30mm" }}>
+                  {memberData.latest_photo &&
+                    memberData.latest_photo.base64 !== "" && (
+                      <img
+                        src={`data:image/jpeg;base64,${memberData.latest_photo.base64}`}
+                        alt="member photo"
+                        className="user-photo-al"
+                      />
+                    )}
+                  {(!memberData.latest_photo ||
+                    memberData.latest_photo.base64 == "") && (
+                    <img
+                      src={userProfileIcon}
+                      alt="member photo"
+                      className="user-photo-al"
+                    />
+                  )}
                 </div>
               </div>
-              <div
-                className="p-2 pb-0 pt-0 row-user-detail"
-                style={{ marginTop: "-3rem" }}
-              >
+              <div style={{ marginTop: "-8mm" }}>
                 <div className="row detail-row">
-                  <p className="fs-5" style={{ marginBottom: "5px" }}>
-                    <span className="me-2 ">क्रम संख्या:</span>
+                  <p style={{ marginBottom: "5px", fontSize: "17pt" }}>
+                    <span className="me-2">क्रम संख्या:</span>
                     <span className="border-bottom text-success">
                       {memberData.unique_code}
                     </span>
                   </p>
                 </div>
-                <div className="row detail-row">
-                  <p className="m-0 fs-4" style={{ textAlign: "justify" }}>
+                <div className="row">
+                  <p
+                    className="m-0"
+                    style={{ textAlign: "justify", fontSize: "19pt" }}
+                  >
                     {process.env.REACT_APP_NAME} आपको{" "}
                     <span className="detail-span">{memberData.name}</span> पिता{" "}
                     <span className="detail-span">
@@ -582,22 +685,31 @@ const MemberDetail = () => {
                   </p>
                 </div>
               </div>
-              <div className="" style={{ width: "56%" }}>
-                <p
-                  className="fs-4 mb-0 p-2 pt-0"
-                  style={{ textAlign: "justify" }}
+              <div className="d-flex">
+                <div
+                  style={{
+                    width: "180mm",
+                    fontSize: "18pt",
+                    textAlign: "justify",
+                    marginRight: "5mm",
+                  }}
                 >
-                  आपसे आशा ही नहीं बल्कि पूर्ण विश्वास है की आप अपने पद की
-                  मान-मर्यादा को ध्यान में रखते हुए सभी धर्मों, समुदायों,
-                  जातियों का आदर करते हुए निःस्वार्थ व बिना भेदभाव के ट्रस्ट के
-                  सभी सदस्यों की सहायता करेंगे।
-                </p>
-              </div>
-              <div className="border adhyaksh-sign-box-al">
-                <div className="align-content-end">
-                  <p className="fs-5 mb-0 pb-1 pe-2 text-end">
-                    अध्यक्ष/पदाधिकारी
+                  <p>
+                    आपसे आशा ही नहीं बल्कि पूर्ण विश्वास है की आप अपने पद की
+                    मान-मर्यादा को ध्यान में रखते हुए सभी धर्मों, समुदायों एवं
+                    जातियों का आदर करते हुए निःस्वार्थ व बिना भेदभाव के ट्रस्ट
+                    के सभी सदस्यों की सहायता करेंगे।
                   </p>
+                </div>
+                <div className="border adhyaksh-sign-box-al">
+                  <div className="align-content-end">
+                    <p
+                      className="mb-0 pb-1 pe-2 text-end"
+                      style={{ fontSize: "14pt" }}
+                    >
+                      अध्यक्ष/पदाधिकारी
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -651,7 +763,7 @@ const MemberDetail = () => {
           </div>
           <div className="col-12 col-md-8">
             <Avatar
-              alt={memberData ? memberData.name : ""}
+              alt={memberData ? memberData.name : "member name"}
               src={memberData ? memberData.latest_photo.url : ""}
               sx={{ width: 120, height: 120 }}
               className="mx-auto mb-3 mt-3"

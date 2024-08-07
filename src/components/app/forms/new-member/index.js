@@ -896,6 +896,7 @@ const NewMemberForm = ({ memberData = null }) => {
                 setMemberForm({
                   ...memberForm,
                   work_group: "Thekedar",
+                  work_detail: "",
                 });
               }}
             />
@@ -918,6 +919,7 @@ const NewMemberForm = ({ memberData = null }) => {
                 setMemberForm({
                   ...memberForm,
                   work_group: "Karigar",
+                  work_detail: "",
                 });
               }}
             />
@@ -940,6 +942,7 @@ const NewMemberForm = ({ memberData = null }) => {
                 setMemberForm({
                   ...memberForm,
                   work_group: "Helper",
+                  work_detail: "",
                 });
               }}
             />

@@ -1,20 +1,22 @@
+/*  */
 #print-id-card,
 #print-appointment-letter {
   display: none;
 }
-/* .name {
+.name {
   color: red;
 }
 .user-photo {
-  height: 90px;
-  width: 80px;
+  height: 24mm;
+  width: 22mm;
 }
 .logo {
-  height: 100px;
-  width: 100px;
+  height: 23mm;
+  width: 23mm;
 }
 .main-box {
-  width: 380px;
+  width: 50%;
+  height: 100%;
   border: solid 3px lightcoral;
 }
 .user-detail-p {
@@ -22,7 +24,7 @@
   width: 70%;
   padding-left: 5px;
   padding-right: 5px;
-  font-size: 0.9rem;
+  font-size: 11.33pt; /* 4mm */
 }
 
 .user-detail-label {
@@ -30,21 +32,29 @@
   font-weight: 500;
   padding-left: 8px;
   padding-right: 5px;
-  font-size: 0.9rem;
+  font-size: 11.33pt; /* 4mm */
 }
 .adhyaksh-photo {
-  width: 135px;
-  height: 160px;
+  width: 35mm;
+  height: 35mm;
 }
 .detail-row {
   margin-top: 6px;
 }
 .id-card-back-label-name {
-  font-size: 0.85rem;
+  font-size: 11pt;
   display: block;
   color: darkred;
   margin-top: -2px;
 }
+.text-firebrick {
+  color: firebrick !important;
+}
+#print-media {
+  width: 210mm; /* A4 Paper Width  */
+  height: 145mm; /* Half of A4 Paper Height*/
+}
+
 @media print {
   @page {
     margin-left: 0.1in;
@@ -55,16 +65,17 @@
 }
 
 .user-photo-al {
-  height: 170px;
-  width: 170px;
+  height: 30mm;
+  width: 30mm;
 }
 .logo-al {
-  height: 140px;
-  width: 140px;
+  height: 30mm;
+  width: 30mm;
 }
 .main-box-al {
-  width: 776px;
+  width: 100%;
   border: solid 3px lightcoral;
+  padding: 5mm;
 }
 
 .detail-row {
@@ -76,14 +87,18 @@
   font-weight: 600;
 }
 .qr-photo {
-  height: 150px;
-  width: 150px;
+  height: 30mm;
+  width: 30mm;
 }
 .adhyaksh-sign-box-al {
-  padding-top: 7rem;
-  width: 40%;
+  padding-top: 25mm;
+  width: 60mm;
   float: inline-start;
-  float: right;
-  margin-top: -10rem;
-  margin-right: 5px;
-} */
+}
+
+#print-al-media {
+  /* Landscape mode */
+  width: 258mm; /* A4 Paper Height => 298mm (will become 258mm After margin 20mm on left and right side) */
+  height: 190mm; /* A4 Paper Width => 210mm (will become 190mm After 10mm margin on top and bottom) */
+  margin: 10mm 20mm;
+}
