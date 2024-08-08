@@ -44,38 +44,41 @@ const MemberDetail = () => {
 .main-box {
   width: 50%;
   height: 100%;
-  border: solid 3px lightcoral;
+  border: solid 1mm lightcoral;
 }
 .user-detail-p {
   border-bottom: 1px dotted;
   width: 70%;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 1mm;
+  padding-right: 1mm;
   font-size: 11.33pt; /* 4mm */
 }
 
 .user-detail-label {
   width: 28%;
   font-weight: 500;
-  padding-left: 8px;
-  padding-right: 5px;
+  padding-left: 2mm;
+  padding-right: 1mm;
   font-size: 11.33pt; /* 4mm */
 }
 .adhyaksh-photo {
-  width: 35mm;
+  width: 30mm;
   height: 35mm;
 }
 .detail-row {
-  margin-top: 6px;
+  margin-top: 1.5mm;
 }
 .id-card-back-label-name {
-  font-size: 11pt;
+  font-size: 12pt;
   display: block;
   color: darkred;
-  margin-top: -2px;
+  margin-top: -1mm;
 }
 .text-firebrick {
   color: firebrick !important;
+}
+.fw-semibold{
+    font-weight: 600 !important;
 }
 #print-media {
   width: 210mm; /* A4 Paper Width  */
@@ -129,7 +132,7 @@ const MemberDetail = () => {
 }
 
 .detail-row {
-  margin-top: 6px;
+  margin-top: 1.5mm;
 }
 .detail-span {
   border-bottom: 1px dotted gray;
@@ -223,15 +226,14 @@ const MemberDetail = () => {
                 <div className="text-center">
                   <h6
                     className="text-decoration-underline text-success"
-                    style={{ fontSize: "9pt", marginBottom: "5px" }}
+                    style={{ fontSize: "9pt", marginBottom: "1mm" }}
                   >
                     कार्यालय
                   </h6>
                   <p
                     className="mb-0 text-firebrick"
                     style={{
-                      fontSize: "0.7rem",
-                      fontWeight: "500",
+                      fontSize: "9pt",
                     }}
                   >
                     शेखपुरा कदीम, पत्थरों वाला कुआँ, <br />
@@ -239,21 +241,21 @@ const MemberDetail = () => {
                   </p>
                   <div
                     className="col-12 small text-center mt-1 mb-1 text-firebrick"
-                    style={{ fontSize: "0.7rem" }}
+                    style={{ fontSize: "9pt" }}
                   >
                     <img
                       src={whatsappLogo}
                       style={{
-                        height: "18px",
-                        width: "18px",
-                        marginTop: "-2px",
-                        marginRight: "4px",
+                        height: "4mm",
+                        width: "4mm",
+                        marginTop: "-1mm",
+                        marginRight: "1mm",
                       }}
                     ></img>
                     9720060562 , 9720060246
                     <p
                       className="mt-1 mb-1 small text-success"
-                      style={{ fontSize: "0.65rem" }}
+                      style={{ fontSize: "9pt" }}
                     >
                       Reg. no. 202400702011174
                     </p>
@@ -301,7 +303,7 @@ const MemberDetail = () => {
                   className="text-success"
                   style={{
                     display: "block",
-                    fontSize: "10pt",
+                    fontSize: "14pt",
                     fontWeight: "bold",
                   }}
                 >
@@ -382,7 +384,10 @@ const MemberDetail = () => {
                     alt="logo"
                     className="m-0 adhyaksh-photo"
                   />
-                  <h5 className="card-text card-subheading text-success">
+                  <h5
+                    className="text-success"
+                    style={{ marginTop: "1mm", marginBottom: 0 }}
+                  >
                     <span style={{ fontSize: "13.5pt" }}>(संस्थापक)</span>
                   </h5>
                 </div>
@@ -390,13 +395,16 @@ const MemberDetail = () => {
                 <div className="col-detail text-center align-content-around p-0">
                   <div className="text-center">
                     <h5
-                      className="card-title card-heading text-success"
-                      style={{ fontSize: "19pt" }}
+                      className="text-success"
+                      style={{ fontSize: "19pt", marginBottom: 0 }}
                     >
                       मौ० नदीम ठेकेदार
                     </h5>
                     <label className="id-card-back-label-name">(अध्यक्ष)</label>
-                    <h6 className="mt-2 mb-0 fw-semibold text-success">
+                    <h6
+                      className="mt-2 mb-0 fw-semibold text-success"
+                      style={{ fontSize: "14pt" }}
+                    >
                       {process.env.REACT_APP_NAME}
                     </h6>
 
@@ -426,10 +434,10 @@ const MemberDetail = () => {
                       <img
                         src={whatsappLogo}
                         style={{
-                          height: "18px",
-                          width: "18px",
-                          marginTop: "-2px",
-                          marginRight: "4px",
+                          height: "4mm",
+                          width: "4mm",
+                          marginTop: "-1mm",
+                          marginRight: "1mm",
                         }}
                       ></img>
                       9756365905 , 9149180927
@@ -555,7 +563,7 @@ const MemberDetail = () => {
                 >
                   <h6
                     className="text-decoration-underline text-success"
-                    style={{ marginBottom: "5px", fontSize: "26pt" }}
+                    style={{ marginBottom: "1mm", fontSize: "26pt" }}
                   >
                     कार्यालय
                   </h6>
@@ -658,7 +666,7 @@ const MemberDetail = () => {
               </div>
               <div style={{ marginTop: "-8mm" }}>
                 <div className="row detail-row">
-                  <p style={{ marginBottom: "5px", fontSize: "17pt" }}>
+                  <p style={{ marginBottom: "1mm", fontSize: "17pt" }}>
                     <span className="me-2">क्रम संख्या:</span>
                     <span className="border-bottom text-success">
                       {memberData.unique_code}
