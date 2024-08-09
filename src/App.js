@@ -18,16 +18,16 @@ import AboutPage from "./pages/app/about";
 import PrivateRoute from "./components/private-route/PrivateRoute";
 import NetworkStatus from "./components/network-status/NetworkStatus";
 import ObjectivesOfTrust from "./pages/app/objectivesOfTrust";
-import {useEffect} from "react";
+import { useEffect } from "react";
 import Lightbox from "bs5-lightbox";
 import SignIn from "./pages/admin/auth/sign-in";
 
 import LeftResponsiveDrawer from "./components/admin/drawer";
 import AdminDashboard from "./pages/admin/dashboard";
 import AllMembers from "./pages/admin/members";
+import AllManagers from "./pages/admin/managers";
 import MemberDetail from "./pages/admin/memberDetail";
 export default function App() {
-  
   const options = {
     keyboard: true,
     ride: true,
@@ -84,6 +84,7 @@ export default function App() {
         >
           <Route path="/admin/dashboard" element={<AdminDashboard />}></Route>
           <Route path="/admin/members" element={<AllMembers />}></Route>
+          <Route path="/admin/managers" element={<AllManagers />}></Route>
           <Route
             path="/admin/member-detail/:memberId"
             element={<MemberDetail />}
@@ -96,7 +97,7 @@ export default function App() {
   return <RouterProvider router={router} />;
 }
 
-const Root = ({layout = ""}) => {
+const Root = ({ layout = "" }) => {
   console.log("IN ROOT");
   //const theme = useTheme();
   //const mobileScreen = useMediaQuery(theme.breakpoints.down("sm"));

@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
-const AllMembers = () => {
+const AllManagers = () => {
   const navigate = useNavigate();
   const [membersArr, setMembersArr] = useState([]);
   const [rowId, setRowId] = useState(null);
@@ -20,14 +20,14 @@ const AllMembers = () => {
 
   // Fetch all members
   useEffect(() => {
-    const resMembers = membersAPI.getMembers();
+    const resMembers = membersAPI.getManagers();
     resMembers.then((resData) => {
       //console.log("received:", resData);
       if (!resData) {
         return;
       }
       setMembersArr(resData.data);
-      console.log("Done fetching all members: ", membersArr);
+      console.log("Done fetching all managers: ", membersArr);
     });
   }, []);
 
@@ -191,7 +191,7 @@ const AllMembers = () => {
           variant="h4"
           component="h4"
         >
-          All Members
+          All Managers
         </Typography>
       </Box>
       <Grid container spacing={2}>
@@ -223,4 +223,4 @@ const AllMembers = () => {
   );
 };
 
-export default AllMembers;
+export default AllManagers;

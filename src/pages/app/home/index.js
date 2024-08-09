@@ -26,7 +26,9 @@ const Homepage = () => {
   useEffect(() => {
     membersApi.getMembers().then((res) => {
       console.log("All members =>", res.data);
-      setTotalMembers(res.data.length);
+      if (res.data) {
+        setTotalMembers(res.data.length);
+      }
     });
   }, []);
 

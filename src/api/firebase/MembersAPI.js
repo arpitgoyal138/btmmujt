@@ -8,6 +8,7 @@ import {
   query,
   orderBy,
   deleteDoc,
+  where,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 const collection_name = "members";
@@ -45,6 +46,7 @@ export default class MembersAPI {
       console.log("API CALL =========> getMembers:");
       const q = query(
         collection(db, collection_name),
+        // where("post_name", "==", "सदस्य"),
         orderBy("createdAt", "desc")
       );
       const querySnapshot = await getDocs(q);
@@ -54,6 +56,29 @@ export default class MembersAPI {
         proArr.push({ id: doc.id, ...doc.data() });
       });
       console.log("members:", proArr);
+      return { success: true, data: proArr };
+    } catch (ex) {
+      console.log(ex);
+      return { success: false, message: ex };
+    }
+  }
+
+  // Fetch all managers
+  async getManagers() {
+    try {
+      console.log("API CALL =========> getManagers:");
+      const q = query(
+        collection(db, collection_name),
+        where("post_name", "!=", "सदस्य"),
+        orderBy("createdAt", "desc")
+      );
+      const querySnapshot = await getDocs(q);
+      let proArr = [];
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        proArr.push({ id: doc.id, ...doc.data() });
+      });
+      console.log("managers:", proArr);
       return { success: true, data: proArr };
     } catch (ex) {
       console.log(ex);
