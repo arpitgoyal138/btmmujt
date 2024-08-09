@@ -78,6 +78,7 @@ const NewMemberForm = ({ memberData = null }) => {
     show: false,
   });
   const [open, setOpen] = useState(false);
+  const [submitButtonClicked, setSubmitButtonClicked] = useState(false);
   const handleClick = () => {
     setOpen(true);
   };
@@ -86,7 +87,7 @@ const NewMemberForm = ({ memberData = null }) => {
     if (reason === "clickaway") {
       return;
     }
-
+    setAlertMsg({ type: "", title: "", show: false });
     setOpen(false);
   };
 
@@ -109,6 +110,7 @@ const NewMemberForm = ({ memberData = null }) => {
     setMemberForm({ ...initMemberForm });
     setImageData([]);
     setProgress(0);
+    setSubmitButtonClicked(false);
     // set all reference value to empty
     nameRef.current.value = "";
     fathers_nameRef.current.value = "";
@@ -123,7 +125,9 @@ const NewMemberForm = ({ memberData = null }) => {
     aadhaar_photo_backRef.current.value = "";
     latest_photoRef.current.value = "";
     work_detailRef.current.value = "";
-    postNameRef.current.value = "";
+    if (postNameRef.current !== null) {
+      postNameRef.current.value = "";
+    }
   };
   const populateFormValues = (data) => {
     // console.log("populate form with data:", data);
@@ -136,6 +140,7 @@ const NewMemberForm = ({ memberData = null }) => {
       work_detailRef.current.value = data.work_detail;
     }
     setFormChecked(false);
+    setSubmitButtonClicked(false);
     setImageData([]);
     setProgress(0);
     // set all reference value to empty
@@ -393,6 +398,7 @@ const NewMemberForm = ({ memberData = null }) => {
   };
   const submitForm = () => {
     if (validate()) {
+      setSubmitButtonClicked(true);
       // get total no. of members
       membersAPI
         .getMembers()
@@ -408,10 +414,18 @@ const NewMemberForm = ({ memberData = null }) => {
               return member.contact_no === memberForm.contact_no;
             });
             if (memberExists) {
+              setSubmitButtonClicked(false);
+              const alertOptions = {
+                type: "warning",
+                title:
+                  "इस व्हाट्सप्प मोबाइल नंबर से कोई और सदस्य पहले ही पंजीकृत हो चुका है| \nकृप्या किसी अन्य मोबाइल नंबर से प्रयास करें| ",
+                show: true,
+              };
+              setAlertMsg({ ...alertOptions });
               console.log("Member Already Exists!");
-              alert(
-                "इस व्हाट्सप्प मोबाइल नंबर से कोई और सदस्य पहले ही पंजीकृत हो चुका है| \nकृप्या किसी अन्य मोबाइल नंबर से प्रयास करें| "
-              );
+              // alert(
+              //   "इस व्हाट्सप्प मोबाइल नंबर से कोई और सदस्य पहले ही पंजीकृत हो चुका है| \nकृप्या किसी अन्य मोबाइल नंबर से प्रयास करें| "
+              // );
               return;
             }
             latestSerialNo = Number(
@@ -451,8 +465,9 @@ const NewMemberForm = ({ memberData = null }) => {
           });
           if (codeExists) {
             console.log("Code Already Exists!");
+            setSubmitButtonClicked(true);
             const alertOptions = {
-              type: "warning",
+              type: "danger",
               title: "Registration failed (Code Already Exists)",
               show: true,
             };
@@ -467,6 +482,7 @@ const NewMemberForm = ({ memberData = null }) => {
           membersAPI
             .setMember(dataToSend)
             .then((res) => {
+              console.log("res:", res);
               if (res.success) {
                 clearForm();
                 // Success
@@ -474,15 +490,17 @@ const NewMemberForm = ({ memberData = null }) => {
                 const alertOptions = {
                   type: "success",
                   title:
-                    "आपका पंजीकरण सफलतापूर्वक हो गया है|\r\n कृप्या अपना कोड " +
+                    "आपका पंजीकरण सफलतापूर्वक हो गया है|\n कृप्या अपना कोड " +
                     uniqueCode +
-                    " सुरक्षित कर लें ",
+                    " नोट कर लें ",
                   show: true,
                 };
                 setAlertMsg({ ...alertOptions });
                 // alert("registered with id: " + uniqueCode);
               } else {
                 // Failure
+                console.log("Error while setMember() API ResponseFailed");
+                setSubmitButtonClicked(false);
                 const alertOptions = {
                   type: "danger",
                   title: "Registration failed",
@@ -494,8 +512,10 @@ const NewMemberForm = ({ memberData = null }) => {
             .catch((err) => {
               // Error
               // Failure
+              console.log("Exception while setMember() API:", err);
+              setSubmitButtonClicked(false);
               const alertOptions = {
-                type: "warning",
+                type: "danger",
                 title: "Registration failed",
                 show: true,
               };
@@ -503,10 +523,11 @@ const NewMemberForm = ({ memberData = null }) => {
             });
         })
         .catch((err) => {
+          setSubmitButtonClicked(false);
           console.log("error while getMembers() API");
           const alertOptions = {
-            type: "warning",
-            title: "Registration failed",
+            type: "danger",
+            title: "Registration failed ERROR:getMemebersAPI",
             show: true,
           };
           setAlertMsg({ ...alertOptions });
@@ -517,6 +538,7 @@ const NewMemberForm = ({ memberData = null }) => {
   };
   const updateForm = () => {
     if (validate()) {
+      setSubmitButtonClicked(true);
       const dataToSend = {
         payload: { ...memberForm },
         id: memberData.unique_code,
@@ -527,6 +549,7 @@ const NewMemberForm = ({ memberData = null }) => {
           if (res.success) {
             //clearForm();
             setFormChecked(false);
+            setSubmitButtonClicked(false);
             // Success
             const alertOptions = {
               type: "success",
@@ -539,9 +562,10 @@ const NewMemberForm = ({ memberData = null }) => {
             // alert("registered with id: " + uniqueCode);
           } else {
             // Failure
+            setSubmitButtonClicked(false);
             const alertOptions = {
               type: "danger",
-              title: "Updation failed",
+              title: "Updation failed: ErrorResponseFalse",
               show: true,
             };
             setAlertMsg({ ...alertOptions });
@@ -550,9 +574,10 @@ const NewMemberForm = ({ memberData = null }) => {
         .catch((err) => {
           // Error
           // Failure
+          setSubmitButtonClicked(false);
           const alertOptions = {
             type: "warning",
-            title: "Updation failed",
+            title: "Updation failed: Exception " + err,
             show: true,
           };
           setAlertMsg({ ...alertOptions });
@@ -1037,7 +1062,7 @@ const NewMemberForm = ({ memberData = null }) => {
           <button
             type="submit"
             className="btn btn-success col-12 mx-auto"
-            disabled={formChecked ? false : "disabled"}
+            disabled={formChecked && !submitButtonClicked ? false : "disabled"}
           >
             जमा करें
           </button>
@@ -1046,7 +1071,7 @@ const NewMemberForm = ({ memberData = null }) => {
           <button
             type="button"
             className="btn btn-success col-12 mx-auto"
-            disabled={formChecked ? false : "disabled"}
+            disabled={formChecked && !submitButtonClicked ? false : "disabled"}
             onClick={updateForm}
           >
             Update
@@ -1054,32 +1079,35 @@ const NewMemberForm = ({ memberData = null }) => {
         )}
       </form>
       <div
-        className={`mt-3 alert alert-${alertMsg.type} alert-dismissible fade ${
-          alertMsg.show ? "d-block show" : "d-none"
-        } $`}
+        className={`mt-3 align-items-center justify-content-between alert alert-${
+          alertMsg.type
+        } alert-dissmissible fade ${alertMsg.show ? "d-flex show" : "d-none"}`}
         role="alert"
       >
         {alertMsg.title}
         <button
           type="button"
-          className="btn-close"
-          data-bs-dismiss="alert"
+          className="btn btn-close"
           aria-label="Close"
           onClick={() => {
-            setAlertMsg({ ...alertMsg, show: false });
+            setAlertMsg({ type: "", title: "", show: false });
           }}
         ></button>
       </div>
-      <Snackbar open={open} autoHideDuration={4000} onClose={handleClose}>
+      {/* <Snackbar
+        open={alertMsg.show}
+        autoHideDuration={5000}
+        onClose={handleClose}
+      >
         <Alert
           onClose={handleClose}
-          severity={alertMsg.type}
+          severity={alertMsg.type == "danger" ? "error" : alertMsg.type}
           variant="filled"
           sx={{ width: "100%" }}
         >
           {alertMsg.title}
         </Alert>
-      </Snackbar>
+      </Snackbar> */}
     </>
   );
 };
