@@ -1,9 +1,10 @@
 /*  */
-#print-id-card,
+#print-id-card {
+  display: none;
+}
 #print-appointment-letter {
   display: none;
 }
-
 .name {
   color: red;
 }
@@ -94,12 +95,16 @@
 .adhyaksh-sign-box-al {
   padding-top: 25mm;
   width: 60mm;
-  float: inline-start;
 }
 
 #print-al-media {
-  /* Landscape mode */
-  width: 258mm; /* A4 Paper Height => 298mm (will become 258mm After margin 20mm on left and right side) */
-  height: 190mm; /* A4 Paper Width => 210mm (will become 190mm After 10mm margin on top and bottom) */
-  margin: 10mm 20mm;
+  width: 268mm;
+  height: 185mm;
+  margin-top: 55.5mm;
+  margin-left: -29.5mm;
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
 }

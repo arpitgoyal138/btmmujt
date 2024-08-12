@@ -9,7 +9,7 @@ import LogoImage from "../../../assets/images/logo.png";
 import whatsappLogo from "../../../assets/images/whatsapp-logo.webp";
 import adhyakshPhoto from "../../../assets/images/adyaksh-photo-cropped.png";
 import qrCodeImg from "../../../assets/images/qr-code.png";
-import phonePeLogo from "../../../assets/images/phonepe-logo-resized.png";
+import phonePeLogo from "../../../assets/images/PhonePe-Logo-resized.png";
 import userProfileIcon from "../../../assets/images/user-profile-icon.png";
 const MemberDetail = () => {
   const { memberId } = useParams();
@@ -144,18 +144,20 @@ const MemberDetail = () => {
   width: 30mm;
 }
 .adhyaksh-sign-box-al {
-  padding-top: 20mm;
+  padding-top: 25mm;
   width: 60mm;
-  float: inline-start;
-  float: right;
-  margin-top: 0mm;
-  margin-right: 1.5mm;
 }
 
 #print-al-media {
-  width: 258mm; /* A4 Paper Height  */
-  height: 190mm; /* Landscape mode A4 Paper Width */
-  margin: 10mm 20mm;
+  width: 268mm; 
+  height: 185mm;
+  margin-top:55.5mm;
+  margin-left: -29.5mm;
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
 }
 .text-firebrick {
   color: firebrick !important;
@@ -174,7 +176,7 @@ const MemberDetail = () => {
 }
       @media print {
         @page {
-        size: landscape;
+        size: portrait;
           margin-left: 0mm;
           margin-right: 0mm;
           margin-top: 0mm;
@@ -310,7 +312,7 @@ const MemberDetail = () => {
                   (B.T.M.M / जनकल्याण ट्रस्ट)
                 </span>
 
-                <h5 className="mt-2 mb-2 text-firebrick">Identity Card</h5>
+                <h5 className="mb-2 text-firebrick">Identity Card</h5>
               </div>
               <div className="p-2 pt-0 mt-1">
                 <div className="row detail-row">
@@ -529,7 +531,7 @@ const MemberDetail = () => {
                     >
                       <img
                         src={phonePeLogo}
-                        style={{ marginTop: "-2mm", height: "5.8mm" }}
+                        style={{ marginTop: "-1mm", height: "5.8mm" }}
                       ></img>{" "}
                       :
                     </label>
@@ -553,7 +555,7 @@ const MemberDetail = () => {
               <div className="d-flex justify-content-between">
                 <div className="col-logo text-center">
                   <img src={LogoImage} alt="logo" className="m-0 logo-al" />
-                  <p style={{ fontSize: "13pt", margin: "3mm 0" }}>
+                  <p style={{ fontSize: "14pt", margin: "3mm 0" }}>
                     Reg. no. 202400702011174
                   </p>
                 </div>
@@ -696,7 +698,7 @@ const MemberDetail = () => {
               <div className="d-flex">
                 <div
                   style={{
-                    width: "180mm",
+                    width: "190mm",
                     fontSize: "18pt",
                     textAlign: "justify",
                     marginRight: "5mm",
@@ -704,9 +706,9 @@ const MemberDetail = () => {
                 >
                   <p>
                     आपसे आशा ही नहीं बल्कि पूर्ण विश्वास है की आप अपने पद की
-                    मान-मर्यादा को ध्यान में रखते हुए सभी धर्मों, समुदायों एवं
-                    जातियों का आदर करते हुए निःस्वार्थ व बिना भेदभाव के ट्रस्ट
-                    के सभी सदस्यों की सहायता करेंगे।
+                    मान-मर्यादा को ध्यान में रखते हुए सभी धर्मों व समुदायों एवं
+                    जातियों का आदर व सम्मान करते हुए निःस्वार्थ व बिना भेदभाव के
+                    ट्रस्ट के सभी सदस्यों की सहायता करेंगे।
                   </p>
                 </div>
                 <div className="border adhyaksh-sign-box-al">
