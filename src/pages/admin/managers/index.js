@@ -6,6 +6,7 @@ import CustomDataGrid from "../../../components/common/DataGrid/CustomDataGrid";
 import MembersAPI from "../../../api/firebase/MembersAPI";
 import "./styles.css";
 import { useNavigate } from "react-router-dom";
+import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 
 // import DataGridActions from "../../../components/admin/datagrid-actions/DataGridActions";
 
@@ -194,8 +195,8 @@ const AllManagers = () => {
           All Managers
         </Typography>
       </Box>
-      <Grid container spacing={2}>
-        <Grid item xs={12} mt={2}>
+      <Grid2 container spacing={2}>
+        <Grid2 xs={12} mt={2} sx={{ maxWidth: "95.5vw" }}>
           <CustomDataGrid
             rows={membersArr}
             columns={columns}
@@ -204,21 +205,22 @@ const AllManagers = () => {
             onCellEditCommit={(params) => setRowId(params.id)}
             onRowClickHandle={(params) => showMemberDetail(params.id)}
           />
-        </Grid>
-      </Grid>
-      <Snackbar
-        open={snackbarState}
-        autoHideDuration={3000}
-        onClose={hideSnackbar}
-      >
-        <Alert
+        </Grid2>
+
+        <Snackbar
+          open={snackbarState}
+          autoHideDuration={3000}
           onClose={hideSnackbar}
-          severity={message.type}
-          sx={{ width: "100%" }}
         >
-          {message.text}
-        </Alert>
-      </Snackbar>
+          <Alert
+            onClose={hideSnackbar}
+            severity={message.type}
+            sx={{ width: "100%" }}
+          >
+            {message.text}
+          </Alert>
+        </Snackbar>
+      </Grid2>
     </>
   );
 };

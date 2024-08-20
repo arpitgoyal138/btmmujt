@@ -21,6 +21,7 @@ import { styles } from "./styles";
 import MembersAPI from "../../../api/firebase/MembersAPI";
 import DataGridActions from "../../../components/admin/datagrid-actions/DataGridActions";
 import AlertDialogSlide from "../../../components/common/Dialog/AlertDialogSlide";
+import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 // import DataGridActions from "../../../components/admin/datagrid-actions/DataGridActions";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -258,8 +259,8 @@ const AllDonations = () => {
           All Donations
         </Typography>
       </Box>
-      <Grid container spacing={2}>
-        <Grid item xs={12} mt={0}>
+      <Grid2 container spacing={2}>
+        <Grid2>
           <Button
             variant="outlined"
             color="primary"
@@ -272,7 +273,7 @@ const AllDonations = () => {
           >
             Add Donation
           </Button>
-        </Grid>
+        </Grid2>
         <Modal
           aria-labelledby="transition-modal-title"
           aria-describedby="transition-modal-description"
@@ -292,7 +293,7 @@ const AllDonations = () => {
             </Box>
           </Fade>
         </Modal>
-        <Grid item xs={12} mt={2}>
+        <Grid2 xs={12} mt={2} sx={{ maxWidth: "95.5vw" }}>
           <CustomDataGrid
             rows={donationsArr}
             columns={columns}
@@ -301,8 +302,8 @@ const AllDonations = () => {
             onCellEditCommit={(params) => setRowId(params.id)}
             onRowClickHandle={(params) => showDonationDetail(params.id)}
           />
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
       <Snackbar
         open={snackbarState}
         autoHideDuration={3000}

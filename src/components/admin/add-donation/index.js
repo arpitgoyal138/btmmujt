@@ -1,6 +1,7 @@
 import {
   Button,
   FormControl,
+  Grid,
   InputLabel,
   ListItemText,
   MenuItem,
@@ -42,6 +43,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -347,6 +349,7 @@ const AddDonation = ({
     );
   };
   return (
+    // <>Hello</>
     <Grid2 container spacing={2}>
       {/* show error message */}
       {errorMsg !== "" && <Grid2 xs={12}>{errorMsg}</Grid2>}
@@ -445,7 +448,7 @@ const AddDonation = ({
         />
       </Grid2>
 
-      <Grid2 xs={4}>
+      <Grid2 xs={12}>
         <TextField
           inputRef={amountRef}
           required
@@ -531,18 +534,18 @@ const AddDonation = ({
           ? "Add Donation"
           : "Update Donation"}
       </Button>
-      {action === "EDIT" && (
-        <Button
-          variant="outlined"
-          color="primary"
-          size="small"
-          onClick={hideModal}
-          fullWidth
-          sx={{ marginTop: "15px" }}
-        >
-          Cancel
-        </Button>
-      )}
+
+      <Button
+        variant="outlined"
+        color="primary"
+        size="small"
+        onClick={hideModal}
+        fullWidth
+        sx={{ marginTop: "15px" }}
+      >
+        Cancel
+      </Button>
+
       <Dialog
         open={openErrorDialog}
         TransitionComponent={Transition}

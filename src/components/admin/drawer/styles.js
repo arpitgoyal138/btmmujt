@@ -69,7 +69,7 @@ export const drawerStyles = {
   drawerBox: { width: { sm: drawerWidth }, flexShrink: { sm: 0 } },
   outletBox: {
     flexGrow: 1,
-    p: 3,
+    p: 2,
     width: { sm: `calc(100% - ${drawerWidth}px)` },
     minHeight: "100vh",
   },
