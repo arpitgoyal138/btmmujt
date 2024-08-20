@@ -118,8 +118,8 @@ const MemberDetail = () => {
     var sheet = a.document.createElement("style");
     sheet.innerHTML = `
 .user-photo-al {
-  height: 30mm;
-  width: 30mm;
+  height: 35mm;
+  width: 35mm;
 }
 .logo-al {
   height: 30mm;
@@ -339,7 +339,7 @@ const MemberDetail = () => {
                   </label>
                   <label
                     className="user-detail-p text-firebrick"
-                    style={{ minHeight: "16mm" }}
+                    style={{ minHeight: "12mm" }}
                   >
                     {memberData.address}, {memberData.district},{" "}
                     {memberData.state}
@@ -374,7 +374,7 @@ const MemberDetail = () => {
                   </label>
                 </div>
               </div>
-              <div className="bottom-row pt-0" style={{ marginTop: "11mm" }}>
+              <div className="bottom-row pt-0" style={{ marginTop: "14mm" }}>
                 <p className="text-end mb-0">अध्यक्ष/पदाधिकारी</p>
               </div>
             </div>
@@ -666,7 +666,7 @@ const MemberDetail = () => {
                   )}
                 </div>
               </div>
-              <div style={{ marginTop: "-8mm" }}>
+              <div style={{ marginTop: "-13mm" }}>
                 <div className="row detail-row">
                   <p style={{ marginBottom: "1mm", fontSize: "17pt" }}>
                     <span className="me-2">क्रम संख्या:</span>

@@ -435,7 +435,7 @@ const NewMemberForm = ({ memberData = null }) => {
 
           console.log("latest serial no.:", latestSerialNo);
 
-          // generate serail no.
+          // generate serial no.
           let serialNo = (latestSerialNo + 1).toString();
 
           console.log("serial No :", serialNo);

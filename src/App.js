@@ -27,6 +27,7 @@ import AdminDashboard from "./pages/admin/dashboard";
 import AllMembers from "./pages/admin/members";
 import AllManagers from "./pages/admin/managers";
 import MemberDetail from "./pages/admin/memberDetail";
+import AllDonations from "./pages/admin/donations";
 export default function App() {
   const options = {
     keyboard: true,
@@ -89,6 +90,7 @@ export default function App() {
             path="/admin/member-detail/:memberId"
             element={<MemberDetail />}
           ></Route>
+          <Route path="/admin/add-donation" element={<AllDonations />}></Route>
         </Route>
       </>
     )

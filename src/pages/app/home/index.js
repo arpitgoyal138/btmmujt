@@ -17,8 +17,10 @@ import officePic4 from "./../../../assets/images/office/4.jpg";
 import officePic5 from "./../../../assets/images/office/5.jpg";
 import officePic6 from "./../../../assets/images/office/6.jpg";
 import MembersAPI from "../../../api/firebase/MembersAPI";
+import DonationsAPI from "../../../api/firebase/DonationsAPI";
 const Homepage = () => {
   const membersApi = new MembersAPI();
+  const donationsAPI = new DonationsAPI();
   const [totalMembers, setTotalMembers] = useState(0);
   const [totalBeneficiaries, setTotalBeneficiaries] = useState(0);
   const [totalAmountReceived, setTotalAmountReceived] = useState(0);
@@ -28,6 +30,11 @@ const Homepage = () => {
       console.log("All members =>", res.data);
       if (res.data) {
         setTotalMembers(res.data.length);
+      }
+    });
+    donationsAPI.totalDonatedAmount().then((res) => {
+      if (res.success) {
+        setTotalAmountDonated(res.data);
       }
     });
   }, []);

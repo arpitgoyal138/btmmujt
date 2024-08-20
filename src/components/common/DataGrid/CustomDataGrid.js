@@ -83,7 +83,7 @@ const CustomDataGrid = ({
 }) => {
   const [pageSize, setPageSize] = useState(pageSizes[0]);
   return (
-    <div style={{ height: 900, width: "100%" }}>
+    <div style={{ width: "100%" }}>
       <DataGrid
         components={{
           NoRowsOverlay: CustomNoRowsOverlay,

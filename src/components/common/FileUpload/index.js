@@ -1,5 +1,5 @@
 import React from "react";
-import "./styles.scss";
+import "./styles.css";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { CircularProgressWithLabel } from "../ProgressBar";
 import { Paper } from "@mui/material";
@@ -29,12 +29,9 @@ const FileUpload = ({
         }}
       >
         {isUploading && <CircularProgressWithLabel value={upProgress} />}
-        {!isUploading && (
-          <AddCircleOutlineIcon className="add-icon placeholder" />
-        )}
+        {!isUploading && <AddCircleOutlineIcon className="add-icon" />}
       </Paper>
     </label>
-    // </div>
   );
 };
 

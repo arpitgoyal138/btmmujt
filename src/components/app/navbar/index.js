@@ -1,10 +1,12 @@
 import * as React from "react";
 import logoImage from "./../../../assets/images/logo.png";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 const navItems = [
   // {title: "उद्देश्य जानें", url: "/objectives"},
-  {title: "Objectives", url: "/objectives"},
-  {title: "Login", url: "/login"},
+  { title: "Objectives", url: "/objectives" },
+  { title: "Privacy Policy", url: "/privacy-policy" },
+  { title: "Terms and Conditions", url: "/terms-and-conditions" },
+  { title: "Login", url: "/login" },
   // {title: "संपर्क करें", url: "/contactUs"},
 ];
 

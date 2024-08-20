@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import Paper from "@mui/material/Paper";
-import {Box, Container, Grid, Typography} from "@mui/material";
-import {useNavigate} from "react-router-dom";
+import { Box, Container, Grid, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 import "./styles.css";
 import AuthAPI from "../../../api/firebase/AuthAPI";
@@ -11,20 +11,28 @@ import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import AddIcon from "@mui/icons-material/Add";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import DonationsAPI from "../../../api/firebase/DonationsAPI";
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const authAPI = new AuthAPI();
   const membersAPI = new MembersAPI();
+  const donationsAPI = new DonationsAPI();
   const [totMembers, setTotMembers] = useState(0);
+  const [totAmountDonated, setTotAmountDonated] = useState(0);
   useEffect(() => {
     membersAPI.getMembers().then((res) => {
       setTotMembers(res.data.length);
+    });
+    donationsAPI.totalDonatedAmount().then((res) => {
+      if (res.success) {
+        setTotAmountDonated(res.data);
+      }
     });
   }, []);
 
   return (
     <>
-      <Box component="div" sx={{display: {xs: "none", sm: "block"}}}>
+      <Box component="div" sx={{ display: { xs: "none", sm: "block" } }}>
         <Typography
           sx={{
             marginBottom: "2rem",
@@ -43,17 +51,17 @@ const AdminDashboard = () => {
           >
             <Container className="p-2" maxWidth="sm">
               <Box className="text-start">
-                <PeopleAltIcon sx={{fontSize: 40}} />
+                <PeopleAltIcon sx={{ fontSize: 40 }} />
                 <Typography variant="h5" align="center">
                   Total Members
                 </Typography>
               </Box>
-              <Box sx={{pt: 0.5, pb: 0.5}}>
+              <Box sx={{ pt: 0.5, pb: 0.5 }}>
                 <Typography variant="h5" align="center">
                   {totMembers}
                 </Typography>
               </Box>
-              <Box sx={{textAlign: "left", mt: 1}}></Box>
+              <Box sx={{ textAlign: "left", mt: 1 }}></Box>
             </Container>
           </Paper>
         </Grid>
@@ -64,18 +72,18 @@ const AdminDashboard = () => {
           >
             <Container className="p-2" maxWidth="sm">
               <Box className="text-start">
-                <CurrencyRupeeIcon sx={{fontSize: 40}} />
-                <AddIcon sx={{fontSize: 28, ml: "-12px"}} />
+                <CurrencyRupeeIcon sx={{ fontSize: 40 }} />
+                <AddIcon sx={{ fontSize: 28, ml: "-12px" }} />
                 <Typography variant="h5" align="center">
                   Amount Received
                 </Typography>
               </Box>
-              <Box sx={{pt: 0.5, pb: 0.5}}>
+              <Box sx={{ pt: 0.5, pb: 0.5 }}>
                 <Typography variant="h5" align="center">
                   ₹0
                 </Typography>
               </Box>
-              <Box sx={{textAlign: "left", mt: 2}}></Box>
+              <Box sx={{ textAlign: "left", mt: 2 }}></Box>
             </Container>
           </Paper>
         </Grid>
@@ -86,17 +94,17 @@ const AdminDashboard = () => {
           >
             <Container className="p-2" maxWidth="sm">
               <Box className="text-start">
-                <VolunteerActivismIcon sx={{fontSize: 40}} />
+                <VolunteerActivismIcon sx={{ fontSize: 40 }} />
                 <Typography variant="h5" align="center">
                   Amount Donated
                 </Typography>
               </Box>
-              <Box sx={{pt: 0.5, pb: 0.5}}>
+              <Box sx={{ pt: 0.5, pb: 0.5 }}>
                 <Typography variant="h5" align="center">
-                  ₹0
+                  ₹{totAmountDonated}
                 </Typography>
               </Box>
-              <Box sx={{textAlign: "left", mt: 2}}></Box>
+              <Box sx={{ textAlign: "left", mt: 2 }}></Box>
             </Container>
           </Paper>
         </Grid>
@@ -107,17 +115,17 @@ const AdminDashboard = () => {
           >
             <Container className="p-2" maxWidth="sm">
               <Box className="text-start">
-                <AccountBalanceIcon sx={{fontSize: 40}} />
+                <AccountBalanceIcon sx={{ fontSize: 40 }} />
                 <Typography variant="h5" align="center">
                   Balance
                 </Typography>
               </Box>
-              <Box sx={{pt: 0.5, pb: 0.5}}>
+              <Box sx={{ pt: 0.5, pb: 0.5 }}>
                 <Typography variant="h5" align="center">
                   ₹0
                 </Typography>
               </Box>
-              <Box sx={{textAlign: "left", mt: 2}}></Box>
+              <Box sx={{ textAlign: "left", mt: 2 }}></Box>
             </Container>
           </Paper>
         </Grid>

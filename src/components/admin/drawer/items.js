@@ -32,13 +32,13 @@ export const drawerItems = [
   {
     id: 4,
     icon: <VolunteerActivismIcon />,
-    label: "Add Donation",
-    route: "/admin/categories",
+    label: "All Donations",
+    route: "/admin/add-donation",
   },
-  {
-    id: 5,
-    icon: <AccountBalanceIcon />,
-    label: "Account Balance",
-    route: "/admin/orders",
-  },
+  // {
+  //   id: 5,
+  //   icon: <AccountBalanceIcon />,
+  //   label: "Account Balance",
+  //   route: "/admin/orders",
+  // },
 ];
