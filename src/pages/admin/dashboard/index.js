@@ -68,7 +68,7 @@ const AdminDashboard = () => {
         <Grid item xs={12} sm={5} lg={3}>
           <Paper
             className="dashboard-box received"
-            onClick={() => navigate("/admin/products")}
+            onClick={() => navigate("/admin/add-donation")}
           >
             <Container className="p-2" maxWidth="sm">
               <Box className="text-start">
@@ -90,7 +90,7 @@ const AdminDashboard = () => {
         <Grid item xs={12} sm={5} lg={3}>
           <Paper
             className="dashboard-box donated"
-            onClick={() => navigate("/admin/products")}
+            onClick={() => navigate("/admin/add-donation")}
           >
             <Container className="p-2" maxWidth="sm">
               <Box className="text-start">
