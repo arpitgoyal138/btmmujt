@@ -3,19 +3,23 @@ import "./styles.css";
 import { states } from "./IndianStates";
 import MembersAPI from "./../../../../api/firebase/MembersAPI";
 //Firebase
-import {
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-  deleteObject,
-} from "firebase/storage";
-import { storage } from "../../../../firebase";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { auth, storage } from "../../../../firebase";
 // Image Libraries
 import CompressAPI from "./../../../../api/compressImage/CompressAPI";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import AuthAPI from "../../../../api/firebase/AuthAPI";
+import {
+  PhoneAuthProvider,
+  RecaptchaVerifier,
+  getAuth,
+  signInWithCredential,
+  signInWithPhoneNumber,
+} from "firebase/auth";
 
 const NewMemberForm = ({ memberData = null }) => {
+  //auth.settings.appVerificationDisabledForTesting = true;
   const initMemberForm = {
     name: "",
     fathers_name: "",
@@ -65,6 +69,8 @@ const NewMemberForm = ({ memberData = null }) => {
   const work_detailRef = useRef(null);
   const formCheckRef = useRef(null);
   const postNameRef = useRef(null);
+  const otpRef = useRef(null);
+  const submitBtnRef = useRef(null);
   const [memberForm, setMemberForm] = useState(initMemberForm);
   const [formChecked, setFormChecked] = useState(false);
   const [isUploadingFront, setIsUploadingFront] = useState(false);
@@ -79,6 +85,12 @@ const NewMemberForm = ({ memberData = null }) => {
   });
   const [open, setOpen] = useState(false);
   const [submitButtonClicked, setSubmitButtonClicked] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [verificationId, setVerificationId] = useState(null);
+  const [otpTimer, setOtpTimer] = useState(0);
+  const [memberUniqueCode, setMemberUniqueCode] = useState("");
+  const [buttonText, setButtonText] = useState("पुष्टि कोड भेजें");
+  const [verifyButtonClicked, setVerifyButtonClicked] = useState(false);
   const handleClick = () => {
     setOpen(true);
   };
@@ -99,7 +111,44 @@ const NewMemberForm = ({ memberData = null }) => {
       populateFormValues(memberData);
     }
   }, [memberData]);
+  useEffect(() => {
+    if (!otpSent) {
+      setOtpTimer(0);
+      window.otpTimer = 0;
+      return;
+    }
+    const intervalId = setInterval(() => {
+      console.log(
+        "OTPSent:",
+        otpSent,
+        "__OTP Timer:",
+        otpTimer,
+        " verifyButtonClicked:",
+        verifyButtonClicked
+      );
+      if (otpTimer > 0) {
+        console.log("here verifyButtonClicked: ", verifyButtonClicked);
+        if (!verifyButtonClicked) {
+          submitBtnRef.current.disabled = true;
+          console.log("set button text: ");
+          setButtonText("पुनः पुष्टि कोड भेजें (" + otpTimer + "s)");
+        }
 
+        setOtpTimer(otpTimer - 1);
+        window.otpTimer = otpTimer - 1;
+      } else {
+        submitBtnRef.current.disabled = false;
+        setSubmitButtonClicked(false);
+        window.buttonClicked = false;
+        setButtonText("पुष्टि कोड भेजें");
+        clearInterval(intervalId);
+        window.otpTimer = 0;
+        window.otpSent = false;
+      }
+    }, 1000); // Update every 1 second
+
+    return () => clearInterval(intervalId); // Clear interval on unmount
+  }, [otpSent, otpTimer]);
   const clearForm = () => {
     thekedarRadioRef.current.checked = false;
     karigarRadioRef.current.checked = false;
@@ -111,6 +160,13 @@ const NewMemberForm = ({ memberData = null }) => {
     setImageData([]);
     setProgress(0);
     setSubmitButtonClicked(false);
+    window.buttonClicked = false;
+    setOtpTimer(0);
+    setOtpSent(false);
+    window.otpSent = false;
+    window.otpTimer = 0;
+    setVerificationId(null);
+    setButtonText("पुष्टि कोड भेजें");
     // set all reference value to empty
     nameRef.current.value = "";
     fathers_nameRef.current.value = "";
@@ -141,8 +197,10 @@ const NewMemberForm = ({ memberData = null }) => {
     }
     setFormChecked(false);
     setSubmitButtonClicked(false);
+    window.buttonClicked = false;
     setImageData([]);
     setProgress(0);
+    setMemberUniqueCode(data.unique_code);
     // set all reference value to empty
     nameRef.current.value = data.name;
     fathers_nameRef.current.value = data.fathers_name;
@@ -156,33 +214,78 @@ const NewMemberForm = ({ memberData = null }) => {
     postNameRef.current.value = data.post_name ? data.post_name : "";
   };
   const validate = () => {
+    console.log("validate form:", memberForm);
     // validate form
     if (memberForm.name.length < 3) {
-      alert("नाम न्यूनतम ३ अक्षरों का होना अनिवार्य है ");
+      const alertOptions = {
+        type: "warning",
+        title: "नाम न्यूनतम 3 अक्षरों का होना अनिवार्य है",
+        show: true,
+      };
+      setAlertMsg({ ...alertOptions });
       nameRef.current.focus();
       return false;
     } else if (memberForm.fathers_name.length < 3) {
-      alert("पिता का नाम न्यूनतम ३ अक्षरों का होना अनिवार्य है ");
+      const alertOptions = {
+        type: "warning",
+        title: "पिता का नाम न्यूनतम 3 अक्षरों का होना अनिवार्य है",
+        show: true,
+      };
+      setAlertMsg({ ...alertOptions });
       fathers_nameRef.current.focus();
       return false;
     } else if (memberForm.address.length < 3) {
-      alert("स्थायी पता न्यूनतम ३ अक्षरों का होना अनिवार्य है ");
+      const alertOptions = {
+        type: "warning",
+        title: "स्थायी पता न्यूनतम 3 अक्षरों का होना अनिवार्य है",
+        show: true,
+      };
+      setAlertMsg({ ...alertOptions });
       addressRef.current.focus();
       return false;
     } else if (memberForm.rtocode.length > 0 && memberForm.rtocode.length < 3) {
-      alert("R.T.O. कोड 4 अक्षरों का होना अनिवार्य है ");
+      const alertOptions = {
+        type: "warning",
+        title: "R.T.O. कोड 4 अक्षरों का होना अनिवार्य है",
+        show: true,
+      };
+      setAlertMsg({ ...alertOptions });
       rtocodeRef.current.focus();
       return false;
     } else if (memberForm.pincode.length > 0 && memberForm.pincode.length < 6) {
-      alert("पिनकोड 6 अक्षरों का होना अनिवार्य है ");
+      const alertOptions = {
+        type: "warning",
+        title: "पिनकोड 6 अक्षरों का होना अनिवार्य है",
+        show: true,
+      };
+      setAlertMsg({ ...alertOptions });
       pincodeRef.current.focus();
       return false;
     } else if (memberForm.aadhaar_photo_front.url === "") {
-      alert("आधार कार्ड की सामने व पीछे की फोटो संलग्न करना अनिवार्य है ");
+      const alertOptions = {
+        type: "warning",
+        title: "आधार कार्ड की सामने की फोटो संलग्न करना अनिवार्य है ",
+        show: true,
+      };
+      setAlertMsg({ ...alertOptions });
       aadhaar_photo_frontRef.current.focus();
       return false;
+    } else if (memberForm.contact_no.length !== 10) {
+      const alertOptions = {
+        type: "warning",
+        title: "व्हाट्सप्प मोबाइल नंबर 10 अक्षरों का होना अनिवार्य है ",
+        show: true,
+      };
+      setAlertMsg({ ...alertOptions });
+      contact_noRef.current.focus();
+      return false;
     } else if (memberForm.aadhaar_photo_back.url === "") {
-      alert("आधार कार्ड की सामने व पीछे की फोटो संलग्न करना अनिवार्य है ");
+      const alertOptions = {
+        type: "warning",
+        title: "आधार कार्ड की पीछे की फोटो संलग्न करना अनिवार्य है ",
+        show: true,
+      };
+      setAlertMsg({ ...alertOptions });
       aadhaar_photo_backRef.current.focus();
       return false;
     }
@@ -192,13 +295,23 @@ const NewMemberForm = ({ memberData = null }) => {
     // return false;
     // }
     else if (memberForm.work_group === "") {
-      alert("कृप्या अपने कार्यक्षेत्र का चयन करें");
+      const alertOptions = {
+        type: "warning",
+        title: "कृप्या अपने कार्यक्षेत्र का चयन करें",
+        show: true,
+      };
+      setAlertMsg({ ...alertOptions });
       return false;
     } else if (
       memberForm.work_group === "Others" &&
       memberForm.work_detail.length < 3
     ) {
-      alert("कृप्या अपने कार्य के विषय में जानकारी दें ");
+      const alertOptions = {
+        type: "warning",
+        title: "कृप्या अपने कार्य के विषय में जानकारी दें ",
+        show: true,
+      };
+      setAlertMsg({ ...alertOptions });
       work_detailRef.current.focus();
       return false;
     } else return true;
@@ -372,33 +485,40 @@ const NewMemberForm = ({ memberData = null }) => {
       }
     );
   };
-  const handleDeleteFile = (index, fileName) => {
-    console.log("delete file:", index, " name:", fileName);
-    const tempImageData = [...imageData];
-    tempImageData.splice(index, 1);
-    setImageData(tempImageData);
-    const fileRef = ref(storage, `images/categories/${fileName}`);
-    // Delete the file
-    deleteObject(fileRef)
-      .then(() => {
-        // File deleted successfully
-        console.log("deleted successfully");
-        // const updatedURLs = categoryContext.state.images.filter(
-        //   (state) => state.name !== fileName
-        // );
-        // categoryContext.setState({
-        //   ...categoryContext.state,
-        //   images: updatedURLs,
-        // });
-      })
-      .catch((err) => {
-        // Uh-oh, an error occurred!
-        console.log("delete err:", err.message);
-      });
-  };
+  // const handleDeleteFile = (index, fileName) => {
+  //   console.log("delete file:", index, " name:", fileName);
+  //   const tempImageData = [...imageData];
+  //   tempImageData.splice(index, 1);
+  //   setImageData(tempImageData);
+  //   const fileRef = ref(storage, `images/categories/${fileName}`);
+  //   // Delete the file
+  //   deleteObject(fileRef)
+  //     .then(() => {
+  //       // File deleted successfully
+  //       console.log("deleted successfully");
+  //       // const updatedURLs = categoryContext.state.images.filter(
+  //       //   (state) => state.name !== fileName
+  //       // );
+  //       // categoryContext.setState({
+  //       //   ...categoryContext.state,
+  //       //   images: updatedURLs,
+  //       // });
+  //     })
+  //     .catch((err) => {
+  //       // Uh-oh, an error occurred!
+  //       console.log("delete err:", err.message);
+  //     });
+  // };
   const submitForm = () => {
+    if ((otpSent && otpTimer !== 0) || window.buttonClicked) {
+      return;
+    }
     if (validate()) {
+      window.buttonClicked = true;
+      setButtonText("पुष्टि कोड भेजा जा रहा है...");
+      submitBtnRef.current.disabled = true;
       setSubmitButtonClicked(true);
+
       // get total no. of members
       membersAPI
         .getMembers()
@@ -414,6 +534,7 @@ const NewMemberForm = ({ memberData = null }) => {
               return member.contact_no === memberForm.contact_no;
             });
             if (memberExists) {
+              window.buttonClicked = false;
               setSubmitButtonClicked(false);
               const alertOptions = {
                 type: "warning",
@@ -423,9 +544,8 @@ const NewMemberForm = ({ memberData = null }) => {
               };
               setAlertMsg({ ...alertOptions });
               console.log("Member Already Exists!");
-              // alert(
-              //   "इस व्हाट्सप्प मोबाइल नंबर से कोई और सदस्य पहले ही पंजीकृत हो चुका है| \nकृप्या किसी अन्य मोबाइल नंबर से प्रयास करें| "
-              // );
+              setButtonText("पुष्टि कोड भेजें");
+
               return;
             }
             latestSerialNo = Number(
@@ -465,64 +585,24 @@ const NewMemberForm = ({ memberData = null }) => {
           });
           if (codeExists) {
             console.log("Code Already Exists!");
-            setSubmitButtonClicked(true);
+            window.buttonClicked = false;
+            setSubmitButtonClicked(false);
             const alertOptions = {
               type: "danger",
               title: "Registration failed (Code Already Exists)",
               show: true,
             };
             setAlertMsg({ ...alertOptions });
+            setButtonText("पुष्टि कोड भेजें");
             return;
           }
-          const dataToSend = {
-            payload: { ...memberForm, unique_code: uniqueCode },
-            id: uniqueCode,
-          };
-          console.log("data to send:", dataToSend);
-          membersAPI
-            .setMember(dataToSend)
-            .then((res) => {
-              console.log("res:", res);
-              if (res.success) {
-                clearForm();
-                // Success
-                //सफलतापूर्वक
-                const alertOptions = {
-                  type: "success",
-                  title:
-                    "आपका पंजीकरण सफलतापूर्वक हो गया है|\n कृप्या अपना कोड " +
-                    uniqueCode +
-                    " नोट कर लें ",
-                  show: true,
-                };
-                setAlertMsg({ ...alertOptions });
-                // alert("registered with id: " + uniqueCode);
-              } else {
-                // Failure
-                console.log("Error while setMember() API ResponseFailed");
-                setSubmitButtonClicked(false);
-                const alertOptions = {
-                  type: "danger",
-                  title: "Registration failed",
-                  show: true,
-                };
-                setAlertMsg({ ...alertOptions });
-              }
-            })
-            .catch((err) => {
-              // Error
-              // Failure
-              console.log("Exception while setMember() API:", err);
-              setSubmitButtonClicked(false);
-              const alertOptions = {
-                type: "danger",
-                title: "Registration failed",
-                show: true,
-              };
-              setAlertMsg({ ...alertOptions });
-            });
+          setMemberUniqueCode(uniqueCode);
+          // Enter form data in firebase
+          // पुष्टि कोड भेजें
+          onSendOTP();
         })
         .catch((err) => {
+          window.buttonClicked = false;
           setSubmitButtonClicked(false);
           console.log("error while getMembers() API");
           const alertOptions = {
@@ -531,25 +611,48 @@ const NewMemberForm = ({ memberData = null }) => {
             show: true,
           };
           setAlertMsg({ ...alertOptions });
+          setButtonText("पुष्टि कोड भेजें");
         });
     } else {
       console.log("incorrect input");
+      setButtonText("पुष्टि कोड भेजें");
+      window.buttonClicked = false;
+      setSubmitButtonClicked(false);
     }
   };
   const updateForm = () => {
+    if ((otpSent && otpTimer !== 0) || window.buttonClicked) {
+      return;
+    }
     if (validate()) {
+      window.buttonClicked = true;
       setSubmitButtonClicked(true);
-      const dataToSend = {
+      setButtonText("पुष्टि कोड भेजा जा रहा है...");
+      onSendOTP();
+    } else {
+      console.log("incorrect input");
+      window.buttonClicked = false;
+      setSubmitButtonClicked(false);
+      setButtonText("पुष्टि कोड भेजें");
+    }
+  };
+  const formValuesIntoDB = () => {
+    if (memberData !== null) {
+      // Update values
+      const dataToSendForUpdation = {
         payload: { ...memberForm },
         id: memberData.unique_code,
       };
       membersAPI
-        .setMember(dataToSend, true)
+        .setMember(dataToSendForUpdation, true)
         .then((res) => {
+          window.buttonClicked = false;
+          setSubmitButtonClicked(false);
+          setVerifyButtonClicked(false);
           if (res.success) {
-            //clearForm();
+            clearForm();
             setFormChecked(false);
-            setSubmitButtonClicked(false);
+
             // Success
             const alertOptions = {
               type: "success",
@@ -562,7 +665,6 @@ const NewMemberForm = ({ memberData = null }) => {
             // alert("registered with id: " + uniqueCode);
           } else {
             // Failure
-            setSubmitButtonClicked(false);
             const alertOptions = {
               type: "danger",
               title: "Updation failed: ErrorResponseFalse",
@@ -574,7 +676,9 @@ const NewMemberForm = ({ memberData = null }) => {
         .catch((err) => {
           // Error
           // Failure
+          window.buttonClicked = false;
           setSubmitButtonClicked(false);
+          setVerifyButtonClicked(false);
           const alertOptions = {
             type: "warning",
             title: "Updation failed: Exception " + err,
@@ -583,15 +687,238 @@ const NewMemberForm = ({ memberData = null }) => {
           setAlertMsg({ ...alertOptions });
         });
     } else {
-      console.log("incorrect input");
+      // Insert Values
+      const dataToSend = {
+        payload: { ...memberForm, unique_code: memberUniqueCode },
+        id: memberUniqueCode,
+      };
+      console.log("data to send:", dataToSend);
+      membersAPI
+        .setMember(dataToSend)
+        .then((res) => {
+          console.log("res:", res);
+          window.buttonClicked = false;
+          setSubmitButtonClicked(false);
+          setVerifyButtonClicked(false);
+          if (res.success) {
+            clearForm();
+            // Success
+            //सफलतापूर्वक
+            const alertOptions = {
+              type: "success",
+              title:
+                "आपका पंजीकरण सफलतापूर्वक हो गया है|\n कृप्या अपना कोड " +
+                memberUniqueCode +
+                " नोट कर लें ",
+              show: true,
+            };
+            setAlertMsg({ ...alertOptions });
+            // alert("registered with id: " + memberUniqueCode);
+          } else {
+            // Failure
+            console.log("Error while setMember() API ResponseFailed");
+            window.buttonClicked = false;
+            setSubmitButtonClicked(false);
+            const alertOptions = {
+              type: "danger",
+              title: "Registration failed",
+              show: true,
+            };
+            setAlertMsg({ ...alertOptions });
+          }
+        })
+        .catch((err) => {
+          // Error
+          // Failure
+          console.log("Exception while setMember() API:", err);
+          window.buttonClicked = false;
+          setSubmitButtonClicked(false);
+          setVerifyButtonClicked(false);
+          const alertOptions = {
+            type: "danger",
+            title: "Registration failed",
+            show: true,
+          };
+          setAlertMsg({ ...alertOptions });
+        });
+    }
+  };
+  async function handleSignIn() {
+    try {
+      const WindowOtpSent = window.otpSent;
+      const WindowOtpTimer = window.otpTimer;
+      const appVerifier = window.recaptchaVerifier;
+      const phoneNumber = "+91" + memberForm.contact_no;
+      console.log(
+        "Handle Sign in with OTP with verifier:",
+        appVerifier,
+        " WindowOtpSent:",
+        WindowOtpSent,
+        " WindowOtpTimer:",
+        WindowOtpTimer
+      );
+      if (WindowOtpSent && WindowOtpTimer !== 0) {
+        return;
+      }
+
+      const auth = getAuth();
+      // const confirmationResult = await signInWithPhoneNumber(
+      //   auth,
+      //   phoneNumber,
+      //   appVerifier
+      // );
+      signInWithPhoneNumber(auth, phoneNumber, appVerifier)
+        .then((confirmationResult) => {
+          // SMS sent. Prompt user to type the code from the message, then sign the
+          // user in with confirmationResult.confirm(code).
+          window.confirmationResult = confirmationResult;
+          setOtpSent(true);
+          setOtpTimer(60);
+          window.otpSent = true;
+          window.otpTimer = 60;
+          // ...
+        })
+        .catch((error) => {
+          // Error; SMS not sent
+          // window.recaptchaVerifier.render().then(function (widgetId) {
+          //   grecaptcha.reset(widgetId);
+          // });
+          const alertOptions = {
+            type: "danger",
+            title: "कुछ समय पश्चात प्रयास करें ",
+            show: true,
+          };
+          setAlertMsg({ ...alertOptions });
+          setOtpSent(false);
+          window.otpSent = false;
+          window.buttonClicked = false;
+          setSubmitButtonClicked(false);
+          setButtonText("पुष्टि कोड भेजें");
+          // ...
+        });
+      console.log("confirmationResult:", window.confirmationResult);
+      //setVerificationId(confirmationResult.verificationId);
+      // setOtpSent(true);
+      // setOtpTimer(60);
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      const alertOptions = {
+        type: "danger",
+        title: "कुछ समय पश्चात प्रयास करें",
+        show: true,
+      };
+      setAlertMsg({ ...alertOptions });
+      setOtpSent(false);
+      window.otpSent = false;
+      window.buttonClicked = false;
+      setSubmitButtonClicked(false);
+      setButtonText("पुष्टि कोड भेजें");
+    }
+  }
+  const onSendOTP = async () => {
+    try {
+      console.log("OTP भेजें");
+      submitBtnRef.current.disabled = true;
+      // const appVerifier = new RecaptchaVerifier(auth, "sign-in-button", {
+      //   size: "invisible",
+      //   callback: (response) => {
+      //     console.log("response:", response);
+      //     handleSignIn(appVerifier);
+      //   },
+      // });
+      // appVerifier.verify();
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, "sign-in-button", {
+        size: "invisible",
+        callback: (response) => {
+          submitBtnRef.current.disabled = true;
+          // reCAPTCHA solved, allow signInWithPhoneNumber.
+          console.log("response:", response);
+          if (window.otpSent && window.otpTimer !== 0) {
+            return;
+          }
+          handleSignIn();
+        },
+      });
+      window.recaptchaVerifier.verify();
+    } catch (err) {
+      console.log("err:", err);
+      const alertOptions = {
+        type: "warning",
+        title: "पुष्टि कोड भेजने में विफल",
+        show: true,
+      };
+      setAlertMsg({ ...alertOptions });
+      setOtpSent(false);
+      window.otpSent = false;
+      window.buttonClicked = false;
+      setSubmitButtonClicked(false);
+      setOtpTimer(0);
+      setButtonText("पुष्टि कोड भेजें");
+    }
+  };
+  const verifyOTP = async () => {
+    try {
+      setVerifyButtonClicked(true);
+      console.log("पुष्टि करें");
+      // const auth = getAuth();
+      // const credential = PhoneAuthProvider.credential(
+      //   verificationId,
+      //   otpRef.current.value
+      // );
+      // const userCredential = await signInWithCredential(auth, credential);
+      // console.log("userCredential:", userCredential);
+      window.confirmationResult
+        .confirm(otpRef.current.value)
+        .then((result) => {
+          // User signed in successfully.
+          const user = result.user;
+          console.log("userCredential:", user);
+          setOtpSent(false);
+          window.otpSent = false;
+          window.buttonClicked = false;
+          setSubmitButtonClicked(false);
+          setOtpTimer(0);
+          // Submit Form Details
+          formValuesIntoDB();
+          // ...
+        })
+        .catch((error) => {
+          // User couldn't sign in (bad verification code?)
+          console.log("Invalid OTP:", error);
+          const alertOptions = {
+            type: "warning",
+            title: "पुष्टि कोड अमान्य है",
+            show: true,
+          };
+          setAlertMsg({ ...alertOptions });
+          setVerifyButtonClicked(false);
+          // ...
+        });
+
+      //Clear form values
+    } catch (err) {
+      console.log("err:", err);
+      const alertOptions = {
+        type: "warning",
+        title: "पुष्टि कोड अमान्य है",
+        show: true,
+      };
+      setAlertMsg({ ...alertOptions });
+      setVerifyButtonClicked(false);
+      // Invalid OTP
     }
   };
   return (
     <>
       <form
         onSubmit={(e) => {
+          console.log("Submit Form:");
           e.preventDefault();
-          submitForm();
+          if (memberData !== null) {
+            updateForm();
+          } else {
+            submitForm();
+          }
         }}
       >
         <div className="row">
@@ -612,6 +939,7 @@ const NewMemberForm = ({ memberData = null }) => {
                   name: e.target.value,
                 });
               }}
+              readOnly={submitButtonClicked}
             />
           </div>
           <div className="col-sm-6 mb-2">
@@ -631,6 +959,7 @@ const NewMemberForm = ({ memberData = null }) => {
                   fathers_name: e.target.value,
                 });
               }}
+              readOnly={submitButtonClicked}
             />
           </div>
         </div>
@@ -652,6 +981,7 @@ const NewMemberForm = ({ memberData = null }) => {
                   address: e.target.value,
                 });
               }}
+              readOnly={submitButtonClicked}
             />
           </div>
           <div className="col-12 col-sm-6 d-flex">
@@ -678,6 +1008,7 @@ const NewMemberForm = ({ memberData = null }) => {
                     rtocode: e.target.value,
                   });
                 }}
+                readOnly={submitButtonClicked}
               />
             </div>
             <div className="col-2 align-content-end mb-2 mb-3 text-center">
@@ -712,6 +1043,7 @@ const NewMemberForm = ({ memberData = null }) => {
                     pincode: e.target.value,
                   });
                 }}
+                readOnly={submitButtonClicked}
               />
             </div>
           </div>
@@ -733,6 +1065,7 @@ const NewMemberForm = ({ memberData = null }) => {
                   district: e.target.value,
                 });
               }}
+              readOnly={submitButtonClicked}
             />
           </div>
           <div className="col-sm-6 mb-2">
@@ -753,6 +1086,7 @@ const NewMemberForm = ({ memberData = null }) => {
               }}
               defaultValue=""
               required
+              readOnly={submitButtonClicked}
             >
               <option value="">अपना राज्य चुनें</option>
               {states.map((state, index) => {
@@ -771,17 +1105,20 @@ const NewMemberForm = ({ memberData = null }) => {
               व्हाट्सप्प मोबाइल नंबर
             </label>
             <input
+              required
               ref={contact_noRef}
               type="text"
               className="form-control"
               id="mobile"
               aria-describedby="name"
+              maxLength={10}
               onChange={(e) => {
                 setMemberForm({
                   ...memberForm,
                   contact_no: e.target.value,
                 });
               }}
+              readOnly={submitButtonClicked}
             />
           </div>
           <div className="col-sm-6 mb-2">
@@ -794,12 +1131,14 @@ const NewMemberForm = ({ memberData = null }) => {
               className="form-control"
               id="mobile2"
               aria-describedby="name"
+              maxLength={10}
               onChange={(e) => {
                 setMemberForm({
                   ...memberForm,
                   alternate_contact_no: e.target.value,
                 });
               }}
+              readOnly={submitButtonClicked}
             />
           </div>
         </div>
@@ -815,7 +1154,7 @@ const NewMemberForm = ({ memberData = null }) => {
               accept="image/*"
               id="aadhaar_front"
               onChange={(e) => handleImageChange(e, "front")}
-              required
+              readOnly={submitButtonClicked}
             />
           </div>
 
@@ -830,13 +1169,13 @@ const NewMemberForm = ({ memberData = null }) => {
               accept="image/*"
               id="aadhaar_back"
               onChange={(e) => handleImageChange(e, "back")}
-              required
+              readOnly={submitButtonClicked}
             />
           </div>
         </div>
-        <div className="row mb-3 justify-content-around">
+        <div className="row justify-content-around">
           {isUploadingFront && (
-            <div className="col mt-2 mb-2 upload-image-box show align-content-center text-center">
+            <div className="col upload-image-box show align-content-center text-center">
               <div className="spinner-grow" role="status">
                 <span className="visually-hidden">Loading...</span>
               </div>
@@ -844,7 +1183,7 @@ const NewMemberForm = ({ memberData = null }) => {
           )}
 
           <div
-            className={`col mt-2 mb-2 uploaded-image-box ${
+            className={`col uploaded-image-box ${
               memberForm.aadhaar_photo_front.url !== "" && !isUploadingFront
                 ? "show"
                 : ""
@@ -854,14 +1193,14 @@ const NewMemberForm = ({ memberData = null }) => {
             }}
           ></div>
           {isUploadingBack && (
-            <div className="col mt-2 mb-2 uploaded-image-box show align-content-center text-center">
+            <div className="col uploaded-image-box show align-content-center text-center">
               <div className="spinner-grow" role="status">
                 <span className="visually-hidden">Loading...</span>
               </div>
             </div>
           )}
           <div
-            className={`col mt-2 mb-2 uploaded-image-box ${
+            className={`col uploaded-image-box ${
               memberForm.aadhaar_photo_back.url !== "" && !isUploadingBack
                 ? "show"
                 : ""
@@ -883,19 +1222,20 @@ const NewMemberForm = ({ memberData = null }) => {
               id="latest_photo"
               onChange={(e) => handleImageChange(e, "self")}
               accept="image/*"
+              readOnly={submitButtonClicked}
             />
           </div>
         </div>
         <div className="row mb-3 justify-content-around">
           {isUploadingSelf && (
-            <div className="col mt-2 mb-2 upload-image-box show align-content-center text-center">
+            <div className="col upload-image-box show align-content-center text-center">
               <div className="spinner-grow" role="status">
                 <span className="visually-hidden">Loading...</span>
               </div>
             </div>
           )}
           <div
-            className={`col mt-2 mb-2 uploaded-image-box ${
+            className={`col uploaded-image-box ${
               memberForm.latest_photo.url !== "" && !isUploadingSelf
                 ? "show"
                 : ""
@@ -924,6 +1264,7 @@ const NewMemberForm = ({ memberData = null }) => {
                   work_detail: "",
                 });
               }}
+              readOnly={submitButtonClicked}
             />
             <label
               className="btn btn-outline-primary p-3 btn-work"
@@ -947,6 +1288,7 @@ const NewMemberForm = ({ memberData = null }) => {
                   work_detail: "",
                 });
               }}
+              readOnly={submitButtonClicked}
             />
             <label
               className="btn btn-outline-primary p-3 btn-work"
@@ -970,6 +1312,7 @@ const NewMemberForm = ({ memberData = null }) => {
                   work_detail: "",
                 });
               }}
+              readOnly={submitButtonClicked}
             />
             <label
               className="btn btn-outline-primary p-3 btn-work"
@@ -992,6 +1335,7 @@ const NewMemberForm = ({ memberData = null }) => {
                   work_group: "Others",
                 });
               }}
+              readOnly={submitButtonClicked}
             />
             <label
               className="btn btn-outline-primary p-3 btn-work"
@@ -1021,6 +1365,7 @@ const NewMemberForm = ({ memberData = null }) => {
                   work_detail: e.target.value,
                 });
               }}
+              readOnly={submitButtonClicked}
             />
           </div>
         </div>
@@ -1053,29 +1398,79 @@ const NewMemberForm = ({ memberData = null }) => {
             onChange={(e) => {
               setFormChecked(e.target.checked);
             }}
+            readOnly={submitButtonClicked}
           />
           <label className="form-check-label" htmlFor="checkbox">
             मैं पुष्टि करता हूं कि उपरोक्त कथन सभी प्रकार से सत्य हैं
           </label>
         </div>
         {memberData === null && (
-          <button
-            type="submit"
-            className="btn btn-success col-12 mx-auto"
-            disabled={formChecked && !submitButtonClicked ? false : "disabled"}
-          >
-            जमा करें
-          </button>
+          <>
+            <button
+              ref={submitBtnRef}
+              type="submit"
+              className="btn btn-success col-12 mx-auto"
+              id="sign-in-button"
+              disabled={
+                !formChecked ||
+                submitButtonClicked ||
+                (formChecked && submitButtonClicked && !otpSent) ||
+                (otpSent && otpTimer !== 0) ||
+                window.buttonClicked
+                  ? true
+                  : false
+              }
+            >
+              {buttonText}
+            </button>
+          </>
         )}
         {memberData !== null && (
           <button
-            type="button"
-            className="btn btn-success col-12 mx-auto"
-            disabled={formChecked && !submitButtonClicked ? false : "disabled"}
-            onClick={updateForm}
+            ref={submitBtnRef}
+            type="submit"
+            className="btn btn-primary col-12 mx-auto"
+            id="sign-in-button"
+            disabled={
+              !formChecked ||
+              submitButtonClicked ||
+              (formChecked && submitButtonClicked && !otpSent) ||
+              (otpSent && otpTimer !== 0) ||
+              window.buttonClicked
+                ? true
+                : false
+            }
           >
-            Update
+            {buttonText}
           </button>
+        )}
+        {otpSent && (
+          <>
+            <p className="small mb-2 mt-2 text-center">
+              {"+91 " + memberForm.contact_no} नंबर पर पुष्टि कोड भेजा गया है{" "}
+            </p>
+            <input
+              type="text"
+              ref={otpRef}
+              className="form-control mt-1 mb-1"
+              maxLength={6}
+              placeholder="पुष्टि कोड दर्ज करें"
+            />
+            <button
+              type="button"
+              className="btn btn-warning col-12 mx-auto"
+              onClick={(e) => {
+                e.preventDefault();
+                setButtonText("सत्यापित किया जा रहा है...");
+                verifyOTP();
+              }}
+              data-coreui-timeout="2000"
+              data-coreui-toggle="loading-button"
+              disabled={verifyButtonClicked}
+            >
+              पुष्टि कोड सत्यापित करें
+            </button>
+          </>
         )}
       </form>
       <div
@@ -1094,20 +1489,6 @@ const NewMemberForm = ({ memberData = null }) => {
           }}
         ></button>
       </div>
-      {/* <Snackbar
-        open={alertMsg.show}
-        autoHideDuration={5000}
-        onClose={handleClose}
-      >
-        <Alert
-          onClose={handleClose}
-          severity={alertMsg.type == "danger" ? "error" : alertMsg.type}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {alertMsg.title}
-        </Alert>
-      </Snackbar> */}
     </>
   );
 };

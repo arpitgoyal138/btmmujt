@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import "./styles.css";
 import LogoImage from "./../../../../assets/images/logo.png";
-import {Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SignInForm from "../../../../components/app/forms/sign-in";
-import {onAuthStateChanged} from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import AuthAPI from "../../../../api/firebase/AuthAPI";
-import {auth} from "./../../../../firebase";
+import { auth } from "./../../../../firebase";
 import Loader from "../../../../components/loader/Loader";
 
 const SignIn = () => {
@@ -30,6 +30,14 @@ const SignIn = () => {
 
         authAPI.getUserDetailById(userId).then((res) => {
           console.log("In Login ===> getUserDetailById RES:", res);
+          if (!res) {
+            handleLogout();
+            setLoading(false);
+            setIsLoggedIn(false);
+            console.log("User signed out");
+            navigate("/login");
+            return;
+          }
           if (res.role === "Admin") {
             console.log("Redirect to Admin");
             // Full Authority
@@ -56,15 +64,15 @@ const SignIn = () => {
         {loading && <Loader />}
         {!loading && (
           <div>
-            <div className="row" style={{marginBottom: "1rem"}}>
+            <div className="row" style={{ marginBottom: "1rem" }}>
               <div className="col-12">
                 <Link className="list-group-item" to="/">
                   <h1
                     className="display-5 text-center"
-                    style={{color: "green", marginTop: "1rem"}}
+                    style={{ color: "green", marginTop: "1rem" }}
                   >
                     भारतीय ठेकेदार मिस्त्री मजदूर यूनियन <br />
-                    <span style={{fontSize: "0.65em"}}>
+                    <span style={{ fontSize: "0.65em" }}>
                       अन्तर्गत (B.T.M.M / जनकल्याण ट्रस्ट)
                     </span>
                   </h1>

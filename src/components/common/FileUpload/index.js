@@ -18,7 +18,9 @@ const FileUpload = ({
         isUploading ? "custom-file-upload uploading" : "custom-file-upload"
       }
     >
-      {!isUploading && <input type="file" onChange={handleChange} />}
+      {!isUploading && (
+        <input type="file" onChange={handleChange} className="d-none" />
+      )}
       <Paper
         style={{
           backgroundImage: `url(${bgImageSrc})`,

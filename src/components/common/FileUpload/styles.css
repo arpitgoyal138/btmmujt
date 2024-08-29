@@ -12,7 +12,9 @@
 .uploading {
   cursor: progress;
 }
-
+.d-none {
+  display: none;
+}
 @media screen and (max-width: 480px) {
   .custom-file-upload {
     height: 100px;
