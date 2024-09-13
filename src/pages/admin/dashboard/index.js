@@ -11,19 +11,19 @@ import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import AddIcon from "@mui/icons-material/Add";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import DonationsAPI from "../../../api/firebase/DonationsAPI";
+import DonationsGivenAPI from "../../../api/firebase/DonationsGivenAPI";
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const authAPI = new AuthAPI();
   const membersAPI = new MembersAPI();
-  const donationsAPI = new DonationsAPI();
+  const donationsGivenAPI = new DonationsGivenAPI();
   const [totMembers, setTotMembers] = useState(0);
   const [totAmountDonated, setTotAmountDonated] = useState(0);
   useEffect(() => {
     membersAPI.getMembers().then((res) => {
       setTotMembers(res.data.length);
     });
-    donationsAPI.totalDonatedAmount().then((res) => {
+    donationsGivenAPI.totalDonatedAmount().then((res) => {
       if (res.success) {
         setTotAmountDonated(res.data);
       }

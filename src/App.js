@@ -27,7 +27,8 @@ import AdminDashboard from "./pages/admin/dashboard";
 import AllMembers from "./pages/admin/members";
 import AllManagers from "./pages/admin/managers";
 import MemberDetail from "./pages/admin/memberDetail";
-import AllDonations from "./pages/admin/donations";
+import AllDonationsGiven from "./pages/admin/donationsGiven";
+import ThankYouForDonation from "./components/app/order-placed/ThankYouForDonation";
 export default function App() {
   const options = {
     keyboard: true,
@@ -75,6 +76,7 @@ export default function App() {
           />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/thank-you" element={<ThankYouForDonation />} />
         </Route>
         <Route path="/login" element={<SignIn />} />
         <Route
@@ -90,7 +92,10 @@ export default function App() {
             path="/admin/member-detail/:memberId"
             element={<MemberDetail />}
           ></Route>
-          <Route path="/admin/add-donation" element={<AllDonations />}></Route>
+          <Route
+            path="/admin/add-donation"
+            element={<AllDonationsGiven />}
+          ></Route>
         </Route>
       </>
     )

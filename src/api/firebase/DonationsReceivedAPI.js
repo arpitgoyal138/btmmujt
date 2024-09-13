@@ -12,13 +12,13 @@ import {
   sum,
 } from "firebase/firestore";
 import { db } from "../../firebase";
-const collection_name = "donationGiven";
+const collection_name = "donationReceived";
 
-export default class DonationsAPI {
-  // Add/Update Beneficiary
+export default class DonationsReceivedAPI {
+  // Add Donation Received
   async setDonation(data, updateTime = true) {
     console.log(
-      "API CALL =========> Add Donation Given:",
+      "API CALL =========> Add Donation Received:",
       data.payload,
       " to id:",
       data.id
@@ -39,10 +39,10 @@ export default class DonationsAPI {
     }
   }
 
-  // Fetch all beneficiaries
+  // Fetch all donations received
   async getDonations() {
     try {
-      console.log("API CALL =========> get all Donations Given:");
+      console.log("API CALL =========> get all Donations Received:");
       const q = query(
         collection(db, collection_name),
         orderBy("createdAt", "desc")
@@ -61,22 +61,22 @@ export default class DonationsAPI {
     }
   }
 
-  async totalDonatedAmount() {
+  async totalDonationReceivedAmount() {
     try {
-      console.log("API CALL =========> get totalDonatedAmount:");
+      console.log("API CALL =========> get totalDonationReceivedAmount:");
       const q = query(collection(db, collection_name));
       const querySnapshot = await getAggregateFromServer(q, {
         totalAmount: sum("amount"),
       });
 
-      console.log("total amount donated:", querySnapshot.data().totalAmount);
+      console.log("total amount received:", querySnapshot.data().totalAmount);
       return { success: true, data: querySnapshot.data().totalAmount };
     } catch (ex) {
       console.log(ex);
       return { success: false, message: ex };
     }
   }
-  // Fetch beneficiary by id
+  // Fetch donation by id
   async getDonationDetailById(donationId) {
     try {
       console.log("API CALL =========> get Donation by id:", donationId);

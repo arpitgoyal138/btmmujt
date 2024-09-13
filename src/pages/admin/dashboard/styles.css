@@ -1,33 +1,36 @@
 .dashboard-box {
-    height: 140px;
-    text-align: center;
-    cursor: pointer;
-    color: white !important;
-    transition: 0.3s all ease !important;
+  height: 140px;
+  text-align: center;
+  cursor: pointer;
+  color: white !important;
+  transition: 0.3s all ease !important;
 }
 
 .dashboard-box:hover {
-    transform: scale(1.015);
+  transform: scale(1.015);
 }
 
 .members {
-    background-color: blueviolet !important;
+  background: linear-gradient(
+    91deg,
+    rgba(108, 0, 144, 1) 0%,
+    rgba(173, 0, 255, 1) 100%
+  ) !important;
 }
 
 .received {
-    background-color: darkcyan !important;
+  background-color: darkcyan !important;
 }
 
 .donated {
-    background-color: #a77b00 !important;
+  background-color: #a77b00 !important;
 }
 
-
 .balance {
-    background-color: indigo !important;
+  background-color: indigo !important;
 }
 
 .box-list {
-    font-weight: 400;
-    margin: 0.25rem 0;
+  font-weight: 400;
+  margin: 0.25rem 0;
 }

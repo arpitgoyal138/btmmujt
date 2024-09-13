@@ -1,34 +1,83 @@
 .input-container {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
 }
 
 .input-container.show {
-    max-height: 120px;
-    /* Adjust according to your needs */
+  max-height: 120px;
+  /* Adjust according to your needs */
 }
 
 .uploaded-image-box {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
 }
 
 .uploaded-image-box.show {
-    height: 200px;
-    width: 200px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    max-height: 200px;
-    background-position: center;
+  height: 200px;
+  width: 200px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  max-height: 200px;
+  background-position: center;
 }
 
 .btn-work {
-    /* transition: 0.3s ease-in-out; */
+  /* transition: 0.3s ease-in-out; */
 }
 
 .btn-work:hover {
-    background-color: rgb(0, 115, 255) !important;
-    color: aliceblue !important;
+  background-color: rgb(0, 115, 255) !important;
+  color: aliceblue !important;
+}
+
+.amount-box {
+  /* height: 85px !important; */
+  text-align: center;
+  cursor: pointer;
+  color: white !important;
+  transition: 0.3s all ease !important;
+}
+
+.amount-box:hover {
+  transform: scale(1.015);
+}
+
+.amount-60 {
+  background: linear-gradient(
+    90deg,
+    rgb(149 6 86) 0%,
+    rgb(235 44 145) 100%
+  ) !important;
+}
+
+.amount-100 {
+  background: linear-gradient(
+    91deg,
+    rgb(183 63 0) 0%,
+    rgb(246 133 32) 100%
+  ) !important;
+}
+
+.amount-200 {
+  background: linear-gradient(
+    90deg,
+    rgb(146 143 0) 0%,
+    rgb(205 199 32) 100%
+  ) !important;
+}
+
+.amount-500 {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 129, 114, 1) 0%,
+    rgba(0, 184, 124, 1) 100%
+  ) !important;
+}
+
+.box-list {
+  font-weight: 400;
+  margin: 0.25rem 0;
 }

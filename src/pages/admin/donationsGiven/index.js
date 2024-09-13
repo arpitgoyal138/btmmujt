@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import CustomDataGrid from "../../../components/common/DataGrid/CustomDataGrid";
-import DonationsAPI from "../../../api/firebase/DonationsAPI";
+import DonationsGivenAPI from "../../../api/firebase/DonationsGivenAPI";
 import "./styles.css";
 import { useNavigate } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
@@ -27,7 +27,7 @@ import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
-const AllDonations = () => {
+const AllDonationsGiven = () => {
   const navigate = useNavigate();
   const [donationsArr, setDonationsArr] = useState([]);
   const [membersArr, setMembersArr] = useState([]);
@@ -35,7 +35,7 @@ const AllDonations = () => {
   const [showDonation, setShowDonation] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [deleteDonationId, setDeleteDonationId] = useState("");
-  const donationsAPI = new DonationsAPI();
+  const donationsGivenAPI = new DonationsGivenAPI();
   const membersAPI = new MembersAPI();
   // Fetch all donations
   useEffect(() => {
@@ -52,7 +52,7 @@ const AllDonations = () => {
   }, []);
 
   const getAllDonations = () => {
-    const allDonations = donationsAPI.getDonations();
+    const allDonations = donationsGivenAPI.getDonations();
     allDonations.then((resData) => {
       console.log("received:", resData);
       if (!resData) {
@@ -92,7 +92,7 @@ const AllDonations = () => {
   };
   const handleAgreeDialog = () => {
     setOpenDialog(false);
-    const res = donationsAPI.deleteDonation(deleteDonationId);
+    const res = donationsGivenAPI.deleteDonation(deleteDonationId);
     res
       .then((resData) => {
         if (resData.success) {
@@ -216,7 +216,7 @@ const AllDonations = () => {
       payload: { ...resData, id: donationId },
       id: donationId,
     };
-    donationsAPI.setDonation(dataToSend).then((res) => {
+    donationsGivenAPI.setDonation(dataToSend).then((res) => {
       if (res.success) {
         setMessage({
           text: `Donation ${
@@ -328,4 +328,4 @@ const AllDonations = () => {
   );
 };
 
-export default AllDonations;
+export default AllDonationsGiven;

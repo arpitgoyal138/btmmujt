@@ -17,7 +17,7 @@ import officePic4 from "./../../../assets/images/office/4.jpg";
 import officePic5 from "./../../../assets/images/office/5.jpg";
 import officePic6 from "./../../../assets/images/office/6.jpg";
 import MembersAPI from "../../../api/firebase/MembersAPI";
-import DonationsAPI from "../../../api/firebase/DonationsAPI";
+import DonationsAPI from "../../../api/firebase/DonationsGivenAPI";
 const Homepage = () => {
   const membersApi = new MembersAPI();
   const donationsAPI = new DonationsAPI();
@@ -25,6 +25,8 @@ const Homepage = () => {
   const [totalBeneficiaries, setTotalBeneficiaries] = useState(0);
   const [totalAmountReceived, setTotalAmountReceived] = useState(0);
   const [totalAmountDonated, setTotalAmountDonated] = useState(0);
+  const [memberData, setMemberData] = useState(null);
+
   useEffect(() => {
     membersApi.getMembers().then((res) => {
       console.log("All members =>", res.data);
@@ -32,6 +34,7 @@ const Homepage = () => {
         setTotalMembers(res.data.length);
       }
     });
+
     donationsAPI.totalDonatedAmount().then((res) => {
       if (res.success) {
         setTotalAmountDonated(res.data);
@@ -314,7 +317,7 @@ const Homepage = () => {
         <div className="col-12 text-center mb-3">
           <h3 className="div-heading">संस्थापक एवं पदाधिकारी </h3>
         </div>
-        <div className="col-12 col-sm-4 mt-2">
+        <div className="col-md-6 col-lg-4 col-sm-6 mt-2">
           <div className="card" style={{ width: "75%", margin: "auto" }}>
             <img className="card-img-top" src={adhyakshPhoto} alt="अध्यक्ष" />
             <div className="card-body">
@@ -331,7 +334,7 @@ const Homepage = () => {
             </div>
           </div>
         </div>
-        <div className="col-12 col-sm-4 mt-2">
+        {/* <div className="col-12 col-sm-4 mt-2">
           <div className="card" style={{ width: "75%", margin: "auto" }}>
             <img className="card-img-top" src={noImage} alt="पदाधिकारी" />
             <div className="card-body">
@@ -340,7 +343,7 @@ const Homepage = () => {
               <p className="card-text card-body-text">पदाधिकारी का पता</p>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
       <div className="row mt-5 mb-2">
         <div className="col-12 col-md-8 m-auto mt-5">
@@ -362,7 +365,7 @@ const Homepage = () => {
           <h3 className="text-center mb-4 div-heading">
             सदस्यता ग्रहण करने हेतु फॉर्म
           </h3>
-          <NewMemberForm />
+          <NewMemberForm memberData={memberData} />
         </div>
       </div>
       <div className="row mt-5 mb-5 text-center">
