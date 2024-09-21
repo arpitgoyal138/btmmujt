@@ -96,7 +96,7 @@ const CustomDataGrid = ({
         rowsPerPageOptions={pageSizes}
         onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         onCellEditCommit={onCellEditCommit}
-        getRowId={(row) => row.id}
+        getRowId={(row) => (row.uid !== undefined ? row.uid : row.unique_code)}
         onRowClick={onRowClickHandle}
       />
     </div>

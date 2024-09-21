@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import CustomDataGrid from "../../../components/common/DataGrid/CustomDataGrid";
-import DonationsGivenAPI from "../../../api/firebase/DonationsGivenAPI";
+import DonationsReceivedAPI from "../../../api/firebase/DonationsReceivedAPI";
 import "./styles.css";
 import { useNavigate } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
@@ -21,13 +21,13 @@ import MembersAPI from "../../../api/firebase/MembersAPI";
 import DataGridActions from "../../../components/admin/datagrid-actions/DataGridActions";
 import AlertDialogSlide from "../../../components/common/Dialog/AlertDialogSlide";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
-import AddDonationGiven from "../../../components/admin/add-donation-given";
+import AddDonationReceived from "../../../components/admin/add-donation-received";
 // import DataGridActions from "../../../components/admin/datagrid-actions/DataGridActions";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
-const AllDonationsGiven = () => {
+const AllDonationsReceived = () => {
   const navigate = useNavigate();
   const [donationsArr, setDonationsArr] = useState([]);
   const [membersArr, setMembersArr] = useState([]);
@@ -35,8 +35,9 @@ const AllDonationsGiven = () => {
   const [showDonation, setShowDonation] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [deleteDonationId, setDeleteDonationId] = useState("");
-  const donationsGivenAPI = new DonationsGivenAPI();
+  const donationsReceivedAPI = new DonationsReceivedAPI();
   const membersAPI = new MembersAPI();
+  console.log("donationsArr: ", donationsArr);
   // Fetch all donations
   useEffect(() => {
     getAllDonations();
@@ -52,14 +53,14 @@ const AllDonationsGiven = () => {
   }, []);
 
   const getAllDonations = () => {
-    const allDonations = donationsGivenAPI.getDonations();
+    const allDonations = donationsReceivedAPI.getDonations();
     allDonations.then((resData) => {
       console.log("received:", resData);
       if (!resData) {
         return;
       }
       setDonationsArr(resData.data);
-      console.log("Done fetching all donations: ", donationsArr);
+      console.log("Done fetching all donations: ", resData.data);
     });
   };
   // For Add Donation Modal
@@ -92,7 +93,7 @@ const AllDonationsGiven = () => {
   };
   const handleAgreeDialog = () => {
     setOpenDialog(false);
-    const res = donationsGivenAPI.deleteDonation(deleteDonationId);
+    const res = donationsReceivedAPI.deleteDonation(deleteDonationId);
     res
       .then((resData) => {
         if (resData.success) {
@@ -125,7 +126,7 @@ const AllDonationsGiven = () => {
       { field: "name", headerName: "नाम", width: 120 },
       { field: "address", headerName: "पता", width: 200 },
       { field: "district", headerName: "जिला", width: 120 },
-      { field: "state", headerName: "राज्य", width: 100 },
+      { field: "state", headerName: "राज्य", width: 80 },
       { field: "contact_no", headerName: "मोबाइल नo", width: 120 },
       {
         field: "createdAt",
@@ -153,38 +154,7 @@ const AllDonationsGiven = () => {
           return <div className="rowitem">{t}</div>;
         },
       },
-      // {
-      //   field: "modifiedAt",
-      //   headerName: "Updated at",
-      //   width: 180,
 
-      //   renderCell: (params) => {
-      //     let t = "";
-      //     if (params.row.modifiedAt === undefined) {
-      //       return <div className="rowitem">-</div>;
-      //     }
-      //     if (typeof params.row.modifiedAt === "string") {
-      //       t =
-      //         new Date(params.row.modifiedAt).toLocaleDateString() +
-      //         " " +
-      //         new Date(params.row.modifiedAt).toLocaleTimeString();
-      //     } else {
-      //       t =
-      //         new Date(
-      //           params.row.modifiedAt.seconds * 1000 +
-      //             params.row.modifiedAt.nanoseconds / 1000000
-      //         ).toLocaleDateString() +
-      //         " " +
-      //         new Date(
-      //           params.row.modifiedAt.seconds * 1000 +
-      //             params.row.modifiedAt.nanoseconds / 1000000
-      //         ).toLocaleTimeString();
-      //     }
-      //     return <div className="rowitem">{t}</div>;
-      //   },
-      // },
-      { field: "id" },
-      // {field: "id", hide: true},
       {
         field: "actions",
         headerName: "Action",
@@ -216,7 +186,7 @@ const AllDonationsGiven = () => {
       payload: { ...resData, uid: donationId },
       id: donationId,
     };
-    donationsGivenAPI.setDonation(dataToSend).then((res) => {
+    donationsReceivedAPI.setDonation(dataToSend).then((res) => {
       if (res.success) {
         setMessage({
           text: `Donation ${
@@ -256,7 +226,7 @@ const AllDonationsGiven = () => {
           variant="h4"
           component="h4"
         >
-          सभी दिए गए दान
+          सभी प्राप्त हुए दान
         </Typography>
       </Box>
       <Grid2 container spacing={2}>
@@ -271,7 +241,7 @@ const AllDonationsGiven = () => {
               showAddDonationModal();
             }}
           >
-            दान की गयी राशि जोड़ें
+            प्राप्त हुई राशि जोड़ें
           </Button>
         </Grid2>
         <Modal
@@ -283,7 +253,7 @@ const AllDonationsGiven = () => {
         >
           <Fade in={openDonationModal}>
             <Box sx={styles.boxStyle}>
-              <AddDonationGiven
+              <AddDonationReceived
                 membersArr={membersArr}
                 action={showDonation === null ? "ADD" : "EDIT"}
                 handleSetDonation={handleSetDonation}
@@ -295,14 +265,6 @@ const AllDonationsGiven = () => {
         </Modal>
         <Grid2 xs={12} mt={2} sx={{ maxWidth: "95.5vw" }}>
           <CustomDataGrid
-            initialState={{
-              columns: {
-                columnVisibilityModel: {
-                  // Hide columns status and traderName, the other columns will remain visible
-                  id: false,
-                },
-              },
-            }}
             rows={donationsArr}
             columns={columns}
             styles={{ height: "540px" }}
@@ -336,4 +298,4 @@ const AllDonationsGiven = () => {
   );
 };
 
-export default AllDonationsGiven;
+export default AllDonationsReceived;

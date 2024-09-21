@@ -30,8 +30,9 @@ const live_secret = "63mii6Ocriolj9dUxT2ubD36";
 // Create and deploy your first functions
 // https://firebase.google.com/docs/functions/get-started
 app.get("/hello", (req, res) => {
-  res.json("Hello World from Firebase Function test_key: " + test_key);
+  res.json("Hello there, from Firebase Functions!");
 });
+
 app.post("/createPayment", (req, res) => {
   const { amount, currency, receipt, method = "" } = req.body;
   var razorpayInstance;
@@ -60,6 +61,7 @@ app.post("/createPayment", (req, res) => {
     }
   );
 });
+
 app.post("/createPlan", (req, res) => {
   const { amount, currency, method = "" } = req.body;
   var razorpayInstance;
@@ -96,6 +98,7 @@ app.post("/createPlan", (req, res) => {
     }
   );
 });
+
 app.post("/createSubscription", (req, res) => {
   const { amount, planId, method = "" } = req.body;
   let amountToPay = amount;
@@ -154,11 +157,18 @@ app.post("/cancelSubscription", (req, res) => {
       key_secret: live_secret,
     });
   }
-  razorpayInstance.subscriptions.cancel(subscriptionId, (err, subscription) => {
-    if (!err) {
-      res.json(subscription);
-    } else res.send(err);
-  });
+
+  razorpayInstance.subscriptions.cancel(
+    subscriptionId,
+    {
+      cancel_at_cycle_end: 0,
+    },
+    (err, subscription) => {
+      if (!err) {
+        res.json(subscription);
+      } else res.send(err);
+    }
+  );
 });
 
 app.post("/pauseSubscription", (req, res) => {
@@ -187,7 +197,32 @@ app.post("/pauseSubscription", (req, res) => {
     }
   );
 });
-
+app.post("/resumeSubscription", (req, res) => {
+  const { subscriptionId, method = "" } = req.body;
+  var razorpayInstance;
+  if (method === "TEST") {
+    razorpayInstance = new Razorpay({
+      key_id: test_key,
+      key_secret: test_secret,
+    });
+  } else {
+    razorpayInstance = new Razorpay({
+      key_id: live_key,
+      key_secret: live_secret,
+    });
+  }
+  razorpayInstance.subscriptions.resume(
+    subscriptionId,
+    {
+      resume_at: "now",
+    },
+    (err, subscription) => {
+      if (!err) {
+        res.json(subscription);
+      } else res.send(err);
+    }
+  );
+});
 app.post("/fetchSubscription", (req, res) => {
   const { subscriptionId, method = "" } = req.body;
   var razorpayInstance;

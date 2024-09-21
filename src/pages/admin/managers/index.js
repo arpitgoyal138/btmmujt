@@ -50,7 +50,7 @@ const AllManagers = () => {
     () => [
       {
         field: "latest_photo",
-        headerName: "Image",
+        headerName: "फोटो",
         width: 80,
         renderCell: (params) => {
           if (
@@ -74,16 +74,16 @@ const AllManagers = () => {
         sortable: false,
         filterable: false,
       },
-      { field: "unique_code", headerName: "Member id", width: 120 },
-      { field: "name", headerName: "Name", width: 120 },
-      { field: "fathers_name", headerName: "Father's Name", width: 120 },
-      { field: "address", headerName: "Address", width: 200 },
-      { field: "district", headerName: "District", width: 100 },
-      { field: "state", headerName: "State", width: 50 },
-      { field: "contact_no", headerName: "Mobile", width: 120 },
-      { field: "post_name", headerName: "Post Name", width: 120 },
-      { field: "work_group", headerName: "Work Group", width: 100 },
-      { field: "work_detail", headerName: "Work Detail", width: 150 },
+      { field: "unique_code", headerName: "सदस्य ID", width: 120 },
+      { field: "name", headerName: "नाम", width: 120 },
+      { field: "fathers_name", headerName: "पिता का नाम", width: 120 },
+      { field: "address", headerName: "पता", width: 200 },
+      { field: "district", headerName: "जिला", width: 100 },
+      { field: "state", headerName: "राज्य", width: 50 },
+      { field: "contact_no", headerName: "मोबाइल न०", width: 120 },
+      { field: "post_name", headerName: "पद का नाम", width: 120 },
+      { field: "work_group", headerName: "कार्यक्षेत्र", width: 100 },
+      { field: "work_detail", headerName: "कार्य", width: 150 },
       {
         field: "createdAt",
         headerName: "Created at",

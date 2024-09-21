@@ -1,0 +1,172 @@
+.admin {
+  padding: 0;
+
+  .callToActions {
+    display: inline-block;
+    width: 100%;
+    padding: 10px;
+    margin: 0 auto;
+
+    ul,
+    li {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+    }
+
+    ul {
+      li {
+        display: inline-block;
+        margin-right: 10px;
+      }
+    }
+  }
+}
+.wrapper {
+  z-index: 100 !important;
+}
+.itemsPanel {
+  h1 {
+    margin-top: 1rem;
+    color: "primary";
+    font-size: 1.5rem;
+    font-weight: 400;
+  }
+  table {
+    width: 100%;
+  }
+  table.results {
+    width: 100%;
+    tr {
+      td:first-child {
+        padding: 0;
+      }
+      td {
+        font-size: 1rem;
+        padding: 5px 10px;
+        text-align: center;
+      }
+      &:nth-child(even) {
+        background-color: "primary.light";
+      }
+
+      .thumb {
+        width: 8rem;
+        height: 8rem;
+        padding: 5px;
+        vertical-align: middle;
+        background: url("./../../../assets/images/add-image.jpg");
+        background-position: center;
+        background-size: 95%;
+        background-repeat: no-repeat;
+      }
+    }
+    tr.table_heading {
+      background-color: "primary";
+      th:first-child {
+        width: 8rem;
+      }
+      th {
+        color: "primary.light";
+        padding: 10px;
+        font-weight: 400;
+        font-size: 1rem;
+      }
+    }
+  }
+}
+.uploaded-product {
+  padding: 0;
+  height: 150px;
+  width: 150px;
+  background-size: cover;
+  background-position: center;
+  text-align: right;
+  margin: 10px;
+  float: left;
+}
+.action-button {
+  background-color: rgba(200, 200, 200) !important;
+  box-shadow: "0px 0px 5px 1px";
+}
+@media only screen and (max-width: 480px) {
+  .add-icon {
+    font-size: 1rem !important;
+  }
+
+  .action-button {
+    padding: 5px !important;
+  }
+  .action-icons {
+    font-size: 1rem !important;
+  }
+  .itemsPanel {
+    h1 {
+      margin-top: 0;
+      font-size: 1.3rem;
+    }
+    table {
+      width: 100%;
+
+      .results {
+        width: 100%;
+        tr.table_heading {
+          background-color: "primary";
+          th {
+            color: "secondary";
+
+            padding: 2px;
+            font-weight: 400;
+            font-size: 0.85rem;
+          }
+          th:first-child {
+            width: 5rem;
+          }
+        }
+
+        tr > td {
+          font-size: 0.85rem;
+          padding: 2px;
+
+          .thumb {
+            width: 5rem;
+            height: 5rem;
+            vertical-align: top;
+          }
+        }
+      }
+    }
+  }
+  .uploaded-product {
+    height: 100px;
+    width: 100px;
+  }
+}
+.delete-icon {
+  color: #f44336;
+}
+
+.edit-icon {
+  color: "primary";
+}
+.add-icon {
+  vertical-align: middle;
+  margin-top: -4px;
+  margin-right: 4px;
+}
+.placeholder {
+  font-size: 2rem !important;
+  color: "primary";
+  padding: 5px;
+  margin: 0px;
+}
+/* input[type="file"] {
+  display: none;
+} */
+.d-none {
+  display: none;
+}
+.action-button {
+  padding: 5px !important;
+  margin: 2px !important;
+}

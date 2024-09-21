@@ -20,7 +20,7 @@ import NetworkStatus from "./components/network-status/NetworkStatus";
 import ObjectivesOfTrust from "./pages/app/objectivesOfTrust";
 import { useEffect } from "react";
 import Lightbox from "bs5-lightbox";
-import SignIn from "./pages/admin/auth/sign-in";
+import SignIn from "./pages/auth/sign-in";
 
 import LeftResponsiveDrawer from "./components/admin/drawer";
 import AdminDashboard from "./pages/admin/dashboard";
@@ -29,6 +29,12 @@ import AllManagers from "./pages/admin/managers";
 import MemberDetail from "./pages/admin/memberDetail";
 import AllDonationsGiven from "./pages/admin/donationsGiven";
 import ThankYouForDonation from "./components/app/order-placed/ThankYouForDonation";
+import MemberHomepage from "./pages/member/member-home";
+import MyDonations from "./pages/member/my-donations";
+import LeftResponsiveDrawerMember from "./components/member/drawer";
+import MySubscription from "./pages/member/my-subscription";
+import AllDonationsReceived from "./pages/admin/donationsReceived";
+
 export default function App() {
   const options = {
     keyboard: true,
@@ -85,17 +91,38 @@ export default function App() {
             <PrivateRoute accessTo="Admin" Component={Root} layout="ADMIN" />
           }
         >
+          <Route
+            path="/admin/my-subscription"
+            element={<MySubscription />}
+          ></Route>
           <Route path="/admin/dashboard" element={<AdminDashboard />}></Route>
           <Route path="/admin/members" element={<AllMembers />}></Route>
           <Route path="/admin/managers" element={<AllManagers />}></Route>
           <Route
-            path="/admin/member-detail/:memberId"
+            path="/admin/member-detail/:memberUId"
             element={<MemberDetail />}
           ></Route>
           <Route
             path="/admin/add-donation"
             element={<AllDonationsGiven />}
           ></Route>
+          <Route
+            path="/admin/donations-received"
+            element={<AllDonationsReceived />}
+          ></Route>
+        </Route>
+        <Route
+          path="/member"
+          element={
+            <PrivateRoute accessTo="Member" Component={Root} layout="MEMBER" />
+          }
+        >
+          <Route
+            path="/member/my-subscription"
+            element={<MySubscription />}
+          ></Route>
+          <Route path="/member/homepage" element={<MemberHomepage />}></Route>
+          <Route path="/member/my-donations" element={<MyDonations />}></Route>
         </Route>
       </>
     )
@@ -114,6 +141,15 @@ const Root = ({ layout = "" }) => {
         <NetworkStatus />
         <LeftResponsiveDrawer />
         {/* <AdminDrawer /> */}
+      </>
+    );
+  } else if (layout === "MEMBER") {
+    return (
+      <>
+        <NetworkStatus />
+        <LeftResponsiveDrawerMember />
+        {/* <AppFooter /> */}
+        <ScrollRestoration />
       </>
     );
   } else if (layout === "") {

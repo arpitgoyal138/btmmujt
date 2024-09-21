@@ -12,12 +12,12 @@ import qrCodeImg from "../../../assets/images/qr-code.png";
 import phonePeLogo from "../../../assets/images/PhonePe-Logo-resized.png";
 import userProfileIcon from "../../../assets/images/user-profile-icon.png";
 const MemberDetail = () => {
-  const { memberId } = useParams();
+  const { memberUId } = useParams();
   const navigate = useNavigate();
   const [memberData, setMemberData] = useState(null);
   const membersAPI = new MembersAPI();
 
-  //console.log("memberId:", memberId);
+  //console.log("memberUId:", memberUId);
   const printIDCard = () => {
     var divContents = document.getElementById("print-id-card").innerHTML;
     var a = window.open("", "");
@@ -191,11 +191,12 @@ const MemberDetail = () => {
     }, 500);
   };
   useEffect(() => {
-    if (memberData === null) {
+    //console.log("memberUId:", memberUId, "memberData:", memberData);
+    if (memberData === null && memberUId !== undefined) {
       membersAPI
-        .getMemberById(memberId)
+        .getMemberById(memberUId)
         .then((res) => {
-          // console.log("member data: ", res.data);
+          console.log("member data: ", res.data);
           setMemberData(res.data);
         })
         .catch((err) => {
@@ -203,7 +204,7 @@ const MemberDetail = () => {
           setMemberData(null);
         });
     }
-  }, [memberId]);
+  }, [memberUId]);
   const style = {
     position: "absolute",
     // top: "50%",
@@ -748,7 +749,7 @@ const MemberDetail = () => {
             variant="h6"
             component="h6"
           >
-            ID: {memberId}
+            ID: {memberData !== null ? memberData.unique_code : ""}
           </Typography>
         </Box>
         <div className="row justify-content-around">

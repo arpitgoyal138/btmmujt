@@ -58,7 +58,7 @@ const MenuProps = {
     },
   },
 };
-const AddDonation = ({
+const AddDonationReceived = ({
   donationDetail,
   membersArr,
   hideModal,
@@ -157,155 +157,7 @@ const AddDonation = ({
     }
     handleSetDonation(action, { ...donationData, images: imageData });
   };
-  function handleImageChange(e) {
-    setProgress(0);
-    setIsUploading(true);
-    const upImage = e.target.files[0];
-    if (upImage) {
-      // console.log("image:", upImage);
-      // Compress Image and get BLOB
-      const compressProps = {
-        size: 2, // the max size in MB, defaults to 2MB
-        quality: 1, // the quality of the image, max is 1,
-        maxWidth: 900, // the max width of the output image, defaults to 1920px
-        maxHeight: 900, // the max height of the output image, defaults to 1920px
-        resize: true, // defaults to true, set false if you do not want to resize the image width and height
-        rotate: true, // Enables rotation, defaults to false
-      };
-      const imgCompressor = new CompressAPI();
-      const req = imgCompressor.compressImage(upImage, compressProps);
-      req
-        .then((resData) => {
-          console.log("Image resData:", resData);
-          if (!resData.success) {
-            setIsUploading(false);
-            return;
-          }
-          const imgBlob = resData.data;
-          //console.log("compressed img blob data:", imgBlob);
-          // Set blob data to images state
 
-          ///// Convert base64 to file /////////
-          const fileName = "IMG_" + Date.now() + "_" + imgBlob.alt;
-          const base64str = imgBlob.data;
-          const imgExt = imgBlob.ext;
-          setImageData((prevState) => {
-            if (prevState) {
-              return [
-                ...prevState,
-                { blob: { ...imgBlob }, name: fileName, url: "" },
-              ];
-            } else {
-              return imgBlob;
-            }
-          });
-          const reqData = imgCompressor.base64ToImage(base64str, imgExt);
-          if (!reqData.success) {
-            setIsUploading(false);
-            return;
-          }
-          const file = reqData.data;
-          handleFileUpload({
-            path: "images/donations/",
-            file,
-            fileName,
-          });
-        })
-        .catch((ex) => {
-          setIsUploading(false);
-          console.log("CompressImage Error:", ex);
-        });
-    }
-  }
-  const handleFileUpload = ({ path, file, fileName }) => {
-    // console.log("path:", path, " file:", file);
-    // fileName = fileName.replace(/[()]/g, "");
-    const storageRef = ref(storage, `${path}/${fileName}`);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-    // Listen for state changes, errors, and completion of the upload.
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const prog = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
-        console.log("Upload is " + progress + "% done");
-        setProgress(prog);
-        switch (snapshot.state) {
-          case "paused":
-            console.log("Upload is paused");
-            break;
-          case "running":
-            console.log("Upload is running");
-            break;
-          default:
-            break;
-        }
-      },
-      (error) => {
-        setIsUploading(false);
-        // A full list of error codes is available at
-        // https://firebase.google.com/docs/storage/web/handle-errors
-        switch (error.code) {
-          case "storage/unauthorized": // User doesn't have permission to access the object
-            console.log("Upload Error: unauthorized access");
-            alert("Upload Error: unauthorized access");
-            break;
-          case "storage/canceled": // User canceled the upload
-            console.log("Upload Error: Upload is cancelled");
-            alert("Upload Error: Upload is cancelled");
-            break;
-          case "storage/unknown": // Unknown error occurred, inspect error.serverResponse
-            console.log("Upload Error: Unknown error occurred");
-            alert("Upload Error: Unknown error occurred");
-            break;
-          default:
-            break;
-        }
-      },
-      () => {
-        // Upload completed successfully, now we can get the download URL
-        getDownloadURL(uploadTask.snapshot.ref)
-          .then((downloadURL) => {
-            console.log("File available at", downloadURL);
-            // Set url in imageData where name == fileName
-            setImageData((prevState) => {
-              return prevState.map((img) => {
-                if (img.name === fileName) {
-                  return { ...img, blob: null, url: downloadURL };
-                } else {
-                  return img;
-                }
-              });
-            });
-
-            setIsUploading(false);
-          })
-          .catch((ex) => {
-            setIsUploading(false);
-            alert("Error while fetching image url: ", ex);
-          });
-      }
-    );
-  };
-  const handleDeleteFile = (index, fileName) => {
-    console.log("delete file:", index, " name:", fileName);
-    const tempImageData = [...imageData];
-    tempImageData.splice(index, 1);
-    setImageData(tempImageData);
-    const fileRef = ref(storage, `images/donations/${fileName}`);
-    // Delete the file
-    deleteObject(fileRef)
-      .then(() => {
-        // File deleted successfully
-        console.log("deleted successfully");
-      })
-      .catch((err) => {
-        // Uh-oh, an error occurred!
-        console.log("Error while deleting image: ", err);
-      });
-  };
   // Auto complete search box
   const handleOnSearch = (string, results) => {
     // onSearch will have as the first callback parameter
@@ -462,62 +314,6 @@ const AddDonation = ({
           onChange={(e) => handleFormData({ amount: Number(e.target.value) })}
         />
       </Grid2>
-      <Grid2 xs={12}>
-        {imageData.map((img, index) => {
-          const bgImg =
-            img.url !== undefined && img.url !== ""
-              ? `url(${img.url})`
-              : `url(${img.blob.prefix}${img.blob.data})`;
-          // console.log("img.url:", img.url, "__ bg img:", bgImg);
-          return (
-            <label className="uploaded-product" key={index}>
-              <Paper
-                style={{
-                  backgroundImage: bgImg,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  height: "100%",
-                  width: "100%",
-                }}
-              >
-                <Tooltip title="Delete">
-                  <IconButton
-                    className="action-button"
-                    aria-label="delete"
-                    onClick={() => {
-                      if (window.confirm("Sure to delete?"))
-                        handleDeleteFile(index, img.name);
-                    }}
-                  >
-                    <DeleteIcon className="action-icons delete-icon" />
-                  </IconButton>
-                </Tooltip>
-              </Paper>
-            </label>
-          );
-        })}
-        <FileUpload
-          acceptFileType="image/*"
-          handleChange={handleImageChange}
-          bgImageSrc={AddDonationImage}
-          upProgress={progress}
-        />
-      </Grid2>
-      <Grid2 xs={12}>
-        <p>Description</p>
-        <CKEditor
-          inputRef={descriptionRef}
-          editor={ClassicEditor}
-          onReady={(editor) => {
-            // You can store the "editor" and use when it is needed.
-            editor.setData(donationData.description);
-          }}
-          onChange={(event, editor) => {
-            const data = editor.getData();
-            handleFormData({ description: data });
-          }}
-        />
-      </Grid2>
 
       <Button
         variant="contained"
@@ -567,4 +363,4 @@ const AddDonation = ({
   );
 };
 
-export default AddDonation;
+export default AddDonationReceived;

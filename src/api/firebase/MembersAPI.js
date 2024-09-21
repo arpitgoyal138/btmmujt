@@ -33,7 +33,7 @@ export default class MembersAPI {
           merge: true,
         }
       );
-      return { success: true };
+      return { success: true, unique_code: data.payload.unique_code };
     } catch (ex) {
       console.log(ex);
       return { success: false, message: ex };
@@ -46,7 +46,7 @@ export default class MembersAPI {
       console.log("API CALL =========> getMembers:");
       const q = query(
         collection(db, collection_name),
-        // where("post_name", "==", "सदस्य"),
+        //where("role", "array-contains", role),
         orderBy("createdAt", "desc")
       );
       const querySnapshot = await getDocs(q);
@@ -100,10 +100,10 @@ export default class MembersAPI {
     }
   }
   // Fetch member by id
-  async getMemberById(prodId) {
+  async getMemberById(memberId) {
     try {
-      console.log("API CALL =========> getMember by id:", prodId);
-      const docRef = doc(db, collection_name, prodId);
+      console.log("API CALL =========> getMember by id:", memberId);
+      const docRef = doc(db, collection_name, memberId);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         console.log("member data:", docSnap.data());
@@ -119,9 +119,31 @@ export default class MembersAPI {
     }
   }
 
-  async deleteMember(prodId) {
+  async getMemberByPhoneNumber(phoneNumber) {
     try {
-      await deleteDoc(doc(db, collection_name, prodId));
+      console.log("API CALL =========> getMember by phoneNumber:", phoneNumber);
+      const q = query(
+        collection(db, collection_name),
+        where("contact_no", "==", phoneNumber),
+        orderBy("createdAt", "desc")
+      );
+      const querySnapshot = await getDocs(q);
+      let memberArr = [];
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        memberArr.push({ id: doc.id, ...doc.data() });
+      });
+      console.log("member by phoneNum:", memberArr);
+      return { success: true, data: memberArr };
+    } catch (ex) {
+      console.log(ex);
+      return { success: false, message: ex };
+    }
+  }
+
+  async deleteMember(memberId) {
+    try {
+      await deleteDoc(doc(db, collection_name, memberId));
       return { success: true };
     } catch (ex) {
       console.log(ex);

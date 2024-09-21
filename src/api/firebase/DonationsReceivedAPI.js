@@ -10,6 +10,7 @@ import {
   deleteDoc,
   getAggregateFromServer,
   sum,
+  where,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 const collection_name = "donationReceived";
@@ -90,6 +91,39 @@ export default class DonationsReceivedAPI {
         console.log("No such document!");
         return { success: false, message: "No Donation Found" };
       }
+    } catch (ex) {
+      console.log(ex);
+      return { success: false, message: ex };
+    }
+  }
+
+  async getDonationDetailByMemberUniqueCode(unique_code) {
+    try {
+      console.log(
+        "API CALL =========> get Donation by member unique code:",
+        unique_code
+      );
+
+      const q = query(
+        collection(db, collection_name),
+        where("member_unique_code", "==", unique_code),
+        orderBy("createdAt", "desc")
+      );
+      const querySnapshot = await getDocs(q);
+      let donationsArr = [];
+      if (querySnapshot.exists()) {
+        querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          donationsArr.push({ id: doc.id, ...doc.data() });
+        });
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No donations by member ", unique_code);
+        return { success: false, message: "No Donation Found" };
+      }
+
+      console.log("donationsArr:", donationsArr);
+      return { success: true, data: donationsArr };
     } catch (ex) {
       console.log(ex);
       return { success: false, message: ex };

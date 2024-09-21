@@ -26,22 +26,18 @@ import {
   Grid,
   Input,
   InputAdornment,
-  InputLabel,
   Paper,
   Typography,
 } from "@mui/material";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
-import AddIcon from "@mui/icons-material/Add";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import { useNavigate } from "react-router-dom";
 import Slide from "@mui/material/Slide";
 import Loader from "../../../loader/Loader";
+import StartMembership from "../../start-membership/StartMembership";
 
 const NewMemberForm = ({ memberData = null }) => {
   const navigate = useNavigate();
-  //auth.settings.appVerificationDisabledForTesting = true;
+  // auth.settings.appVerificationDisabledForTesting = true;
   const initMemberForm = {
     name: "",
     fathers_name: "",
@@ -69,9 +65,9 @@ const NewMemberForm = ({ memberData = null }) => {
     },
     work_group: "",
     work_detail: "",
+    uid: "",
     unique_code: "",
     post_name: "सदस्य",
-    donate_amount: 0,
   };
   const nameRef = useRef(null);
   const fathers_nameRef = useRef(null);
@@ -110,7 +106,6 @@ const NewMemberForm = ({ memberData = null }) => {
   const [open, setOpen] = useState(false);
   const [submitButtonClicked, setSubmitButtonClicked] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
-  const [verificationId, setVerificationId] = useState(null);
   const [otpTimer, setOtpTimer] = useState(0);
   const [memberUniqueCode, setMemberUniqueCode] = useState("");
   const [buttonText, setButtonText] = useState("पुष्टि कोड भेजें");
@@ -119,6 +114,7 @@ const NewMemberForm = ({ memberData = null }) => {
   const [currentPlanId, setCurrentPlanId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [regDone, setRegDone] = useState(false);
+  const [regUserId, setRegUserId] = useState(null);
   const PLAN_60_ID = process.env.REACT_APP_PLAN_60_ID;
   const PLAN_100_ID = process.env.REACT_APP_PLAN_100_ID;
   const PLAN_200_ID = process.env.REACT_APP_PLAN_200_ID;
@@ -135,11 +131,15 @@ const NewMemberForm = ({ memberData = null }) => {
     setOpen(false);
   };
 
+  useEffect(() => {
+    console.log("UseEffect == > memberUniqueCode: ", memberUniqueCode);
+  }, [memberUniqueCode]);
+
   // console.log("memberForm: ", memberForm);
   const membersAPI = new MembersAPI();
   useEffect(() => {
     if (memberForm.donate_amount < 60) {
-      console.log("here 60");
+      //console.log("here 60");
       setCurrentPlanId(PLAN_60_ID);
       // setMemberForm({ ...memberForm, donate_amount: 60 });
     }
@@ -205,7 +205,6 @@ const NewMemberForm = ({ memberData = null }) => {
     setOtpSent(false);
     window.otpSent = false;
     window.otpTimer = 0;
-    setVerificationId(null);
     setButtonText("पुष्टि कोड भेजें");
     // set all reference value to empty
     nameRef.current.value = "";
@@ -240,6 +239,8 @@ const NewMemberForm = ({ memberData = null }) => {
     window.buttonClicked = false;
     setImageData([]);
     setProgress(0);
+    console.log("2. set unique code:", data.unique_code);
+
     setMemberUniqueCode(data.unique_code);
     // set all reference value to empty
     nameRef.current.value = data.name;
@@ -554,6 +555,7 @@ const NewMemberForm = ({ memberData = null }) => {
       return;
     }
     if (validate()) {
+      setLoading(true);
       window.buttonClicked = true;
       setButtonText("पुष्टि कोड भेजा जा रहा है...");
       submitBtnRef.current.disabled = true;
@@ -584,6 +586,8 @@ const NewMemberForm = ({ memberData = null }) => {
               };
               setAlertMsg({ ...alertOptions });
               console.log("Member Already Exists!");
+              setLoading(false);
+
               setButtonText("पुष्टि कोड भेजें");
 
               return;
@@ -619,11 +623,12 @@ const NewMemberForm = ({ memberData = null }) => {
             uniqueCode += "X";
           }
           uniqueCode += serialNo;
-          console.log("unique Code :", uniqueCode);
+          console.log("unique Code here:", uniqueCode);
           const codeExists = rcv_data.data.some(function (member) {
             return member.unique_code === uniqueCode;
           });
           if (codeExists) {
+            setLoading(false);
             console.log("Code Already Exists!");
             window.buttonClicked = false;
             setSubmitButtonClicked(false);
@@ -636,12 +641,16 @@ const NewMemberForm = ({ memberData = null }) => {
             setButtonText("पुष्टि कोड भेजें");
             return;
           }
+          console.log("1. set unique code:", uniqueCode);
           setMemberUniqueCode(uniqueCode);
+          setMemberForm({ ...memberForm, unique_code: uniqueCode });
           // Enter form data in firebase
           // पुष्टि कोड भेजें
           onSendOTP();
         })
         .catch((err) => {
+          setLoading(false);
+
           window.buttonClicked = false;
           setSubmitButtonClicked(false);
           console.log("error while getMembers() API");
@@ -654,6 +663,8 @@ const NewMemberForm = ({ memberData = null }) => {
           setButtonText("पुष्टि कोड भेजें");
         });
     } else {
+      setLoading(false);
+
       console.log("incorrect input");
       setButtonText("पुष्टि कोड भेजें");
       window.buttonClicked = false;
@@ -676,12 +687,15 @@ const NewMemberForm = ({ memberData = null }) => {
       setButtonText("पुष्टि कोड भेजें");
     }
   };
-  const formValuesIntoDB = () => {
+  const formValuesIntoDB = (user = null) => {
     if (memberData !== null) {
       // Update values from Admin Panel
       const dataToSendForUpdation = {
         payload: { ...memberForm },
-        id: memberData.unique_code,
+        id:
+          memberData.uid !== undefined
+            ? memberData.uid
+            : memberData.unique_code,
       };
       membersAPI
         .setMember(dataToSendForUpdation, true)
@@ -729,10 +743,15 @@ const NewMemberForm = ({ memberData = null }) => {
     } else {
       // Insert Values from Home page
       const dataToSend = {
-        payload: { ...memberForm, unique_code: memberUniqueCode },
-        id: memberUniqueCode,
+        payload: {
+          ...memberForm,
+          unique_code: memberUniqueCode,
+          uid: user !== null ? user.uid : memberUniqueCode,
+          role: ["Member"],
+        },
+        id: user !== null ? user.uid : memberUniqueCode,
       };
-      console.log("data to send:", dataToSend);
+      console.log("data to send here:", dataToSend);
       membersAPI
         .setMember(dataToSend)
         .then((res) => {
@@ -788,6 +807,8 @@ const NewMemberForm = ({ memberData = null }) => {
   };
   async function handleSignIn() {
     try {
+      setLoading(false);
+
       const WindowOtpSent = window.otpSent;
       const WindowOtpTimer = window.otpTimer;
       const appVerifier = window.recaptchaVerifier;
@@ -822,6 +843,8 @@ const NewMemberForm = ({ memberData = null }) => {
           // ...
         })
         .catch((error) => {
+          setLoading(false);
+
           // Error; SMS not sent
           // window.recaptchaVerifier.render().then(function (widgetId) {
           //   grecaptcha.reset(widgetId);
@@ -840,10 +863,12 @@ const NewMemberForm = ({ memberData = null }) => {
           // ...
         });
       console.log("confirmationResult:", window.confirmationResult);
-      //setVerificationId(confirmationResult.verificationId);
+
       // setOtpSent(true);
       // setOtpTimer(60);
     } catch (error) {
+      setLoading(false);
+
       console.error("Error sending OTP:", error);
       const alertOptions = {
         type: "danger",
@@ -873,6 +898,8 @@ const NewMemberForm = ({ memberData = null }) => {
       window.recaptchaVerifier = new RecaptchaVerifier(auth, "sign-in-button", {
         size: "invisible",
         callback: (response) => {
+          setLoading(false);
+
           submitBtnRef.current.disabled = true;
           // reCAPTCHA solved, allow signInWithPhoneNumber.
           console.log("response:", response);
@@ -884,6 +911,8 @@ const NewMemberForm = ({ memberData = null }) => {
       });
       window.recaptchaVerifier.verify();
     } catch (err) {
+      setLoading(false);
+
       console.log("err:", err);
       const alertOptions = {
         type: "warning",
@@ -901,31 +930,33 @@ const NewMemberForm = ({ memberData = null }) => {
   };
   const verifyOTP = async () => {
     try {
+      setLoading(true);
+
       setVerifyButtonClicked(true);
       console.log("पुष्टि करें");
-      // const auth = getAuth();
-      // const credential = PhoneAuthProvider.credential(
-      //   verificationId,
-      //   otpRef.current.value
-      // );
-      // const userCredential = await signInWithCredential(auth, credential);
-      // console.log("userCredential:", userCredential);
+
       window.confirmationResult
         .confirm(otpRef.current.value)
         .then((result) => {
+          setLoading(false);
+
           // User signed in successfully.
           const user = result.user;
-          console.log("userCredential:", user);
+          console.log("userCredential for new member:", user);
+          setRegUserId(user.uid);
+          setMemberForm({ ...memberForm, uid: user.uid });
           setOtpSent(false);
           window.otpSent = false;
           window.buttonClicked = false;
           setSubmitButtonClicked(false);
           setOtpTimer(0);
           // Submit Form Details
-          formValuesIntoDB();
+          formValuesIntoDB(user);
           // ...
         })
         .catch((error) => {
+          setLoading(false);
+
           // User couldn't sign in (bad verification code?)
           console.log("Invalid OTP:", error);
           const alertOptions = {
@@ -940,6 +971,8 @@ const NewMemberForm = ({ memberData = null }) => {
 
       //Clear form values
     } catch (err) {
+      setLoading(false);
+
       console.log("err:", err);
       const alertOptions = {
         type: "warning",
@@ -981,6 +1014,7 @@ const NewMemberForm = ({ memberData = null }) => {
       const subscription_id = response.razorpay_subscription_id;
       const dataForDonationReceivedTable = {
         payload: {
+          uid: regUserId,
           member_unique_code: memberUniqueCode,
           name: memberForm.name,
           contact_no: memberForm.contact_no,
@@ -1000,16 +1034,14 @@ const NewMemberForm = ({ memberData = null }) => {
           console.log("RES resPayment:", resPayment);
 
           const dataForMembersTable = {
-            id: memberUniqueCode,
+            id: regUserId !== null ? regUserId : memberUniqueCode,
             payload: {
-              ...memberForm,
-              payments: [
-                {
-                  ...currentPayment,
-                  payment_id: payment_id,
-                  status: "Completed",
-                },
-              ],
+              payment: {
+                ...currentPayment,
+                plan_amount: memberForm.donate_amount,
+                payment_id: payment_id,
+                status: "Completed",
+              },
             },
           };
           // console.log("dataForUsersTable:", dataForUsersTable);
@@ -1041,7 +1073,6 @@ const NewMemberForm = ({ memberData = null }) => {
   };
   return (
     <>
-      {loading && <Loader fullHeight={false} />}
       <form
         onSubmit={(e) => {
           console.log("Submit Form:");
@@ -1622,7 +1653,17 @@ const NewMemberForm = ({ memberData = null }) => {
           }}
         ></button>
       </div>
-      <Slide direction="up" in={regDone} mountOnEnter unmountOnExit>
+      {regDone && (
+        <StartMembership
+          memberDetails={memberForm}
+          setMemberDetails={setMemberForm}
+          setLoading={setLoading}
+        />
+      )}
+      {/* <Slide direction="up" in={regDone} mountOnEnter unmountOnExit></Slide> */}
+      {/* in={regDone} */}
+      {/*  */}
+      {/* <Slide direction="up" in={true} mountOnEnter unmountOnExit>
         <Grid container spacing={2} className="justify-content-evenly">
           <Grid
             container
@@ -1640,7 +1681,7 @@ const NewMemberForm = ({ memberData = null }) => {
             </Grid>
             <Grid
               item
-              xs={6}
+              xs={8}
               sm={4}
               md={6}
               lg={6}
@@ -1728,15 +1769,13 @@ const NewMemberForm = ({ memberData = null }) => {
               }}
             >
               <Container className="p-1" maxWidth="sm">
-                {/* <Box className="text-start">
-                      <VolunteerActivismIcon sx={{ fontSize: 32 }} />
-                    </Box> */}
+                
                 <Box sx={{ pt: 0.5, pb: 0.5 }}>
                   <Typography variant="h5" align="center">
                     ₹60
                   </Typography>
                 </Box>
-                {/* <Box sx={{ textAlign: "left", mt: 1 }}></Box> */}
+                
               </Container>
             </Paper>
           </Grid>
@@ -1758,7 +1797,6 @@ const NewMemberForm = ({ memberData = null }) => {
                     ₹100
                   </Typography>
                 </Box>
-                {/* <Box sx={{ textAlign: "left", mt: 2 }}></Box> */}
               </Container>
             </Paper>
           </Grid>
@@ -1780,7 +1818,6 @@ const NewMemberForm = ({ memberData = null }) => {
                     ₹200
                   </Typography>
                 </Box>
-                {/* <Box sx={{ textAlign: "left", mt: 2 }}></Box> */}
               </Container>
             </Paper>
           </Grid>
@@ -1802,7 +1839,6 @@ const NewMemberForm = ({ memberData = null }) => {
                     ₹500
                   </Typography>
                 </Box>
-                {/* <Box sx={{ textAlign: "left", mt: 2 }}></Box> */}
               </Container>
             </Paper>
           </Grid>
@@ -1829,7 +1865,8 @@ const NewMemberForm = ({ memberData = null }) => {
             />
           </Grid>
         </Grid>
-      </Slide>
+      </Slide> */}
+      {loading && <Loader fullHeight={false} />}
     </>
   );
 };

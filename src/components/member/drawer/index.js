@@ -21,16 +21,15 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Avatar from "@mui/material/Avatar";
 import AuthAPI from "../../../api/firebase/AuthAPI";
 import CustomButton from "../../common/Button/CustomButton";
-import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 
-const LeftResponsiveDrawer = (props) => {
+const LeftResponsiveDrawerMember = (props) => {
   const isMobile = useMediaQuery("(max-width: 600px)");
   const { window } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selectedTab, setSelectedTab] = useState("");
-  const currentUser = JSON.parse(localStorage.getItem("user"));
+  const [currentUser, setCurrentUser] = useState(null);
   const authAPI = new AuthAPI();
-  console.log("Current User: ", currentUser);
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
@@ -53,9 +52,14 @@ const LeftResponsiveDrawer = (props) => {
 
   const navigate = useNavigate();
   useEffect(() => {
+    console.log(
+      "local current user: ",
+      JSON.parse(localStorage.getItem("user"))
+    );
+    setCurrentUser(JSON.parse(localStorage.getItem("user")));
     setTimeout(() => {
       setSelectedTab("Dashboard");
-      navigate("/admin/dashboard");
+      navigate("/member/my-subscription");
     }, 500);
   }, []);
 
@@ -70,23 +74,16 @@ const LeftResponsiveDrawer = (props) => {
         <Divider sx={drawerStyles.divider} />
         <Box sx={{ marginTop: "10px" }}>
           <Avatar
-            alt={currentUser !== null ? currentUser.name : "Admin"}
+            alt={currentUser !== null ? currentUser.name : "Member"}
             src={
               currentUser !== null
-                ? currentUser.latest_photo.url || "/static/images/avatar/1.jpg"
+                ? currentUser.latest_photo.url
                 : "/static/images/avatar/1.jpg"
             }
             sx={drawerStyles.avatar}
           />
           <Typography variant="body1">
-            {currentUser !== null ? currentUser.name : "Admin"}
-            <br />
-            {currentUser.role.includes("Admin") &&
-              currentUser.role.includes("Member") &&
-              "(Member+Admin)"}
-            {currentUser.role.includes("Admin") &&
-              !currentUser.role.includes("Member") &&
-              "(Admin)"}
+            {currentUser !== null ? currentUser.name : "Member"}
           </Typography>
           <CustomButton
             color="primary"
@@ -101,27 +98,6 @@ const LeftResponsiveDrawer = (props) => {
       </Box>
 
       <Divider sx={drawerStyles.divider} />
-      <List>
-        {/* icon: <VolunteerActivismIcon />,
-    label: "All Donations",
-    route: "/admin/add-donation", */}
-        <ListItemButton
-          className={`${selectedTab === "मेरी सदस्यता" ? "bg-primary" : ""}`}
-          sx={drawerStyles.listItems}
-          onClick={() => {
-            setSelectedTab("मेरी सदस्यता");
-            navigate("/admin/my-subscription");
-            handleDrawerToggle();
-          }}
-        >
-          <ListItemIcon sx={drawerStyles.icons}>
-            <VolunteerActivismIcon />
-          </ListItemIcon>
-          <ListItemText sx={drawerStyles.text} primary="मेरी सदस्यता" />
-        </ListItemButton>
-      </List>
-      <Divider sx={drawerStyles.divider} />
-
       <List>
         {drawerItems.map((item, index) => (
           <ListItemButton
@@ -189,10 +165,10 @@ const LeftResponsiveDrawer = (props) => {
 
       <Box component="main" sx={drawerStyles.outletBox}>
         <Toolbar sx={{ display: { sm: "none", xs: "block" } }} />
-        <Outlet />
+        <Outlet context={currentUser} />
       </Box>
     </Box>
   );
 };
 
-export default LeftResponsiveDrawer;
+export default LeftResponsiveDrawerMember;

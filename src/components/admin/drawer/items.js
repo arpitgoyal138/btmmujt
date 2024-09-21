@@ -4,11 +4,13 @@ import WebIcon from "@mui/icons-material/Web";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 export const drawerItems = [
   {
     id: 0,
     icon: <WebIcon />,
-    label: "Go to Website",
+    label: "वेबसाइट पर जाएं",
     route: "/",
   },
   {
@@ -20,20 +22,26 @@ export const drawerItems = [
   {
     id: 2,
     icon: <PeopleIcon />,
-    label: "All Members",
+    label: "सभी सदस्य",
     route: "/admin/members",
   },
   {
     id: 3,
     icon: <ManageAccountsIcon />,
-    label: "All Managers",
+    label: "सभी प्रबंधक",
     route: "/admin/managers",
   },
   {
     id: 4,
-    icon: <VolunteerActivismIcon />,
-    label: "All Donations",
+    icon: <RemoveIcon />,
+    label: "सभी दिए गए दान",
     route: "/admin/add-donation",
+  },
+  {
+    id: 5,
+    icon: <AddIcon />,
+    label: "सभी प्राप्त हुए दान",
+    route: "/admin/donations-received",
   },
   // {
   //   id: 5,
