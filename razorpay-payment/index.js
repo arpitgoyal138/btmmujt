@@ -119,23 +119,17 @@ app.post("/createSubscription", (req, res) => {
     customer_notify: 1,
     quantity: 1,
     total_count: 60,
+    addons: [
+      {
+        item: {
+          name: "Setup Charge",
+          amount: 10000,
+          currency: "INR",
+        },
+      },
+    ],
   };
 
-  if (amount < 10000) {
-    amountToPay = 10000;
-    options = {
-      ...options,
-      addons: [
-        {
-          item: {
-            name: "Setup Charge",
-            amount: 10000 - amount,
-            currency: "INR",
-          },
-        },
-      ],
-    };
-  }
   razorpayInstance.subscriptions.create(options, (err, subscription) => {
     if (!err) {
       res.json({ ...subscription, amount: amountToPay / 100 });

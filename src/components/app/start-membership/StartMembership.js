@@ -296,11 +296,8 @@ const StartMembership = (props) => {
       <Grid item xs={12}>
         {Number(memberDetails.donate_amount) >= 60 && (
           <Typography variant="body1" className="mt-2">
-            ₹
-            {memberDetails.donate_amount < 100
-              ? 100
-              : memberDetails.donate_amount}{" "}
-            अभी भुकतान करें और प्रति माह ₹{memberDetails.donate_amount} दान करें{" "}
+            ₹{memberDetails.donate_amount} (+ ₹100 सदस्यता ग्रहण शुल्क) अभी
+            भुकतान करें और प्रति माह ₹{memberDetails.donate_amount} दान करें{" "}
           </Typography>
         )}
 

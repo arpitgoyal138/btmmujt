@@ -1,6 +1,6 @@
 {
   "name": "jankalyan-trust",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^43.0.0",
