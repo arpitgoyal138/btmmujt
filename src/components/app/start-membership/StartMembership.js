@@ -68,7 +68,10 @@ const StartMembership = (props) => {
           payment_id: payment_id,
           plan_id: currentPayment.plan_id,
           subscription_id: subscription_id,
-          amount: currentPayment.amount,
+          amount: currentPayment.amount + 100,
+          address: memberDetails.address,
+          district: memberDetails.district,
+          state: memberDetails.state,
         },
         id: payment_id,
       };
@@ -84,6 +87,7 @@ const StartMembership = (props) => {
               payment: {
                 ...currentPayment,
                 plan_amount: memberDetails.donate_amount,
+                amount: currentPayment.amount + 100,
                 payment_id: payment_id,
                 status: "Completed",
               },

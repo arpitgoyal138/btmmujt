@@ -48,7 +48,7 @@ const AllDonationsReceived = () => {
         return;
       }
       setMembersArr(resData.data);
-      console.log("Done fetching all members: ", membersArr);
+      console.log("Done fetching all members: ", resData.data);
     });
   }, []);
 
