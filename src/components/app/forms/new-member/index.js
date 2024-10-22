@@ -112,9 +112,13 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
     if (memberData !== null) {
       setMemberForm({ ...memberData });
       populateFormValues(memberData);
-      setButtonText("जमा करें");
+      setButtonText("अपडेट करें");
     }
   }, [memberData]);
+  useEffect(() => {
+    window.buttonText = buttonText;
+    console.log("Button text updated:", window.buttonText);
+  }, [buttonText]);
 
   useEffect(() => {
     if (!otpSent) {
@@ -126,10 +130,8 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
       if (otpTimer > 0) {
         if (!verifyButtonClicked) {
           submitBtnRef.current.disabled = true;
-          console.log("set button text: ");
           setButtonText("पुनः पुष्टि कोड भेजें (" + otpTimer + "s)");
         }
-
         setOtpTimer(otpTimer - 1);
         window.otpTimer = otpTimer - 1;
       } else {
@@ -137,6 +139,7 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
         setSubmitButtonClicked(false);
         window.buttonClicked = false;
         setButtonText("पुष्टि कोड भेजें");
+
         clearInterval(intervalId);
         window.otpTimer = 0;
         window.otpSent = false;
@@ -160,7 +163,9 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
     ) {
       setButtonText("पुष्टि कोड भेजें");
     } else {
-      setButtonText("जमा करें");
+      memberData === null
+        ? setButtonText("जमा करें")
+        : setButtonText("अपडेट करें");
     }
   };
   const clearForm = () => {
@@ -626,6 +631,7 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
             };
             setAlertMsg({ ...alertOptions });
             setButtonText("पुष्टि कोड भेजें");
+
             return;
           }
           console.log("1. set unique code:", uniqueCode);
@@ -656,6 +662,7 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
 
       console.log("incorrect input");
       setButtonText("पुष्टि कोड भेजें");
+
       window.buttonClicked = false;
       setSubmitButtonClicked(false);
     }
@@ -669,8 +676,30 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
       setSubmitButtonClicked(true);
       console.log("memberData:", memberData, "\n memberForm:", memberForm);
       if (memberData.contact_no !== memberForm.contact_no) {
-        setButtonText("पुष्टि कोड भेजा जा रहा है...");
-        onSendOTP();
+        // check if new mobile number is already registered
+        membersAPI.getMemberByPhoneNumber(memberForm.contact_no).then((res) => {
+          console.log("getMemberByPhoneNumber res:", res);
+          if (res.data.length > 0) {
+            setLoading(false);
+            console.log("Mobile Number Already Exists!");
+            window.buttonClicked = false;
+            const alertOptions = {
+              type: "warning",
+              title: "इस फ़ोन नंबर पर खाता पहले से मौजूद है|",
+              show: true,
+            };
+            setAlertMsg({ ...alertOptions });
+            formCheckRef.current.checked = false;
+            contact_noRef.current.focus();
+            resetSubmitButton();
+            setFormChecked(false);
+            alert("इस फ़ोन नंबर पर खाता पहले से मौजूद है|");
+            return;
+          } else {
+            setButtonText("पुष्टि कोड भेजा जा रहा है...");
+            onSendOTP();
+          }
+        });
       } else {
         setButtonText("अपडेट किया जा रहा है...");
         formValuesIntoDB();
@@ -685,6 +714,8 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
   };
   const formValuesIntoDB = (user = null) => {
     if (memberData !== null) {
+      console.log("memberForm in formValuesIntoDB:", memberForm);
+      console.log("memberData in formValuesIntoDB:", memberData);
       // Update values from Admin Panel
       const dataToSendForUpdation = {
         payload: { ...memberForm },
@@ -693,6 +724,7 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
             ? memberData.uid
             : memberData.unique_code,
       };
+      console.log("dataToSendForUpdation:", dataToSendForUpdation);
       membersAPI
         .setMember(dataToSendForUpdation, true)
         .then((res) => {
@@ -719,13 +751,14 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
               "member data:",
               memberData
             );
-            setButtonText("जमा करें");
+            setButtonText("अपडेट करें");
+
             console.log("fromMyProfile:", fromMyProfile);
             if (fromMyProfile || currentUser.uid == memberData.uid) {
               // reset local storage
               localStorage.setItem("user", JSON.stringify(memberForm));
               alert("पंजीकरण सफलतापूर्वक हो गया है|");
-              window.location.reload();
+              //window.location.reload();
             }
             if (memberData.contact_no !== memberForm.contact_no) {
               setOpenDialog(true);
@@ -902,6 +935,7 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
             window.buttonClicked = false;
             setSubmitButtonClicked(false);
             setButtonText("पुष्टि कोड भेजें");
+
             // ...
           });
       }
@@ -929,16 +963,17 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
         size: "invisible",
         callback: (response) => {
           setLoading(false);
-
           submitBtnRef.current.disabled = true;
           // reCAPTCHA solved, allow signInWithPhoneNumber.
-          // console.log("response:", response);
+          console.log("reCAPTCHA solved response:", response);
           if (window.otpSent && window.otpTimer !== 0) {
             return;
           }
           handleSignIn();
         },
       });
+      window.recaptchaWidgetId = await window.recaptchaVerifier.render();
+      console.log(" window.recaptchaWidgetId = ", window.recaptchaWidgetId);
       window.recaptchaVerifier.verify();
     } catch (err) {
       setLoading(false);
@@ -1008,7 +1043,9 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
                 title: "इस फ़ोन नंबर पर खाता पहले से मौजूद है|",
                 show: true,
               };
+              formCheckRef.current.checked = false;
               resetSubmitButton();
+              setFormChecked(false);
             }
             if (error.code === "auth/invalid-verification-code") {
               alertOptions = {
@@ -1368,7 +1405,9 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
                 ) {
                   setButtonText("पुष्टि कोड भेजें");
                 } else {
-                  setButtonText("जमा करें");
+                  memberData !== null
+                    ? setButtonText("अपडेट करें")
+                    : setButtonText("पुष्टि कोड भेजें");
                   setSubmitButtonClicked(false);
                   window.buttonClicked = false;
                   setOtpTimer(0);
@@ -1463,13 +1502,7 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
               backgroundImage: `url("${memberForm.aadhaar_photo_front.url}")`,
             }}
             onClick={() => {
-              //window.open(memberForm.aadhaar_photo_front.url, "_blank");
-              var link = document.createElement("a");
-              link.href = memberForm.aadhaar_photo_front.url;
-              link.download = "Download.jpg";
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
+              window.open(memberForm.aadhaar_photo_front.url, "_blank");
             }}
           ></div>
           {isUploadingBack && (
@@ -1489,13 +1522,7 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
               backgroundImage: `url("${memberForm.aadhaar_photo_back.url}")`,
             }}
             onClick={() => {
-              // window.open(memberForm.aadhaar_photo_back.url, "_blank");
-              var link = document.createElement("a");
-              link.href = memberForm.aadhaar_photo_back.url;
-              link.download = "Download.jpg";
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
+              window.open(memberForm.aadhaar_photo_back.url, "_blank");
             }}
           ></div>
         </div>
@@ -1531,13 +1558,7 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
             }`}
             style={{ backgroundImage: `url("${memberForm.latest_photo.url}")` }}
             onClick={() => {
-              // window.open(memberForm.latest_photo.url, "_blank");
-              var link = document.createElement("a");
-              link.href = memberForm.latest_photo.url;
-              link.download = "Download.jpg";
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
+              window.open(memberForm.latest_photo.url, "_blank");
             }}
           ></div>
         </div>
