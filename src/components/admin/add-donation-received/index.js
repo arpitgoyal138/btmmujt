@@ -1,11 +1,15 @@
 import {
   Button,
   FormControl,
+  FormControlLabel,
+  FormLabel,
   Grid,
   InputLabel,
   ListItemText,
   MenuItem,
   OutlinedInput,
+  Radio,
+  RadioGroup,
   Select,
   TextField,
 } from "@mui/material";
@@ -85,11 +89,15 @@ const AddDonationReceived = ({
     amount: "",
     description: "",
     images: [],
+    method: "cash",
   };
 
   let initProImages = [];
-  if (donationDetail !== null) {
-    initProImages = donationDetail.images;
+  if (donationDetail !== undefined && donationDetail !== null) {
+    console.log("Donation Detail: ", donationDetail);
+    if (donationDetail.images !== undefined && donationDetail.images !== null) {
+      initProImages = donationDetail.images;
+    }
     initDonationData = donationDetail;
   }
   const [donationData, setDonationData] = useState(initDonationData);
@@ -230,7 +238,7 @@ const AddDonationReceived = ({
           required
           fullWidth
           id="name"
-          label="Name"
+          label="नाम"
           variant="standard"
           value={donationData.name}
           onChange={(e) => {
@@ -245,7 +253,7 @@ const AddDonationReceived = ({
           required
           fullWidth
           id="contact_no"
-          label="Mobile"
+          label="मोबाइल न."
           variant="standard"
           value={donationData.contact_no}
           onChange={(e) => {
@@ -260,7 +268,7 @@ const AddDonationReceived = ({
           required
           fullWidth
           id="address"
-          label="Address"
+          label="पता"
           variant="standard"
           value={donationData.address}
           onChange={(e) => {
@@ -275,7 +283,7 @@ const AddDonationReceived = ({
           required
           fullWidth
           id="district"
-          label="District"
+          label="जिला"
           variant="standard"
           value={donationData.district}
           onChange={(e) => {
@@ -290,7 +298,7 @@ const AddDonationReceived = ({
           required
           fullWidth
           id="state"
-          label="State"
+          label="राज्य"
           variant="standard"
           value={donationData.state}
           onChange={(e) => {
@@ -308,11 +316,32 @@ const AddDonationReceived = ({
           type="number"
           name="amount"
           id="amount"
-          label="Amount"
+          label="दान राशि"
           variant="standard"
           value={donationData.amount}
           onChange={(e) => handleFormData({ amount: Number(e.target.value) })}
         />
+      </Grid2>
+      <Grid2 xs={12}>
+        <FormControl>
+          {/* <FormLabel id="demo-controlled-radio-buttons-group">
+            Payment Method
+          </FormLabel> */}
+          <RadioGroup
+            row
+            aria-labelledby="demo-controlled-radio-buttons-group"
+            name="controlled-radio-buttons-group"
+            value={donationData.method || "cash"}
+            onChange={(e) => handleFormData({ method: e.target.value })}
+          >
+            <FormControlLabel value="cash" control={<Radio />} label="कैश" />
+            <FormControlLabel
+              value="online"
+              control={<Radio />}
+              label="ऑनलाइन"
+            />
+          </RadioGroup>
+        </FormControl>
       </Grid2>
 
       <Button
@@ -327,8 +356,8 @@ const AddDonationReceived = ({
         {isUploading
           ? "Uploading image"
           : action === "ADD"
-          ? "Add Donation"
-          : "Update Donation"}
+          ? "दान राशि जोड़ें"
+          : "दान राशि अप्डेट करें"}
       </Button>
 
       <Button
@@ -339,7 +368,7 @@ const AddDonationReceived = ({
         fullWidth
         sx={{ marginTop: "15px" }}
       >
-        Cancel
+        रद्द करें
       </Button>
 
       <Dialog

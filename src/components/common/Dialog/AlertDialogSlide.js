@@ -18,8 +18,10 @@ export default function AlertDialogSlide({
   title = "",
   description = "",
   isOpen = false,
+  onlyOkButton = false,
   agreeButtonText = "Remove",
   cancelButtonText = "Cancel",
+  cancelButtonDanger = false,
 }) {
   return (
     <Dialog
@@ -36,10 +38,16 @@ export default function AlertDialogSlide({
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <CustomButton onClick={handleOnClose} variant="outlined">
-          {cancelButtonText}
-        </CustomButton>
-        <CustomButton onClick={handleOnAgree} variant="contained">
+        {!onlyOkButton && (
+          <CustomButton onClick={handleOnClose} variant="outlined">
+            {cancelButtonText}
+          </CustomButton>
+        )}
+        <CustomButton
+          onClick={handleOnAgree}
+          variant="contained"
+          color={cancelButtonDanger ? "error" : "primary"}
+        >
           {agreeButtonText}
         </CustomButton>
       </DialogActions>

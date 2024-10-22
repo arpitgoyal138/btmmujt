@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 
 const StartMembership = (props) => {
   //   console.log("props:", props);
-  const { memberDetails, setMemberDetails, setLoading } = props;
+  const { memberDetails, setMemberDetails, setLoading, fromAdmin } = props;
   const planAmountRef = useRef(null);
   const [currentPlanId, setCurrentPlanId] = useState(null);
   const [currentPayment, setCurrentPayment] = useState(null);
@@ -101,7 +101,12 @@ const StartMembership = (props) => {
               if (res.success) {
                 //alert("Payment Successfull");
                 // navigate to order placed page
-                navigate("/thank-you");
+                if (!fromAdmin) {
+                  navigate("/thank-you");
+                } else {
+                  navigate("/admin/members");
+                }
+
                 setLoading(false);
               } else {
                 setLoading(false);

@@ -27,7 +27,8 @@ import StartMembership from "../../components/app/start-membership/StartMembersh
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
-const MySubscription = () => {
+const MySubscription = ({ forMember = null, fromRegistration = false }) => {
+  console.log("forMember: ", forMember);
   const [currentUser, setCurrentUser] = useState(null);
   const [subscriptionDetail, setSubscriptionDetail] = useState(null);
   const [startSubscription, setStartSubscription] = useState(false);
@@ -38,17 +39,25 @@ const MySubscription = () => {
   const [message, setMessage] = useState({ text: "", type: "" });
   const [openDialog, setOpenDialog] = useState(false);
 
-  console.log("current user: ", currentUser);
+  //console.log("subscription for user: ", currentUser);
   let user = useOutletContext();
 
-  console.log("user: ", user);
+  //console.log("user: ", user);
   if (user === null || user === undefined) {
     user = JSON.parse(localStorage.getItem("user"));
   }
+  if (forMember !== null) {
+    user = forMember;
+  }
   // Fetch subscription detail from razorpay
   useEffect(() => {
-    setCurrentUser(user);
-    if (user.payment && user.payment.id && user.payment.id !== "") {
+    if (forMember !== null) {
+      setCurrentUser(forMember);
+    } else {
+      setCurrentUser(user);
+    }
+
+    if (user && user.payment && user.payment.id && user.payment.id !== "") {
       console.log("user.payments", user.payment);
       fetchSubscription(user.payment.id);
     } else {
@@ -195,7 +204,7 @@ const MySubscription = () => {
     setOpenDialog(false);
   };
   return (
-    <Container maxWidth="lg">
+    <Container>
       <Box component="div" sx={{ display: { xs: "none", sm: "block" } }}>
         <Typography
           sx={{
@@ -204,11 +213,11 @@ const MySubscription = () => {
           variant="h4"
           component="h4"
         >
-          My Subscription
+          {forMember === null && !fromRegistration ? `My Subscription` : ""}
         </Typography>
       </Box>
       {!startSubscription && subscriptionDetail && (
-        <Grid container spacing={2} maxWidth="sm" justifyContent="center">
+        <Grid container spacing={2} justifyContent="center">
           <Grid item xs={12}>
             <TableContainer component={Paper}>
               <Table aria-label="simple table">
@@ -219,12 +228,12 @@ const MySubscription = () => {
                     }}
                   >
                     <TableCell component="th" scope="row">
-                      Plan
+                      योजना
                     </TableCell>
                     <TableCell align="right">
-                      Monthly Amount - {user.payment.plan_amount} <br></br>
+                      मासिक राशि - {user.payment.plan_amount} <br></br>
                       <span className="text-secondary">
-                        Billed Every 1 month
+                        स्वतः भुगतान प्रति 1 माह
                       </span>
                     </TableCell>
                   </TableRow>
@@ -234,7 +243,7 @@ const MySubscription = () => {
                     }}
                   >
                     <TableCell component="th" scope="row">
-                      Link
+                      भुगतान लिंक
                     </TableCell>
                     <TableCell align="right">
                       <a
@@ -252,7 +261,7 @@ const MySubscription = () => {
                     }}
                   >
                     <TableCell component="th" scope="row">
-                      Recurring Billing
+                      स्वतः भुगतान राशि
                     </TableCell>
                     <TableCell align="right">
                       ₹{user.payment.plan_amount}
@@ -264,7 +273,7 @@ const MySubscription = () => {
                     }}
                   >
                     <TableCell component="th" scope="row">
-                      Status
+                      भुगतान स्थति
                     </TableCell>
                     <TableCell align="right">
                       {subscriptionDetail.status === "active" && (
@@ -278,7 +287,7 @@ const MySubscription = () => {
                           }}
                         >
                           <span className="p-1 rounded-1 small text-bg-success text-light ps-2 pe-2 fw-bold">
-                            Active
+                            स्वतः भुगतान चालू है
                           </span>
                           <Button
                             variant="outlined"
@@ -289,7 +298,7 @@ const MySubscription = () => {
                               setOpenDialog(true);
                             }}
                           >
-                            Pause
+                            स्वतः भुगतान रोकें
                           </Button>
                         </Stack>
                       )}
@@ -305,7 +314,7 @@ const MySubscription = () => {
                           }}
                         >
                           <span className="p-1 rounded-1 small text-bg-warning text-light ps-2 pe-2 fw-bold">
-                            Paused
+                            स्वतः भुगतान रुका हुआ
                           </span>
                           <Button
                             variant="outlined"
@@ -316,13 +325,13 @@ const MySubscription = () => {
                               handleResumeClick();
                             }}
                           >
-                            Resume
+                            फिर शुरू करें
                           </Button>
                         </Stack>
                       )}
                       {subscriptionDetail.status === "cancelled" && (
                         <span className="p-1 rounded-1 small text-bg-danger text-light ps-2 pe-2 fw-bold">
-                          Cancelled
+                          रद्द कर दिया गया
                         </span>
                       )}
                     </TableCell>
@@ -333,7 +342,7 @@ const MySubscription = () => {
                     }}
                   >
                     <TableCell component="th" scope="row">
-                      Payment method
+                      भुगतान की विधि
                     </TableCell>
                     <TableCell align="right" className="text-capitalize">
                       {subscriptionDetail.payment_method}
@@ -345,7 +354,7 @@ const MySubscription = () => {
                     }}
                   >
                     <TableCell component="th" scope="row">
-                      Created at
+                      पहली भुगतान की तिथि
                     </TableCell>
                     <TableCell align="right">
                       {unixTimeToDate(subscriptionDetail.start_at)}
@@ -358,7 +367,7 @@ const MySubscription = () => {
                       }}
                     >
                       <TableCell component="th" scope="row">
-                        Next due on
+                        अगली भुगतान की तिथि
                       </TableCell>
                       <TableCell align="right">
                         {unixTimeToDate(subscriptionDetail.charge_at)}
@@ -378,11 +387,12 @@ const MySubscription = () => {
               Start Donation
             </Typography>
           </Grid>
-          <Grid item xs={12} lg={6} xl={6}>
+          <Grid item xs={12} lg={10} xl={8}>
             <StartMembership
               memberDetails={currentUser}
               setMemberDetails={setCurrentUser}
               setLoading={setLoading}
+              fromAdmin={forMember !== null}
             />
           </Grid>
         </Grid>
@@ -406,9 +416,11 @@ const MySubscription = () => {
             handleOnAgree={handleAgreeDialog}
             handleOnClose={handleCloseDialog}
             isOpen={openDialog}
-            agreeButtonText="Pause Membership"
-            title="Pause subscription"
-            description={"You will not be able to use benefits of membership."}
+            agreeButtonText="सदस्यता रोकें"
+            cancelButtonText="सदस्यता जारी रखें"
+            title="कृपया पुष्टि करें"
+            description={"आप सदस्यता के लाभों का उपयोग नहीं कर पाएंगे."}
+            cancelButtonDanger={true}
           />
         </Grid>
       </Grid>

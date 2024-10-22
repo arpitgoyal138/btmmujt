@@ -80,6 +80,7 @@ const CustomDataGrid = ({
   pageSizes = [10, 20, 30],
   onCellEditCommit,
   onRowClickHandle = null,
+  getRowClassName = null,
 }) => {
   const [pageSize, setPageSize] = useState(pageSizes[0]);
   return (
@@ -98,6 +99,7 @@ const CustomDataGrid = ({
         onCellEditCommit={onCellEditCommit}
         getRowId={(row) => (row.uid !== undefined ? row.uid : row.unique_code)}
         onRowClick={onRowClickHandle}
+        getRowClassName={getRowClassName}
       />
     </div>
   );

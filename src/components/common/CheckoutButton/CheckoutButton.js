@@ -112,7 +112,7 @@ const CheckoutButton = ({
     }
   };
   function handlePayment() {
-    console.log("handlePayment=> currentPayment:", currentPayment);
+    //console.log("now handlePayment=> currentPayment:", currentPayment);
     // const options = {
     //   key:
     //     process.env.REACT_APP_PAYMENT_METHOD === "TEST"
@@ -152,15 +152,17 @@ const CheckoutButton = ({
       description: "Monthly Donation",
       // image: "/your_logo.jpg",
       handler: (response) => {
-        console.log("Subscription Payment Response:", response);
+        //console.log("Subscription Payment Response:", response);
         onPayment({ success: true, response });
         setOrderData(null);
       },
       prefill: {
         name: member.name,
         contact: member.contact_no,
+        email: "nadeem0786rana@gmail.com",
       },
     };
+    //console.log("subscription_options:", subscription_options);
     const rzp1 = new Razorpay(subscription_options);
 
     rzp1.on("payment.failed", function (response) {
@@ -178,14 +180,14 @@ const CheckoutButton = ({
     rzp1.open();
   }
   useEffect(() => {
-    console.log("orderData CHANGED:", orderData);
+    //console.log("orderData CHANGED:", orderData);
     if (orderData !== null && orderData !== undefined) {
       setLoading(false);
       onCreateOrder({ success: true, subscription: orderData });
     }
   }, [orderData]);
   useEffect(() => {
-    console.log("currentPayment CHANGED:", currentPayment);
+    //console.log("currentPayment CHANGED:", currentPayment);
     if (currentPayment !== null && currentPayment !== undefined) {
       handlePayment();
     }

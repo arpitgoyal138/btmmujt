@@ -34,6 +34,7 @@ import MyDonations from "./pages/member/my-donations";
 import LeftResponsiveDrawerMember from "./components/member/drawer";
 import MySubscription from "./pages/member/my-subscription";
 import AllDonationsReceived from "./pages/admin/donationsReceived";
+import MyProfile from "./pages/member/my-profile";
 
 export default function App() {
   const options = {
@@ -95,6 +96,7 @@ export default function App() {
             path="/admin/my-subscription"
             element={<MySubscription />}
           ></Route>
+          <Route path="/admin/my-profile" element={<MyProfile />}></Route>
           <Route path="/admin/dashboard" element={<AdminDashboard />}></Route>
           <Route path="/admin/members" element={<AllMembers />}></Route>
           <Route path="/admin/managers" element={<AllManagers />}></Route>
@@ -123,6 +125,7 @@ export default function App() {
           ></Route>
           <Route path="/member/homepage" element={<MemberHomepage />}></Route>
           <Route path="/member/my-donations" element={<MyDonations />}></Route>
+          <Route path="/member/my-profile" element={<MyProfile />}></Route>
         </Route>
       </>
     )

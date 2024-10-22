@@ -5,11 +5,9 @@ import CustomButton from "../../common/Button/CustomButton";
 import { useNavigate } from "react-router-dom";
 import "./thank-animate.css";
 const ThankYouForDonation = () => {
-  const navigate = useNavigate();
   return (
     <Container maxWidth="sm" align="center">
       <CssBaseline />
-
       <Typography
         variant="h3"
         align="center"
@@ -28,16 +26,8 @@ const ThankYouForDonation = () => {
         <Typography variant="body1" align="center" sx={{ mt: 2 }}>
           जल्द ही आपका I.D. कार्ड आपके व्हाट्सप्प नंबर पर भेज दिया जायगा
           <br></br>अधिक जानकारी के लिए कृप्या{" "}
-          <b style={{ fontWeight: 500 }}> 9999999999</b> नंबर पर संपर्क करें
+          <b style={{ fontWeight: 500 }}> 9720060562</b> नंबर पर संपर्क करें
         </Typography>
-      </Box>
-      <Box sx={{ mt: 4 }}>
-        {/* <CustomButton
-          variant="outlined"
-          onClick={() => navigate("/userOrders")}
-        >
-          Go to Orders Page
-        </CustomButton> */}
       </Box>
     </Container>
   );

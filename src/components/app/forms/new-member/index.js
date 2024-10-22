@@ -7,36 +7,27 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { auth, storage } from "../../../../firebase";
 // Image Libraries
 import CompressAPI from "./../../../../api/compressImage/CompressAPI";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
-import AuthAPI from "../../../../api/firebase/AuthAPI";
 import {
-  PhoneAuthProvider,
   RecaptchaVerifier,
   getAuth,
-  signInWithCredential,
   signInWithPhoneNumber,
+  PhoneAuthProvider,
+  updatePhoneNumber,
 } from "firebase/auth";
-import CheckoutButton from "../../../common/CheckoutButton/CheckoutButton";
 import DonationsReceivedAPI from "../../../../api/firebase/DonationsReceivedAPI";
-import {
-  Box,
-  Container,
-  FormControl,
-  Grid,
-  Input,
-  InputAdornment,
-  Paper,
-  Typography,
-} from "@mui/material";
-import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import { useNavigate } from "react-router-dom";
-import Slide from "@mui/material/Slide";
+// import Slide from "@mui/material/Slide";
 import Loader from "../../../loader/Loader";
 import StartMembership from "../../start-membership/StartMembership";
+import MySubscription from "../../../../pages/member/my-subscription";
+import AlertDialogSlide from "../../../common/Dialog/AlertDialogSlide";
+import AuthAPI from "../../../../api/firebase/AuthAPI";
 
-const NewMemberForm = ({ memberData = null }) => {
+const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
+  const auth = getAuth();
+
   const navigate = useNavigate();
+  const authAPI = new AuthAPI();
   // auth.settings.appVerificationDisabledForTesting = true;
   const initMemberForm = {
     name: "",
@@ -90,20 +81,18 @@ const NewMemberForm = ({ memberData = null }) => {
   const postNameRef = useRef(null);
   const otpRef = useRef(null);
   const submitBtnRef = useRef(null);
-  const planAmountRef = useRef(null);
   const [memberForm, setMemberForm] = useState(initMemberForm);
   const [formChecked, setFormChecked] = useState(false);
   const [isUploadingFront, setIsUploadingFront] = useState(false);
   const [isUploadingBack, setIsUploadingBack] = useState(false);
   const [isUploadingSelf, setIsUploadingSelf] = useState(false);
-  const [imageData, setImageData] = useState([]);
+
   const [progress, setProgress] = useState(0);
   const [alertMsg, setAlertMsg] = useState({
     type: "",
     title: "",
     show: false,
   });
-  const [open, setOpen] = useState(false);
   const [submitButtonClicked, setSubmitButtonClicked] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [otpTimer, setOtpTimer] = useState(0);
@@ -111,46 +100,22 @@ const NewMemberForm = ({ memberData = null }) => {
   const [buttonText, setButtonText] = useState("पुष्टि कोड भेजें");
   const [verifyButtonClicked, setVerifyButtonClicked] = useState(false);
   const [currentPayment, setCurrentPayment] = useState(null);
-  const [currentPlanId, setCurrentPlanId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [regDone, setRegDone] = useState(false);
   const [regUserId, setRegUserId] = useState(null);
-  const PLAN_60_ID = process.env.REACT_APP_PLAN_60_ID;
-  const PLAN_100_ID = process.env.REACT_APP_PLAN_100_ID;
-  const PLAN_200_ID = process.env.REACT_APP_PLAN_200_ID;
-  const PLAN_500_ID = process.env.REACT_APP_PLAN_500_ID;
-  const handleClick = () => {
-    setOpen(true);
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setAlertMsg({ type: "", title: "", show: false });
-    setOpen(false);
-  };
-
-  useEffect(() => {
-    console.log("UseEffect == > memberUniqueCode: ", memberUniqueCode);
-  }, [memberUniqueCode]);
-
+  const [verificationId, setVerificationId] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
   // console.log("memberForm: ", memberForm);
   const membersAPI = new MembersAPI();
-  useEffect(() => {
-    if (memberForm.donate_amount < 60) {
-      //console.log("here 60");
-      setCurrentPlanId(PLAN_60_ID);
-      // setMemberForm({ ...memberForm, donate_amount: 60 });
-    }
-  }, [memberForm]);
 
   useEffect(() => {
     if (memberData !== null) {
       setMemberForm({ ...memberData });
       populateFormValues(memberData);
+      setButtonText("जमा करें");
     }
   }, [memberData]);
+
   useEffect(() => {
     if (!otpSent) {
       setOtpTimer(0);
@@ -158,16 +123,7 @@ const NewMemberForm = ({ memberData = null }) => {
       return;
     }
     const intervalId = setInterval(() => {
-      console.log(
-        "OTPSent:",
-        otpSent,
-        "__OTP Timer:",
-        otpTimer,
-        " verifyButtonClicked:",
-        verifyButtonClicked
-      );
       if (otpTimer > 0) {
-        console.log("here verifyButtonClicked: ", verifyButtonClicked);
         if (!verifyButtonClicked) {
           submitBtnRef.current.disabled = true;
           console.log("set button text: ");
@@ -189,6 +145,24 @@ const NewMemberForm = ({ memberData = null }) => {
 
     return () => clearInterval(intervalId); // Clear interval on unmount
   }, [otpSent, otpTimer]);
+
+  const resetSubmitButton = () => {
+    //console.log("memberData:", memberData, "\n memberForm:", memberForm);
+    setSubmitButtonClicked(false);
+    window.buttonClicked = false;
+    setOtpTimer(0);
+    setOtpSent(false);
+    window.otpSent = false;
+    window.otpTimer = 0;
+    if (
+      memberData === null ||
+      (memberData && memberData.contact_no !== memberForm.contact_no)
+    ) {
+      setButtonText("पुष्टि कोड भेजें");
+    } else {
+      setButtonText("जमा करें");
+    }
+  };
   const clearForm = () => {
     thekedarRadioRef.current.checked = false;
     karigarRadioRef.current.checked = false;
@@ -197,15 +171,8 @@ const NewMemberForm = ({ memberData = null }) => {
     formCheckRef.current.checked = false;
     setFormChecked(false);
     setMemberForm({ ...initMemberForm });
-    setImageData([]);
     setProgress(0);
-    setSubmitButtonClicked(false);
-    window.buttonClicked = false;
-    setOtpTimer(0);
-    setOtpSent(false);
-    window.otpSent = false;
-    window.otpTimer = 0;
-    setButtonText("पुष्टि कोड भेजें");
+    resetSubmitButton();
     // set all reference value to empty
     nameRef.current.value = "";
     fathers_nameRef.current.value = "";
@@ -224,6 +191,22 @@ const NewMemberForm = ({ memberData = null }) => {
       postNameRef.current.value = "";
     }
   };
+  const handleLogout = async (isRedirect = true) => {
+    try {
+      await authAPI
+        .signoutUser()
+        .then(() => {
+          localStorage.clear();
+          console.log("Sign out success");
+          if (isRedirect) navigate("/login");
+        })
+        .catch((err) => {
+          console.log("Error in SignOut:", err);
+        });
+    } catch (ex) {
+      console.log("Error sign out:", ex);
+    }
+  };
   const populateFormValues = (data) => {
     // console.log("populate form with data:", data);
     thekedarRadioRef.current.checked = data.work_group === "Thekedar";
@@ -237,7 +220,6 @@ const NewMemberForm = ({ memberData = null }) => {
     setFormChecked(false);
     setSubmitButtonClicked(false);
     window.buttonClicked = false;
-    setImageData([]);
     setProgress(0);
     console.log("2. set unique code:", data.unique_code);
 
@@ -284,7 +266,19 @@ const NewMemberForm = ({ memberData = null }) => {
       setAlertMsg({ ...alertOptions });
       addressRef.current.focus();
       return false;
-    } else if (memberForm.rtocode.length > 0 && memberForm.rtocode.length < 3) {
+    } else if (
+      memberForm.rtocode.length === 0 &&
+      memberForm.pincode.length === 0
+    ) {
+      const alertOptions = {
+        type: "warning",
+        title: "R.T.O. कोड या पिनकोड में से कोई एक दर्ज करना अनिवार्य है",
+        show: true,
+      };
+      setAlertMsg({ ...alertOptions });
+      rtocodeRef.current.focus();
+      return false;
+    } else if (memberForm.rtocode.length > 0 && memberForm.rtocode.length < 4) {
       const alertOptions = {
         type: "warning",
         title: "R.T.O. कोड 4 अक्षरों का होना अनिवार्य है",
@@ -389,13 +383,6 @@ const NewMemberForm = ({ memberData = null }) => {
 
           // console.log("compressed img blob data:", imgBlob);
           // Set blob data to images state
-          setImageData((prevState) => {
-            if (prevState) {
-              return [...prevState, imgBlob];
-            } else {
-              return imgBlob;
-            }
-          });
 
           ///// Convert base64 to file /////////
           const fileName = imgBlob.alt;
@@ -644,7 +631,9 @@ const NewMemberForm = ({ memberData = null }) => {
           console.log("1. set unique code:", uniqueCode);
           setMemberUniqueCode(uniqueCode);
           setMemberForm({ ...memberForm, unique_code: uniqueCode });
-          // Enter form data in firebase
+          // Logout any user, if already logged in
+          if (auth.currentUser !== null && auth.currentUser !== undefined)
+            handleLogout(false);
           // पुष्टि कोड भेजें
           onSendOTP();
         })
@@ -656,7 +645,7 @@ const NewMemberForm = ({ memberData = null }) => {
           console.log("error while getMembers() API");
           const alertOptions = {
             type: "danger",
-            title: "Registration failed ERROR:getMemebersAPI",
+            title: "Registration failed ERROR:getMembersAPI",
             show: true,
           };
           setAlertMsg({ ...alertOptions });
@@ -678,13 +667,20 @@ const NewMemberForm = ({ memberData = null }) => {
     if (validate()) {
       window.buttonClicked = true;
       setSubmitButtonClicked(true);
-      setButtonText("पुष्टि कोड भेजा जा रहा है...");
-      onSendOTP();
+      console.log("memberData:", memberData, "\n memberForm:", memberForm);
+      if (memberData.contact_no !== memberForm.contact_no) {
+        setButtonText("पुष्टि कोड भेजा जा रहा है...");
+        onSendOTP();
+      } else {
+        setButtonText("अपडेट किया जा रहा है...");
+        formValuesIntoDB();
+      }
+      //
     } else {
       console.log("incorrect input");
       window.buttonClicked = false;
       setSubmitButtonClicked(false);
-      setButtonText("पुष्टि कोड भेजें");
+      setButtonText("अपडेट करें");
     }
   };
   const formValuesIntoDB = (user = null) => {
@@ -700,13 +696,14 @@ const NewMemberForm = ({ memberData = null }) => {
       membersAPI
         .setMember(dataToSendForUpdation, true)
         .then((res) => {
+          setLoading(false);
           window.buttonClicked = false;
           setSubmitButtonClicked(false);
           setVerifyButtonClicked(false);
           if (res.success) {
-            clearForm();
+            //clearForm();
             setFormChecked(false);
-
+            resetSubmitButton();
             // Success
             const alertOptions = {
               type: "success",
@@ -715,8 +712,24 @@ const NewMemberForm = ({ memberData = null }) => {
             };
             formCheckRef.current.checked = false;
             setAlertMsg({ ...alertOptions });
-            handleClick();
-            // alert("registered with id: " + uniqueCode);
+            const currentUser = auth.currentUser;
+            console.log(
+              "here-> current user:",
+              currentUser,
+              "member data:",
+              memberData
+            );
+            setButtonText("जमा करें");
+            console.log("fromMyProfile:", fromMyProfile);
+            if (fromMyProfile || currentUser.uid == memberData.uid) {
+              // reset local storage
+              localStorage.setItem("user", JSON.stringify(memberForm));
+              alert("पंजीकरण सफलतापूर्वक हो गया है|");
+              window.location.reload();
+            }
+            if (memberData.contact_no !== memberForm.contact_no) {
+              setOpenDialog(true);
+            }
           } else {
             // Failure
             const alertOptions = {
@@ -730,6 +743,7 @@ const NewMemberForm = ({ memberData = null }) => {
         .catch((err) => {
           // Error
           // Failure
+          setLoading(false);
           window.buttonClicked = false;
           setSubmitButtonClicked(false);
           setVerifyButtonClicked(false);
@@ -756,11 +770,11 @@ const NewMemberForm = ({ memberData = null }) => {
         .setMember(dataToSend)
         .then((res) => {
           console.log("res:", res);
+          setLoading(false);
           window.buttonClicked = false;
-          //setSubmitButtonClicked(false);
-          //setVerifyButtonClicked(false);
           if (res.success) {
-            //clearForm();
+            localStorage.setItem("user", JSON.stringify(dataToSend.payload));
+            clearForm();
             setOtpSent(false);
             setRegDone(true);
             // Success
@@ -774,9 +788,9 @@ const NewMemberForm = ({ memberData = null }) => {
               show: true,
             };
             setAlertMsg({ ...alertOptions });
-            // alert("registered with id: " + memberUniqueCode);
           } else {
             // Failure
+            setLoading(false);
             console.log("Error while setMember() API ResponseFailed");
             window.buttonClicked = false;
             setSubmitButtonClicked(false);
@@ -808,64 +822,89 @@ const NewMemberForm = ({ memberData = null }) => {
   async function handleSignIn() {
     try {
       setLoading(false);
-
+      const auth = getAuth();
       const WindowOtpSent = window.otpSent;
       const WindowOtpTimer = window.otpTimer;
       const appVerifier = window.recaptchaVerifier;
       const phoneNumber = "+91" + memberForm.contact_no;
       console.log(
-        "Handle Sign in with OTP with verifier:",
+        "\nauth:",
+        auth,
+        "\nphone number:",
+        phoneNumber,
+        "\nHandle Sign in with OTP with verifier:",
         appVerifier,
-        " WindowOtpSent:",
+        "\nWindowOtpSent:",
         WindowOtpSent,
-        " WindowOtpTimer:",
+        "\nWindowOtpTimer:",
         WindowOtpTimer
       );
       if (WindowOtpSent && WindowOtpTimer !== 0) {
         return;
       }
 
-      const auth = getAuth();
-      // const confirmationResult = await signInWithPhoneNumber(
-      //   auth,
-      //   phoneNumber,
-      //   appVerifier
-      // );
-      signInWithPhoneNumber(auth, phoneNumber, appVerifier)
-        .then((confirmationResult) => {
-          // SMS sent. Prompt user to type the code from the message, then sign the
-          // user in with confirmationResult.confirm(code).
-          window.confirmationResult = confirmationResult;
-          setOtpSent(true);
-          setOtpTimer(60);
-          window.otpSent = true;
-          window.otpTimer = 60;
-          // ...
-        })
-        .catch((error) => {
-          setLoading(false);
+      if (memberData !== null) {
+        const phoneProvider = new PhoneAuthProvider(auth);
+        phoneProvider
+          .verifyPhoneNumber(phoneNumber, appVerifier)
+          .then((verificationId) => {
+            console.log("verificationId:", verificationId);
+            setVerificationId(verificationId);
+            setOtpSent(true);
+            setOtpTimer(60);
+            window.otpSent = true;
+            window.otpTimer = 60;
+          })
+          .catch((error) => {
+            console.error("Error updating phone number", error);
+            setLoading(false);
 
-          // Error; SMS not sent
-          // window.recaptchaVerifier.render().then(function (widgetId) {
-          //   grecaptcha.reset(widgetId);
-          // });
-          const alertOptions = {
-            type: "danger",
-            title: "कुछ समय पश्चात प्रयास करें ",
-            show: true,
-          };
-          setAlertMsg({ ...alertOptions });
-          setOtpSent(false);
-          window.otpSent = false;
-          window.buttonClicked = false;
-          setSubmitButtonClicked(false);
-          setButtonText("पुष्टि कोड भेजें");
-          // ...
-        });
-      console.log("confirmationResult:", window.confirmationResult);
+            // Error; SMS not sent
 
-      // setOtpSent(true);
-      // setOtpTimer(60);
+            const alertOptions = {
+              type: "danger",
+              title: "कुछ समय पश्चात प्रयास करें ",
+              show: true,
+            };
+            setAlertMsg({ ...alertOptions });
+            setOtpSent(false);
+            window.otpSent = false;
+            window.buttonClicked = false;
+            setSubmitButtonClicked(false);
+            setButtonText("पुष्टि कोड भेजें");
+          });
+      } else {
+        signInWithPhoneNumber(auth, phoneNumber, appVerifier)
+          .then((confirmationResult) => {
+            console.log("confirmationResult:", confirmationResult);
+            // SMS sent. Prompt user to type the code from the message, then sign the
+            // user in with confirmationResult.confirm(code).
+            window.confirmationResult = confirmationResult;
+            setOtpSent(true);
+            setOtpTimer(60);
+            window.otpSent = true;
+            window.otpTimer = 60;
+            // ...
+          })
+          .catch((error) => {
+            setLoading(false);
+
+            // Error; SMS not sent
+
+            const alertOptions = {
+              type: "danger",
+              title: "कुछ समय पश्चात प्रयास करें ",
+              show: true,
+            };
+            setAlertMsg({ ...alertOptions });
+            setOtpSent(false);
+            window.otpSent = false;
+            window.buttonClicked = false;
+            setSubmitButtonClicked(false);
+            setButtonText("पुष्टि कोड भेजें");
+            // ...
+          });
+      }
     } catch (error) {
       setLoading(false);
 
@@ -885,16 +924,7 @@ const NewMemberForm = ({ memberData = null }) => {
   }
   const onSendOTP = async () => {
     try {
-      console.log("OTP भेजें");
       submitBtnRef.current.disabled = true;
-      // const appVerifier = new RecaptchaVerifier(auth, "sign-in-button", {
-      //   size: "invisible",
-      //   callback: (response) => {
-      //     console.log("response:", response);
-      //     handleSignIn(appVerifier);
-      //   },
-      // });
-      // appVerifier.verify();
       window.recaptchaVerifier = new RecaptchaVerifier(auth, "sign-in-button", {
         size: "invisible",
         callback: (response) => {
@@ -902,7 +932,7 @@ const NewMemberForm = ({ memberData = null }) => {
 
           submitBtnRef.current.disabled = true;
           // reCAPTCHA solved, allow signInWithPhoneNumber.
-          console.log("response:", response);
+          // console.log("response:", response);
           if (window.otpSent && window.otpTimer !== 0) {
             return;
           }
@@ -930,44 +960,100 @@ const NewMemberForm = ({ memberData = null }) => {
   };
   const verifyOTP = async () => {
     try {
+      const verificationCode = otpRef.current.value;
       setLoading(true);
 
       setVerifyButtonClicked(true);
-      console.log("पुष्टि करें");
+      // console.log("पुष्टि करें");
+      const auth = getAuth();
+      const user = auth.currentUser;
 
-      window.confirmationResult
-        .confirm(otpRef.current.value)
-        .then((result) => {
-          setLoading(false);
+      // Create a PhoneAuthCredential with the verification code
 
-          // User signed in successfully.
-          const user = result.user;
-          console.log("userCredential for new member:", user);
-          setRegUserId(user.uid);
-          setMemberForm({ ...memberForm, uid: user.uid });
-          setOtpSent(false);
-          window.otpSent = false;
-          window.buttonClicked = false;
-          setSubmitButtonClicked(false);
-          setOtpTimer(0);
-          // Submit Form Details
-          formValuesIntoDB(user);
-          // ...
-        })
-        .catch((error) => {
-          setLoading(false);
-
-          // User couldn't sign in (bad verification code?)
-          console.log("Invalid OTP:", error);
-          const alertOptions = {
-            type: "warning",
-            title: "पुष्टि कोड अमान्य है",
-            show: true,
-          };
-          setAlertMsg({ ...alertOptions });
-          setVerifyButtonClicked(false);
-          // ...
-        });
+      if (memberData !== null) {
+        const phoneCredential = PhoneAuthProvider.credential(
+          verificationId,
+          verificationCode
+        );
+        updatePhoneNumber(user, phoneCredential)
+          .then(() => {
+            console.log(
+              "Phone number updated successfully in Firebase Authentication"
+            );
+            //setLoading(false);
+            // User signed in successfully.
+            const user = auth.currentUser;
+            // console.log("userCredential for new member:", user);
+            setRegUserId(user.uid);
+            setMemberForm({ ...memberForm, uid: user.uid });
+            setOtpSent(false);
+            window.otpSent = false;
+            window.buttonClicked = false;
+            setSubmitButtonClicked(false);
+            setOtpTimer(0);
+            // Submit Form Details
+            formValuesIntoDB(user);
+            // ...
+          })
+          .catch((error) => {
+            setLoading(false);
+            // User couldn't sign in (bad verification code?)
+            console.log("Error:", error, "type:", typeof error);
+            let alertOptions = {};
+            if (
+              error.code === "auth/account-exists-with-different-credential"
+            ) {
+              alertOptions = {
+                type: "warning",
+                title: "इस फ़ोन नंबर पर खाता पहले से मौजूद है|",
+                show: true,
+              };
+              resetSubmitButton();
+            }
+            if (error.code === "auth/invalid-verification-code") {
+              alertOptions = {
+                type: "warning",
+                title: "पुष्टि कोड अमान्य है",
+                show: true,
+              };
+            }
+            setAlertMsg({ ...alertOptions });
+            setVerifyButtonClicked(false);
+            // ...
+          });
+      } else {
+        window.confirmationResult
+          .confirm(verificationCode)
+          .then((result) => {
+            setLoading(false);
+            // User signed in successfully.
+            const user = result.user;
+            console.log("userCredential for new member:", user);
+            setRegUserId(user.uid);
+            setMemberForm({ ...memberForm, uid: user.uid });
+            setOtpSent(false);
+            window.otpSent = false;
+            window.buttonClicked = false;
+            setSubmitButtonClicked(false);
+            setOtpTimer(0);
+            // Submit Form Details
+            formValuesIntoDB(user);
+            // ...
+          })
+          .catch((error) => {
+            setLoading(false);
+            // User couldn't sign in (bad verification code?)
+            console.log("Invalid OTP:", error);
+            const alertOptions = {
+              type: "warning",
+              title: "पुष्टि कोड अमान्य है",
+              show: true,
+            };
+            setAlertMsg({ ...alertOptions });
+            setVerifyButtonClicked(false);
+            // ...
+          });
+      }
 
       //Clear form values
     } catch (err) {
@@ -984,98 +1070,97 @@ const NewMemberForm = ({ memberData = null }) => {
       // Invalid OTP
     }
   };
-  const handleCreateOrder = (props) => {
-    console.log("handleCreateOrder:", props);
-    const { success, subscription } = props;
-    if (!success) {
-      console.log("Failed to create order:", props);
-      setLoading(false);
-      return;
-    }
-    setCurrentPayment(subscription);
-    console.log("subscriptionData:", subscription);
-  };
-  const handlePaymentUpdate = (props) => {
-    setLoading(true);
-    console.log(
-      "handlePaymentUpdate props:",
-      props,
-      "__currentPayment:",
-      currentPayment,
-      "__member:",
-      memberForm
-    );
-    //return;
-    const { success, response } = props;
-    if (success) {
-      // sendMail();
-      // Payment Completed
-      const payment_id = response.razorpay_payment_id;
-      const subscription_id = response.razorpay_subscription_id;
-      const dataForDonationReceivedTable = {
-        payload: {
-          uid: regUserId,
-          member_unique_code: memberUniqueCode,
-          name: memberForm.name,
-          contact_no: memberForm.contact_no,
-          method: "online",
-          status: "Completed",
-          payment_id: payment_id,
-          plan_id: currentPayment.plan_id,
-          subscription_id: subscription_id,
-          amount: currentPayment.amount,
-        },
-        id: payment_id,
-      };
-      const donationsReceivedAPI = new DonationsReceivedAPI();
-      donationsReceivedAPI
-        .setDonation(dataForDonationReceivedTable)
-        .then((resPayment) => {
-          console.log("RES resPayment:", resPayment);
+  // const handleCreateOrder = (props) => {
+  //   console.log("handleCreateOrder:", props);
+  //   const { success, subscription } = props;
+  //   if (!success) {
+  //     console.log("Failed to create order:", props);
+  //     setLoading(false);
+  //     return;
+  //   }
+  //   setCurrentPayment(subscription);
+  //   console.log("subscriptionData:", subscription);
+  // };
+  // const handlePaymentUpdate = (props) => {
+  //   setLoading(true);
+  //   console.log(
+  //     "handlePaymentUpdate props:",
+  //     props,
+  //     "__currentPayment:",
+  //     currentPayment,
+  //     "__member:",
+  //     memberForm
+  //   );
+  //   //return;
+  //   const { success, response } = props;
+  //   if (success) {
+  //     // sendMail();
+  //     // Payment Completed
+  //     const payment_id = response.razorpay_payment_id;
+  //     const subscription_id = response.razorpay_subscription_id;
+  //     const dataForDonationReceivedTable = {
+  //       payload: {
+  //         uid: regUserId,
+  //         member_unique_code: memberUniqueCode,
+  //         name: memberForm.name,
+  //         contact_no: memberForm.contact_no,
+  //         method: "online",
+  //         status: "Completed",
+  //         payment_id: payment_id,
+  //         plan_id: currentPayment.plan_id,
+  //         subscription_id: subscription_id,
+  //         amount: currentPayment.amount,
+  //       },
+  //       id: payment_id,
+  //     };
+  //     const donationsReceivedAPI = new DonationsReceivedAPI();
+  //     donationsReceivedAPI
+  //       .setDonation(dataForDonationReceivedTable)
+  //       .then((resPayment) => {
+  //         console.log("RES resPayment:", resPayment);
 
-          const dataForMembersTable = {
-            id: regUserId !== null ? regUserId : memberUniqueCode,
-            payload: {
-              payment: {
-                ...currentPayment,
-                plan_amount: memberForm.donate_amount,
-                payment_id: payment_id,
-                status: "Completed",
-              },
-            },
-          };
-          // console.log("dataForUsersTable:", dataForUsersTable);
-          membersAPI
-            .setMember(dataForMembersTable)
-            .then((res) => {
-              console.log("RES from user data update:", res);
-              if (res.success) {
-                //alert("Payment Successfull");
-                // navigate to order placed page
-                navigate("/thank-you");
-                setLoading(false);
-              } else {
-                setLoading(false);
-                setSubmitButtonClicked(false);
-                setVerifyButtonClicked(false);
-              }
-            })
-            .catch((err) => {
-              setLoading(false);
-              console.log("err:", err);
-            });
-        });
-    } else {
-      // Payment failed
-      console.log("Payment Failed");
-      setLoading(false);
-    }
-  };
+  //         const dataForMembersTable = {
+  //           id: regUserId !== null ? regUserId : memberUniqueCode,
+  //           payload: {
+  //             payment: {
+  //               ...currentPayment,
+  //               plan_amount: memberForm.donate_amount,
+  //               payment_id: payment_id,
+  //               status: "Completed",
+  //             },
+  //           },
+  //         };
+  //         // console.log("dataForUsersTable:", dataForUsersTable);
+  //         membersAPI
+  //           .setMember(dataForMembersTable)
+  //           .then((res) => {
+  //             console.log("RES from user data update:", res);
+  //             if (res.success) {
+  //               //alert("Payment Successfull");
+  //               // navigate to order placed page
+  //               navigate("/thank-you");
+  //               setLoading(false);
+  //             } else {
+  //               setLoading(false);
+  //               setSubmitButtonClicked(false);
+  //               setVerifyButtonClicked(false);
+  //             }
+  //           })
+  //           .catch((err) => {
+  //             setLoading(false);
+  //             console.log("err:", err);
+  //           });
+  //       });
+  //   } else {
+  //     // Payment failed
+  //     console.log("Payment Failed");
+  //     setLoading(false);
+  //   }
+  // };
   return (
     <>
       <form
         onSubmit={(e) => {
-          console.log("Submit Form:");
           e.preventDefault();
           if (memberData !== null) {
             updateForm();
@@ -1276,12 +1361,35 @@ const NewMemberForm = ({ memberData = null }) => {
               aria-describedby="name"
               maxLength={10}
               onChange={(e) => {
+                //console.log("memberData:", memberData, "\n e:", e.target.value);
+                if (
+                  memberData !== null &&
+                  memberData.contact_no !== e.target.value.toString()
+                ) {
+                  setButtonText("पुष्टि कोड भेजें");
+                } else {
+                  setButtonText("जमा करें");
+                  setSubmitButtonClicked(false);
+                  window.buttonClicked = false;
+                  setOtpTimer(0);
+                  setOtpSent(false);
+                  window.otpSent = false;
+                  window.otpTimer = 0;
+                  setFormChecked(false);
+                }
                 setMemberForm({
                   ...memberForm,
                   contact_no: e.target.value,
                 });
               }}
-              readOnly={submitButtonClicked}
+              readOnly={
+                submitButtonClicked || (memberData !== null && !fromMyProfile)
+              }
+              style={
+                memberData !== null && !fromMyProfile
+                  ? { backgroundColor: "gainsboro" }
+                  : {}
+              }
             />
           </div>
           <div className="col-sm-6 mb-2">
@@ -1354,6 +1462,15 @@ const NewMemberForm = ({ memberData = null }) => {
             style={{
               backgroundImage: `url("${memberForm.aadhaar_photo_front.url}")`,
             }}
+            onClick={() => {
+              //window.open(memberForm.aadhaar_photo_front.url, "_blank");
+              var link = document.createElement("a");
+              link.href = memberForm.aadhaar_photo_front.url;
+              link.download = "Download.jpg";
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
           ></div>
           {isUploadingBack && (
             <div className="col uploaded-image-box show align-content-center text-center">
@@ -1371,9 +1488,18 @@ const NewMemberForm = ({ memberData = null }) => {
             style={{
               backgroundImage: `url("${memberForm.aadhaar_photo_back.url}")`,
             }}
+            onClick={() => {
+              // window.open(memberForm.aadhaar_photo_back.url, "_blank");
+              var link = document.createElement("a");
+              link.href = memberForm.aadhaar_photo_back.url;
+              link.download = "Download.jpg";
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
           ></div>
         </div>
-        <div className="row mb-3">
+        <div className="row mb-3 mt-3">
           <div className="col-12 mb-2">
             <label htmlFor="latest_photo" className="form-label">
               अपनी नवीनतम फोटो
@@ -1404,6 +1530,15 @@ const NewMemberForm = ({ memberData = null }) => {
                 : ""
             }`}
             style={{ backgroundImage: `url("${memberForm.latest_photo.url}")` }}
+            onClick={() => {
+              // window.open(memberForm.latest_photo.url, "_blank");
+              var link = document.createElement("a");
+              link.href = memberForm.latest_photo.url;
+              link.download = "Download.jpg";
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            }}
           ></div>
         </div>
         <div className="row">
@@ -1508,7 +1643,7 @@ const NewMemberForm = ({ memberData = null }) => {
             </label>
           </div>
         </div>
-        <div className="row mb-3">
+        <div className="row mb-2">
           <div
             className={`col-12 mt-2 mb-2 input-container ${
               memberForm.work_group === "Others" ? "show" : ""
@@ -1653,18 +1788,23 @@ const NewMemberForm = ({ memberData = null }) => {
           }}
         ></button>
       </div>
-      {regDone && (
-        <StartMembership
-          memberDetails={memberForm}
-          setMemberDetails={setMemberForm}
-          setLoading={setLoading}
-        />
+      {regDone && memberData === null && (
+        <MySubscription fromRegistration={true} />
       )}
-      {/* <Slide direction="up" in={regDone} mountOnEnter unmountOnExit></Slide> */}
-      {/* in={regDone} */}
-      {/*  */}
-      {/* <Slide direction="up" in={true} mountOnEnter unmountOnExit></Slide> */}
+
+      {memberData !== null && !fromMyProfile && (
+        <MySubscription forMember={memberData} />
+      )}
+
       {loading && <Loader fullHeight={false} />}
+      <AlertDialogSlide
+        handleOnAgree={handleLogout}
+        isOpen={openDialog}
+        title="मोबाइल नंबर सफलतापूर्वक बदल दिया गया है "
+        description={"कृपया अपने नए नंबर से लॉगिन करें "}
+        agreeButtonText="पुनः लॉगिन करें"
+        onlyOkButton={true}
+      />
     </>
   );
 };

@@ -22,7 +22,7 @@ import Avatar from "@mui/material/Avatar";
 import AuthAPI from "../../../api/firebase/AuthAPI";
 import CustomButton from "../../common/Button/CustomButton";
 import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
-
+import PersonIcon from "@mui/icons-material/Person";
 const LeftResponsiveDrawer = (props) => {
   const isMobile = useMediaQuery("(max-width: 600px)");
   const { window } = props;
@@ -102,9 +102,6 @@ const LeftResponsiveDrawer = (props) => {
 
       <Divider sx={drawerStyles.divider} />
       <List>
-        {/* icon: <VolunteerActivismIcon />,
-    label: "All Donations",
-    route: "/admin/add-donation", */}
         <ListItemButton
           className={`${selectedTab === "मेरी सदस्यता" ? "bg-primary" : ""}`}
           sx={drawerStyles.listItems}
@@ -118,6 +115,21 @@ const LeftResponsiveDrawer = (props) => {
             <VolunteerActivismIcon />
           </ListItemIcon>
           <ListItemText sx={drawerStyles.text} primary="मेरी सदस्यता" />
+        </ListItemButton>
+
+        <ListItemButton
+          className={`${selectedTab === "मेरी जानकारी" ? "bg-primary" : ""}`}
+          sx={drawerStyles.listItems}
+          onClick={() => {
+            setSelectedTab("मेरी जानकारी");
+            navigate("/admin/my-profile");
+            handleDrawerToggle();
+          }}
+        >
+          <ListItemIcon sx={drawerStyles.icons}>
+            <PersonIcon />
+          </ListItemIcon>
+          <ListItemText sx={drawerStyles.text} primary="मेरी जानकारी" />
         </ListItemButton>
       </List>
       <Divider sx={drawerStyles.divider} />

@@ -2,3 +2,20 @@
 .MuiTablePagination-displayedRows {
   margin-bottom: 4px;
 }
+
+.method-cash {
+  background-color: orange;
+  color: aliceblue;
+}
+.method-online {
+  background-color: green;
+  color: aliceblue;
+}
+.method-cash:hover {
+  background-color: darkorange !important;
+  color: aliceblue;
+}
+.method-online:hover {
+  background-color: darkgreen !important;
+  color: aliceblue;
+}

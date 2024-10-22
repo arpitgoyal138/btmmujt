@@ -8,7 +8,9 @@ import NewMemberForm from "../../../components/app/forms/new-member";
 import LogoImage from "../../../assets/images/logo.png";
 import whatsappLogo from "../../../assets/images/whatsapp-logo.webp";
 import adhyakshPhoto from "../../../assets/images/adyaksh-photo-cropped.png";
-import qrCodeImg from "../../../assets/images/qr-code.png";
+import DonationQRCodeImg from "../../../assets/images/donation.png";
+import WebsiteQRCodeImg from "../../../assets/images/website.png";
+
 import phonePeLogo from "../../../assets/images/PhonePe-Logo-resized.png";
 import userProfileIcon from "../../../assets/images/user-profile-icon.png";
 const MemberDetail = () => {
@@ -462,8 +464,8 @@ const MemberDetail = () => {
                 <div className="row">
                   <div className="col qr-code text-center mb-1 mt-0">
                     <img
-                      src={qrCodeImg}
-                      alt="bank-qr-code"
+                      src={DonationQRCodeImg}
+                      alt="donation-qr-code"
                       className="m-0 logo"
                     />
                     <p className="mb-0 small" style={{ fontSize: "9pt" }}>
@@ -472,8 +474,8 @@ const MemberDetail = () => {
                   </div>
                   <div className="col qr-code text-center mb-1 mt-0">
                     <img
-                      src={qrCodeImg}
-                      alt="bank-qr-code"
+                      src={WebsiteQRCodeImg}
+                      alt="website-qr-code"
                       className="m-0 logo"
                     />
                     <p className="mb-0 small" style={{ fontSize: "9pt" }}>
@@ -599,8 +601,8 @@ const MemberDetail = () => {
                 <div className="col-detail text-center">
                   <div className="text-end">
                     <img
-                      src={qrCodeImg}
-                      alt="qr-code"
+                      src={WebsiteQRCodeImg}
+                      alt="website-qr-code"
                       className="m-0 border qr-photo"
                     />
                   </div>
@@ -727,7 +729,7 @@ const MemberDetail = () => {
           </div>
         </div>
       )}
-      <div className="container-fluid">
+      <div className="container">
         <IconButton sx={{ ml: "-2rem" }} onClick={() => navigate(-1)}>
           <ArrowBack sx={{ fontSize: 32 }} />
         </IconButton>

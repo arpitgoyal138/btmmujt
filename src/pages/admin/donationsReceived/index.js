@@ -30,6 +30,8 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 const AllDonationsReceived = () => {
   const navigate = useNavigate();
   const [donationsArr, setDonationsArr] = useState([]);
+  const [totalCash, setTotalCash] = useState(0);
+  const [totalOnline, setTotalOnline] = useState(0);
   const [membersArr, setMembersArr] = useState([]);
   const [rowId, setRowId] = useState(null);
   const [showDonation, setShowDonation] = useState(null);
@@ -59,6 +61,24 @@ const AllDonationsReceived = () => {
       if (!resData) {
         return;
       }
+
+      const sumOfCash = resData.data.reduce((total, donation) => {
+        if (donation.method === "cash") {
+          return total + donation.amount;
+        }
+        return total;
+      }, 0);
+
+      console.log("sumOfCash: ", sumOfCash);
+      setTotalCash(sumOfCash);
+      const sumOfOnline = resData.data.reduce((total, donation) => {
+        if (donation.method === "online") {
+          return total + donation.amount;
+        }
+        return total;
+      }, 0);
+      console.log("sumOfOnline: ", sumOfOnline);
+      setTotalOnline(sumOfOnline);
       setDonationsArr(resData.data);
       console.log("Done fetching all donations: ", resData.data);
     });
@@ -123,6 +143,7 @@ const AllDonationsReceived = () => {
   const columns = useMemo(
     () => [
       { field: "amount", headerName: "राशि (₹)", width: 120 },
+      { field: "method", headerName: "प्राप्ति का तरीका", width: 120 },
       { field: "name", headerName: "नाम", width: 120 },
       { field: "address", headerName: "पता", width: 200 },
       { field: "district", headerName: "जिला", width: 120 },
@@ -210,7 +231,7 @@ const AllDonationsReceived = () => {
   const showDonationDetail = (donationID) => {
     console.log("Donation ID: ", donationID);
     const donationDetail = donationsArr.find((donation) => {
-      return donation.id === donationID;
+      return donation.id === donationID || donation.uid === donationID;
     });
     console.log("Donation Detail: ", donationDetail);
     setShowDonation(donationDetail);
@@ -227,6 +248,28 @@ const AllDonationsReceived = () => {
           component="h4"
         >
           सभी प्राप्त हुए दान
+        </Typography>
+      </Box>
+      <Box component="div" sx={{ marginBottom: "1rem" }}>
+        <Typography
+          sx={{
+            marginRight: "1rem",
+            color: "darkorange",
+          }}
+          variant="h5"
+          component="span"
+        >
+          कैश: ₹{totalCash}
+        </Typography>
+        <Typography
+          sx={{
+            marginLeft: "1rem",
+            color: "darkgreen",
+          }}
+          variant="h5"
+          component="span"
+        >
+          ऑनलाइन: ₹{totalOnline}
         </Typography>
       </Box>
       <Grid2 container spacing={2}>
@@ -271,6 +314,7 @@ const AllDonationsReceived = () => {
             pageSizes={[10, 25, 50]}
             onCellEditCommit={(params) => setRowId(params.id)}
             onRowClickHandle={(params) => showDonationDetail(params.id)}
+            getRowClassName={(params) => `method-${params.row.method}`}
           />
         </Grid2>
       </Grid2>
@@ -293,6 +337,7 @@ const AllDonationsReceived = () => {
         isOpen={openDialog}
         title="Remove Donation"
         description={"Sure to delete donation ?"}
+        cancelButtonDanger={true}
       />
     </>
   );
