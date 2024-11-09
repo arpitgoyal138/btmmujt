@@ -50,6 +50,8 @@ const SignIn = () => {
                       uid: user.uid,
                     },
                   };
+
+                  delete dataForNewRecord.payload.createdAt;
                   // Create new record in members table with uid and fetched data
                   membersAPI.setMember(dataForNewRecord, true).then((res) => {
                     console.log("In Login ===> setMember RES:", res);

@@ -714,9 +714,13 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
   };
   const formValuesIntoDB = (user = null) => {
     if (memberData !== null) {
-      console.log("memberForm in formValuesIntoDB:", memberForm);
-      console.log("memberData in formValuesIntoDB:", memberData);
+      //console.log("memberForm in formValuesIntoDB:", memberForm);
+      //console.log("memberData in formValuesIntoDB:", memberData);
       // Update values from Admin Panel
+      delete memberForm.createdAt;
+      delete memberData.createdAt;
+      //console.log("memberForm after deletion in formValuesIntoDB:", memberForm);
+      //console.log("memberData after deletion in formValuesIntoDB:", memberData);
       const dataToSendForUpdation = {
         payload: { ...memberForm },
         id:
@@ -724,7 +728,7 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
             ? memberData.uid
             : memberData.unique_code,
       };
-      console.log("dataToSendForUpdation:", dataToSendForUpdation);
+      //console.log("dataToSendForUpdation:", dataToSendForUpdation);
       membersAPI
         .setMember(dataToSendForUpdation, true)
         .then((res) => {
@@ -1415,6 +1419,7 @@ const NewMemberForm = ({ memberData = null, fromMyProfile = false }) => {
                   window.otpSent = false;
                   window.otpTimer = 0;
                   setFormChecked(false);
+                  formCheckRef.current.checked = false;
                 }
                 setMemberForm({
                   ...memberForm,

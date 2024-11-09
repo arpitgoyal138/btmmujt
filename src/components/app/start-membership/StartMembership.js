@@ -95,7 +95,7 @@ const StartMembership = (props) => {
           };
           // console.log("dataForUsersTable:", dataForUsersTable);
           membersAPI
-            .setMember(dataForMembersTable)
+            .setMember(dataForMembersTable, true)
             .then((res) => {
               console.log("RES from user data update:", res);
               if (res.success) {
