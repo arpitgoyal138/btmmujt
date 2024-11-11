@@ -80,7 +80,8 @@ const AddDonationReceived = ({
   const [openErrorDialog, setOpenErrorDialog] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   let initDonationData = {
-    member_id: "",
+    member_uid: "",
+    member_unique_code: "",
     name: "",
     address: "",
     district: "",
@@ -183,7 +184,8 @@ const AddDonationReceived = ({
     console.log("Selected item:", item);
     setDonationData({
       ...donationData,
-      member_id: item.unique_code,
+      member_uid: item.id,
+      member_unique_code: item.unique_code,
       name: item.name,
       address: item.address,
       district: item.district,
@@ -229,7 +231,7 @@ const AddDonationReceived = ({
             keys: ["unique_code", "name", "contact_no"],
             threshold: 0.0,
           }}
-          inputSearchString={donationData.member_id}
+          inputSearchString={donationData.member_unique_code}
         />
       </Grid2>
       <Grid2 xs={6}>

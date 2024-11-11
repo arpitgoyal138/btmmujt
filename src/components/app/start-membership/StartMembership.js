@@ -59,13 +59,13 @@ const StartMembership = (props) => {
       const subscription_id = response.razorpay_subscription_id;
       const dataForDonationReceivedTable = {
         payload: {
-          uid: memberDetails.uid,
+          member_id: memberDetails.uid,
           member_unique_code: memberDetails.unique_code,
           name: memberDetails.name,
           contact_no: memberDetails.contact_no,
           method: "online",
           status: "Completed",
-          payment_id: payment_id,
+          uid: payment_id,
           plan_id: currentPayment.plan_id,
           subscription_id: subscription_id,
           amount: currentPayment.amount + 100,

@@ -28,10 +28,10 @@ const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 const AllDonationsReceived = () => {
-  const navigate = useNavigate();
   const [donationsArr, setDonationsArr] = useState([]);
   const [totalCash, setTotalCash] = useState(0);
   const [totalOnline, setTotalOnline] = useState(0);
+  const [totalAutoPaidAmount, setTotalAutoPaidAmount] = useState(0);
   const [membersArr, setMembersArr] = useState([]);
   const [rowId, setRowId] = useState(null);
   const [showDonation, setShowDonation] = useState(null);
@@ -39,25 +39,34 @@ const AllDonationsReceived = () => {
   const [deleteDonationId, setDeleteDonationId] = useState("");
   const donationsReceivedAPI = new DonationsReceivedAPI();
   const membersAPI = new MembersAPI();
-  console.log("donationsArr: ", donationsArr);
+  // console.log("donationsArr: ", donationsArr);
   // Fetch all donations
   useEffect(() => {
     getAllDonations();
+    fetchAutoPaidAmount();
     const allMembers = membersAPI.getMembers();
     allMembers.then((resData) => {
-      console.log("received allMembers:", resData);
+      // console.log("received allMembers:", resData);
       if (!resData) {
         return;
       }
       setMembersArr(resData.data);
-      console.log("Done fetching all members: ", resData.data);
+      // console.log("Done fetching all members: ", resData.data);
     });
   }, []);
 
+  const fetchAutoPaidAmount = () => {
+    donationsReceivedAPI.getDonationAutoPaidAmount().then((resData) => {
+      // console.log("res totalAutoPaidAmount:", resData.data.amount);
+      if (resData.success) {
+        setTotalAutoPaidAmount(resData.data.amount);
+      }
+    });
+  };
   const getAllDonations = () => {
     const allDonations = donationsReceivedAPI.getDonations();
     allDonations.then((resData) => {
-      console.log("received:", resData);
+      // console.log("received donations:", resData);
       if (!resData) {
         return;
       }
@@ -69,7 +78,7 @@ const AllDonationsReceived = () => {
         return total;
       }, 0);
 
-      console.log("sumOfCash: ", sumOfCash);
+      // console.log("sumOfCash: ", sumOfCash);
       setTotalCash(sumOfCash);
       const sumOfOnline = resData.data.reduce((total, donation) => {
         if (donation.method === "online") {
@@ -77,10 +86,11 @@ const AllDonationsReceived = () => {
         }
         return total;
       }, 0);
-      console.log("sumOfOnline: ", sumOfOnline);
+      // console.log("sumOfOnline: ", sumOfOnline);
       setTotalOnline(sumOfOnline);
+
       setDonationsArr(resData.data);
-      console.log("Done fetching all donations: ", resData.data);
+      // console.log("Done fetching all donations: ", resData.data);
     });
   };
   // For Add Donation Modal
@@ -89,7 +99,7 @@ const AllDonationsReceived = () => {
     setOpenDonationModal(true);
   };
   const hideAddDonationModal = () => {
-    console.log("close modal");
+    // console.log("close modal");
     setOpenDonationModal(false);
   };
 
@@ -198,7 +208,7 @@ const AllDonationsReceived = () => {
 
   /// Add Category to firebase
   const handleSetDonation = (action, resData) => {
-    console.log("action:", action, ", handleSetDonation:", resData);
+    // console.log("action:", action, ", handleSetDonation:", resData);
     let donationId = "D" + Date.now().toString().substring(0, 10);
     if (action !== "ADD") {
       donationId = resData.id;
@@ -229,11 +239,11 @@ const AllDonationsReceived = () => {
     });
   };
   const showDonationDetail = (donationID) => {
-    console.log("Donation ID: ", donationID);
+    //console.log("Donation ID: ", donationID);
     const donationDetail = donationsArr.find((donation) => {
       return donation.id === donationID || donation.uid === donationID;
     });
-    console.log("Donation Detail: ", donationDetail);
+    //console.log("Donation Detail: ", donationDetail);
     setShowDonation(donationDetail);
     showAddDonationModal();
   };
@@ -247,7 +257,7 @@ const AllDonationsReceived = () => {
           variant="h4"
           component="h4"
         >
-          सभी प्राप्त हुए दान
+          सभी प्राप्त हुए दान (₹{totalCash + totalOnline + totalAutoPaidAmount})
         </Typography>
       </Box>
       <Box component="div" sx={{ marginBottom: "1rem" }}>
@@ -270,6 +280,16 @@ const AllDonationsReceived = () => {
           component="span"
         >
           ऑनलाइन: ₹{totalOnline}
+        </Typography>
+        <Typography
+          sx={{
+            marginLeft: "1rem",
+            color: "darkblue",
+          }}
+          variant="h5"
+          component="span"
+        >
+          स्वतः भुगतान: ₹{totalAutoPaidAmount}
         </Typography>
       </Box>
       <Grid2 container spacing={2}>

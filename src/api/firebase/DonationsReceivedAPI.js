@@ -24,11 +24,11 @@ export default class DonationsReceivedAPI {
       " to id:",
       data.id
     );
-    const payloadData = updateTime ? { createdAt: serverTimestamp() } : {};
+    const timestampData = updateTime ? { createdAt: serverTimestamp() } : {};
     try {
       await setDoc(
         doc(db, collection_name, data.id),
-        { ...data.payload, ...payloadData },
+        { ...data.payload, ...timestampData, modifiedAt: serverTimestamp() },
         {
           merge: true,
         }
@@ -96,7 +96,25 @@ export default class DonationsReceivedAPI {
       return { success: false, message: ex };
     }
   }
-
+  // Fetch Auto paid amount donated
+  async getDonationAutoPaidAmount() {
+    try {
+      console.log("API CALL =========> get DonationAutoPaidAmount");
+      const docRef = doc(db, collection_name, "auto_payment_amount");
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        console.log("donation data:", docSnap.data());
+        return { success: true, data: docSnap.data() };
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+        return { success: false, message: "No Donation Found" };
+      }
+    } catch (ex) {
+      console.log(ex);
+      return { success: false, message: ex };
+    }
+  }
   async getDonationDetailByMemberUniqueCode(unique_code) {
     try {
       console.log(

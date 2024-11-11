@@ -4,18 +4,20 @@
 }
 
 .method-cash {
-  background-color: orange;
-  color: aliceblue;
+  /* background-color: orange; */
+  /* color: aliceblue; */
+  color: orange !important;
 }
 .method-online {
-  background-color: green;
-  color: aliceblue;
+  /* background-color: green !important; */
+  /* color: aliceblue !important; */
+  color: green !important;
 }
 .method-cash:hover {
-  background-color: darkorange !important;
-  color: aliceblue;
+  /* background-color: darkorange !important; */
+  /* color: aliceblue; */
 }
 .method-online:hover {
-  background-color: darkgreen !important;
-  color: aliceblue;
+  /* background-color: darkgreen !important; */
+  /* color: aliceblue !important; */
 }
