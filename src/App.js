@@ -14,6 +14,8 @@ import ContactUsPage from "./pages/app/contactUs";
 import PageNotFound from "./pages/errors/PageNotFound";
 import TermsAndConditions from "./pages/app/termsAndConditions";
 import PrivacyPolicy from "./pages/app/privacy";
+import RefundAndCancellation from "./pages/app/refundAndCancellation";
+
 import AboutPage from "./pages/app/about";
 import PrivateRoute from "./components/private-route/PrivateRoute";
 import NetworkStatus from "./components/network-status/NetworkStatus";
@@ -82,6 +84,10 @@ export default function App() {
             element={<TermsAndConditions />}
           />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route
+            path="/refund-and-cancellations"
+            element={<RefundAndCancellation />}
+          />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/thank-you" element={<ThankYouForDonation />} />
         </Route>

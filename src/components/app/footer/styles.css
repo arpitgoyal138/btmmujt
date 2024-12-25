@@ -1,20 +1,29 @@
 .social-icon {
-    transition: 0.2s;
-    color: gray !important;
+  transition: 0.2s;
+  color: gray !important;
 }
 
 .whatsapp:hover {
-    color: green !important;
+  color: green !important;
 }
 
 .facebook:hover {
-    color: blue !important;
+  color: blue !important;
 }
 
 .youtube:hover {
-    color: red !important;
+  color: red !important;
 }
 
 .instagram:hover {
-    color: purple !important;
+  color: purple !important;
+}
+.footer-link {
+  text-decoration: none;
+  color: gray;
+  transition: 0.3s;
+}
+
+.footer-link:hover {
+  color: darkgreen;
 }

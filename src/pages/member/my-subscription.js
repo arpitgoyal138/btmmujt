@@ -219,10 +219,89 @@ const MySubscription = ({ forMember = null, fromRegistration = false }) => {
       {!startSubscription && subscriptionDetail && (
         <Grid container spacing={2} justifyContent="center">
           <Grid item xs={12}>
+            {subscriptionDetail.status === "active" && (
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                  width: "100%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  color="success"
+                  size="small"
+                  onClick={(e) => {
+                    e.preventDefault();
+                  }}
+                >
+                  स्वतः भुगतान चालू है
+                </Button>
+                <Button
+                  variant="contained"
+                  color="error"
+                  size="small"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setOpenDialog(true);
+                  }}
+                >
+                  स्वतः भुगतान रोकें
+                </Button>
+              </Stack>
+            )}
+
+            {subscriptionDetail.status === "paused" && (
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                  width: "100%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Button
+                  variant="outlined"
+                  color="warning"
+                  size="small"
+                  onClick={(e) => {
+                    e.preventDefault();
+                  }}
+                >
+                  स्वतः भुगतान रुका हुआ है
+                </Button>
+                <Button
+                  variant="contained"
+                  color="success"
+                  size="small"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleResumeClick();
+                  }}
+                >
+                  फिर शुरू करें
+                </Button>
+              </Stack>
+            )}
+            {subscriptionDetail.status === "cancelled" && (
+              <span className="p-1 rounded-1 small text-bg-danger text-light ps-2 pe-2 fw-bold">
+                रद्द कर दिया गया
+              </span>
+            )}
+            {subscriptionDetail.status === "halted" && (
+              <span className="p-1 rounded-1 small text-bg-danger text-light ps-2 pe-2 fw-bold">
+                halted
+              </span>
+            )}
+          </Grid>
+          <Grid item xs={12} sm={10} md={8} lg={6}>
             <TableContainer component={Paper}>
               <Table aria-label="simple table">
                 <TableBody>
-                  <TableRow
+                  {/* <TableRow
                     sx={{
                       "&:last-child td, &:last-child th": { border: 0 },
                     }}
@@ -231,13 +310,10 @@ const MySubscription = ({ forMember = null, fromRegistration = false }) => {
                       योजना
                     </TableCell>
                     <TableCell align="right">
-                      मासिक राशि - {user.payment.plan_amount} <br></br>
-                      <span className="text-secondary">
-                        स्वतः भुगतान प्रति 1 माह
-                      </span>
+                      मासिक राशि - {user.payment.plan_amount}
                     </TableCell>
-                  </TableRow>
-                  <TableRow
+                  </TableRow> */}
+                  {/* <TableRow
                     sx={{
                       "&:last-child td, &:last-child th": { border: 0 },
                     }}
@@ -254,7 +330,7 @@ const MySubscription = ({ forMember = null, fromRegistration = false }) => {
                         {subscriptionDetail.short_url}
                       </a>
                     </TableCell>
-                  </TableRow>
+                  </TableRow> */}
                   <TableRow
                     sx={{
                       "&:last-child td, &:last-child th": { border: 0 },
@@ -267,75 +343,7 @@ const MySubscription = ({ forMember = null, fromRegistration = false }) => {
                       ₹{user.payment.plan_amount}
                     </TableCell>
                   </TableRow>
-                  <TableRow
-                    sx={{
-                      "&:last-child td, &:last-child th": { border: 0 },
-                    }}
-                  >
-                    <TableCell component="th" scope="row">
-                      भुगतान स्थति
-                    </TableCell>
-                    <TableCell align="right">
-                      {subscriptionDetail.status === "active" && (
-                        <Stack
-                          direction="row"
-                          spacing={1}
-                          sx={{
-                            width: "100%",
-                            justifyContent: "flex-end",
-                            alignItems: "center",
-                          }}
-                        >
-                          <span className="p-1 rounded-1 small text-bg-success text-light ps-2 pe-2 fw-bold">
-                            स्वतः भुगतान चालू है
-                          </span>
-                          <Button
-                            variant="outlined"
-                            // color="warning"
-                            size="small"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              setOpenDialog(true);
-                            }}
-                          >
-                            स्वतः भुगतान रोकें
-                          </Button>
-                        </Stack>
-                      )}
 
-                      {subscriptionDetail.status === "paused" && (
-                        <Stack
-                          direction="row"
-                          spacing={1}
-                          sx={{
-                            width: "100%",
-                            justifyContent: "flex-end",
-                            alignItems: "center",
-                          }}
-                        >
-                          <span className="p-1 rounded-1 small text-bg-warning text-light ps-2 pe-2 fw-bold">
-                            स्वतः भुगतान रुका हुआ
-                          </span>
-                          <Button
-                            variant="outlined"
-                            // color="sucecss"
-                            size="small"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleResumeClick();
-                            }}
-                          >
-                            फिर शुरू करें
-                          </Button>
-                        </Stack>
-                      )}
-                      {subscriptionDetail.status === "cancelled" && (
-                        <span className="p-1 rounded-1 small text-bg-danger text-light ps-2 pe-2 fw-bold">
-                          रद्द कर दिया गया
-                        </span>
-                      )}
-                    </TableCell>
-                  </TableRow>
                   <TableRow
                     sx={{
                       "&:last-child td, &:last-child th": { border: 0 },
@@ -389,7 +397,7 @@ const MySubscription = ({ forMember = null, fromRegistration = false }) => {
           </Grid>
           <Grid item xs={12} lg={10} xl={8}>
             <StartMembership
-              memberDetails={currentUser}
+              memberDetails={{ ...currentUser, addonAmount: 100 }}
               setMemberDetails={setCurrentUser}
               setLoading={setLoading}
               fromAdmin={forMember !== null}

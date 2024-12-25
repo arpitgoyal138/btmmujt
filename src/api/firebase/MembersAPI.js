@@ -9,6 +9,8 @@ import {
   orderBy,
   deleteDoc,
   where,
+  updateDoc,
+  arrayUnion,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 const collection_name = "members";
@@ -22,18 +24,57 @@ export default class MembersAPI {
       " to id:",
       data.id
     );
+    const docRef = doc(db, collection_name, data.id);
     const payloadData = updateTime
       ? { modifiedAt: serverTimestamp() }
       : { createdAt: serverTimestamp() };
     try {
-      await setDoc(
-        doc(db, collection_name, data.id),
-        { ...data.payload, ...payloadData },
-        {
-          merge: true,
+      if (Object.hasOwn(data.payload, "subscription")) {
+        await setDoc(
+          docRef,
+          { ...data.payload.subscription, ...payloadData },
+          {
+            merge: true,
+          }
+        );
+        if (Object.hasOwn(data.payload, "payment")) {
+          await updateDoc(docRef, {
+            payments: arrayUnion({ ...data.payload.payment }),
+          });
         }
-      );
+      } else {
+        await setDoc(
+          docRef,
+          { ...data.payload, ...payloadData },
+          {
+            merge: true,
+          }
+        );
+      }
+
       return { success: true, unique_code: data.payload.unique_code };
+    } catch (ex) {
+      console.log(ex);
+      return { success: false, message: ex };
+    }
+  }
+
+  // Add Payment
+  async setPayment(data) {
+    console.log(
+      "API CALL =========> set Member--add form data:",
+      data.payload,
+      " to id:",
+      data.id
+    );
+
+    try {
+      const docRef = doc(db, collection_name, data.id);
+      await updateDoc(docRef, {
+        payments: arrayUnion({ ...data.payload }),
+      });
+
+      return { success: true };
     } catch (ex) {
       console.log(ex);
       return { success: false, message: ex };

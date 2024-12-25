@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useMemo, useEffect } from "react";
-import { Avatar, Box, Snackbar, Typography, Grid } from "@mui/material";
+import { Avatar, Box, Snackbar, Typography, Grid, Button } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import CustomDataGrid from "../../../components/common/DataGrid/CustomDataGrid";
 import MembersAPI from "../../../api/firebase/MembersAPI";
@@ -17,6 +17,9 @@ const AllMembers = () => {
   const navigate = useNavigate();
   const [membersArr, setMembersArr] = useState([]);
   const [rowId, setRowId] = useState(null);
+  const [allSubscriptions, setAllSubscriptions] = useState([]);
+  const [activeSubscriptions, setActiveSubscriptions] = useState([]);
+  const [haltedSubscriptions, setHaltedSubscriptions] = useState([]);
   const membersAPI = new MembersAPI();
 
   // Fetch all members
@@ -30,6 +33,7 @@ const AllMembers = () => {
       setMembersArr(resData.data);
       console.log("Done fetching all members: ", membersArr);
     });
+    fetchAllSubscriptions();
   }, []);
 
   // For snackbar
@@ -44,7 +48,41 @@ const AllMembers = () => {
     }
     setSnackbarState(false);
   };
-
+  const fetchAllSubscriptions = async () => {
+    console.log("fetching subscriptions");
+    //setLoading(true);
+    const url =
+      "https://razorpayapi-ryltdekpdq-uc.a.run.app/fetchAllSubscriptions";
+    const options = {
+      plan_id: "",
+      from: "",
+      to: "",
+      count: 10,
+      skip: 0,
+      method: process.env.REACT_APP_PAYMENT_METHOD, //LIVE or TEST
+    };
+    try {
+      await fetch(url, {
+        method: "POST",
+        body: JSON.stringify(options),
+        headers: {
+          "content-type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(
+            "Resp: fetchAllSubscriptions -> data from razorpay API:",
+            data
+          );
+          setAllSubscriptions({ ...data });
+          // setLoading(false);
+        });
+    } catch (error) {
+      console.log("Server Error:", error);
+      // setLoading(false);
+    }
+  };
   //// Columns for Members DataGrid
   const columns = useMemo(
     () => [
@@ -179,6 +217,30 @@ const AllMembers = () => {
           All Members
         </Typography>
       </Box>
+      <Box component="div" sx={{ marginBottom: "1rem" }}>
+        <Grid2
+          container
+          spacing={2}
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Grid2>
+            <Button variant="outlined" color="warning" onClick={() => {}}>
+              Created
+            </Button>
+          </Grid2>
+          <Grid2>
+            <Button variant="outlined" color="success" onClick={() => {}}>
+              Active
+            </Button>
+          </Grid2>
+          <Grid2>
+            <Button variant="outlined" color="error" onClick={() => {}}>
+              Halted
+            </Button>
+          </Grid2>
+        </Grid2>
+      </Box>
       <Grid2 container spacing={2}>
         <Grid2 xs={12} mt={2} sx={{ maxWidth: "95.5vw" }}>
           <CustomDataGrid
@@ -198,7 +260,6 @@ const AllMembers = () => {
             }}
           />
         </Grid2>
-
         <Snackbar
           open={snackbarState}
           autoHideDuration={3000}

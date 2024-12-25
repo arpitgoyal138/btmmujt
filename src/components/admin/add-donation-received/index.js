@@ -14,8 +14,8 @@ import {
   TextField,
 } from "@mui/material";
 import React, { useState, useEffect, useRef } from "react";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+// import { CKEditor } from "@ckeditor/ckeditor5-react";
+// import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import Grid2 from "@mui/material/Unstable_Grid2/";
 import Paper from "@mui/material/Paper";
 import Tooltip from "@mui/material/Tooltip";
@@ -107,7 +107,7 @@ const AddDonationReceived = ({
   // initProImages = productContext.state.images;
   //}
   const [imageData, setImageData] = useState(initProImages);
-  console.log("imageData:", imageData);
+  console.log("donationData:", donationData);
   const [progress, setProgress] = useState(0);
   const titleInputLimit = {
     minLength: 5,
@@ -184,7 +184,7 @@ const AddDonationReceived = ({
     console.log("Selected item:", item);
     setDonationData({
       ...donationData,
-      member_uid: item.id,
+      member_uid: item.uid || item.id,
       member_unique_code: item.unique_code,
       name: item.name,
       address: item.address,
@@ -322,6 +322,7 @@ const AddDonationReceived = ({
           variant="standard"
           value={donationData.amount}
           onChange={(e) => handleFormData({ amount: Number(e.target.value) })}
+          disabled={action !== "ADD"}
         />
       </Grid2>
       <Grid2 xs={12}>
@@ -359,7 +360,7 @@ const AddDonationReceived = ({
           ? "Uploading image"
           : action === "ADD"
           ? "दान राशि जोड़ें"
-          : "दान राशि अप्डेट करें"}
+          : "अप्डेट करें"}
       </Button>
 
       <Button

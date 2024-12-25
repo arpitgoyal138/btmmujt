@@ -162,7 +162,9 @@ const PrivacyPolicy = () => {
             Saharanpur, Uttar Pradesh - 247001
             <br />
             Email:{" "}
-            <a href="mailto:info@btmmujt.web.app">info@btmmujt.web.app</a>
+            <a href="mailto:nadeem0786rana@gmail.com">
+              nadeem0786rana@gmail.com
+            </a>
             <br />
             Phone: <a href="tel:">+91 9720060562</a>
           </address>

@@ -1,11 +1,12 @@
 import React from "react";
 import "./styles.css";
+import { Link } from "react-router-dom";
 const AppFooter = () => {
   return (
     <div className="container p-2">
-      <footer className="d-flex flex-wrap justify-content-between align-items-center py-3 my-2 border-top">
-        <div className="row d-flex align-items-center mb-4">
-          <div className="col-12">
+      <footer className="d-lg-flex justify-content-between align-items-center py-3 my-2 border-top">
+        <div className="row d-flex align-items-center">
+          <div className="col-12 col-sm-8">
             <a
               href="/"
               className=" mb-md-0 text-body-secondary text-decoration-none"
@@ -20,8 +21,22 @@ const AppFooter = () => {
               +91-9720060562, +91-9720060246
             </span>
           </div>
+          <div className="col-12 col-sm-4 d-grid">
+            <p className="fs-5 mb-1 mt-4 mt-sm-0 text-body-secondary">
+              Policies
+            </p>
+            <Link className="footer-link" to="/privacy-policy">
+              Privacy Policy
+            </Link>
+            <Link className="footer-link" to="/terms-and-conditions">
+              Terms and Conditions
+            </Link>
+            <Link className="footer-link" to="/refund-and-cancellations">
+              Refund and Cancellations
+            </Link>
+          </div>
         </div>
-        <ul className="nav row justify-content-center list-unstyled d-flex">
+        <ul className="d-flex justify-content-center list-unstyled mt-4 mt-lg-0 nav row">
           <span className="col-12 mb-2 mb-xs-3 text-body-secondary text-center">
             <small>
               अधिक जानकारी के लिए ट्रस्ट के सोशल मीडिया पेज फॉलो करें

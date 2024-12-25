@@ -39,7 +39,11 @@ export default function AlertDialogSlide({
       </DialogContent>
       <DialogActions>
         {!onlyOkButton && (
-          <CustomButton onClick={handleOnClose} variant="outlined">
+          <CustomButton
+            onClick={handleOnClose}
+            variant="outlined"
+            color={cancelButtonDanger ? "success" : "primary"}
+          >
             {cancelButtonText}
           </CustomButton>
         )}

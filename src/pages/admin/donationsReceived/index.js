@@ -22,6 +22,7 @@ import DataGridActions from "../../../components/admin/datagrid-actions/DataGrid
 import AlertDialogSlide from "../../../components/common/Dialog/AlertDialogSlide";
 import Grid2 from "@mui/material/Unstable_Grid2/Grid2";
 import AddDonationReceived from "../../../components/admin/add-donation-received";
+import { act } from "react";
 // import DataGridActions from "../../../components/admin/datagrid-actions/DataGridActions";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -152,13 +153,6 @@ const AllDonationsReceived = () => {
   //// Columns for Members DataGrid
   const columns = useMemo(
     () => [
-      { field: "amount", headerName: "राशि (₹)", width: 120 },
-      { field: "method", headerName: "प्राप्ति का तरीका", width: 120 },
-      { field: "name", headerName: "नाम", width: 120 },
-      { field: "address", headerName: "पता", width: 200 },
-      { field: "district", headerName: "जिला", width: 120 },
-      { field: "state", headerName: "राज्य", width: 80 },
-      { field: "contact_no", headerName: "मोबाइल नo", width: 120 },
       {
         field: "createdAt",
         headerName: "दिनांक",
@@ -186,6 +180,14 @@ const AllDonationsReceived = () => {
         },
       },
 
+      { field: "amount", headerName: "राशि (₹)", width: 120 },
+      { field: "method", headerName: "प्राप्ति का तरीका", width: 120 },
+      { field: "name", headerName: "नाम", width: 120 },
+      { field: "address", headerName: "पता", width: 200 },
+      { field: "district", headerName: "जिला", width: 120 },
+      { field: "state", headerName: "राज्य", width: 80 },
+      { field: "contact_no", headerName: "मोबाइल नo", width: 120 },
+
       {
         field: "actions",
         headerName: "Action",
@@ -208,17 +210,43 @@ const AllDonationsReceived = () => {
 
   /// Add Category to firebase
   const handleSetDonation = (action, resData) => {
-    // console.log("action:", action, ", handleSetDonation:", resData);
+    console.log("action:", action, ", handleSetDonation:", resData);
     let donationId = "D" + Date.now().toString().substring(0, 10);
+    let updateTime = true;
     if (action !== "ADD") {
       donationId = resData.id;
+      updateTime = false;
     }
     const dataToSend = {
       payload: { ...resData, uid: donationId },
       id: donationId,
     };
-    donationsReceivedAPI.setDonation(dataToSend).then((res) => {
+    donationsReceivedAPI.setDonation(dataToSend, updateTime).then((res) => {
       if (res.success) {
+        if (action == "ADD") {
+          const dataForMembersTable = {
+            payload: {
+              amount: resData.amount,
+              method: resData.method,
+              createdAt: action == "ADD" ? new Date() : resData.createdAt,
+              id: donationId,
+            },
+            id: resData.member_uid,
+          };
+          console.log("dataForMembersTable: ", dataForMembersTable);
+          // Add payment into Members table
+          membersAPI.setPayment(dataForMembersTable).then((res) => {
+            if (res.success) {
+              console.log("RES dataForMembersTable: ", res);
+              membersArr.filter((member) => {
+                if (member.uid === resData.member_uid) {
+                  member.payment.push(dataForMembersTable.payload);
+                }
+              });
+            }
+          });
+        }
+
         setMessage({
           text: `Donation ${
             action == "ADD" ? "Added" : "Updated"

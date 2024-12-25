@@ -1,8 +1,10 @@
 import React, { useRef, useState } from "react";
 import {
   Box,
+  Checkbox,
   Container,
   FormControl,
+  FormControlLabel,
   Grid,
   Input,
   InputAdornment,
@@ -15,6 +17,8 @@ import CheckoutButton from "../../common/CheckoutButton/CheckoutButton";
 import DonationsReceivedAPI from "../../../api/firebase/DonationsReceivedAPI";
 import MembersAPI from "../../../api/firebase/MembersAPI";
 import { useNavigate } from "react-router-dom";
+import { set } from "firebase/database";
+import { addSubdomain } from "firebase-tools/lib/utils";
 
 const StartMembership = (props) => {
   //   console.log("props:", props);
@@ -63,12 +67,13 @@ const StartMembership = (props) => {
           member_unique_code: memberDetails.unique_code,
           name: memberDetails.name,
           contact_no: memberDetails.contact_no,
+          paymentAs: "subscription",
           method: "online",
           status: "Completed",
           uid: payment_id,
           plan_id: currentPayment.plan_id,
           subscription_id: subscription_id,
-          amount: currentPayment.amount + 100,
+          amount: currentPayment.amount + memberDetails.addonAmount,
           address: memberDetails.address,
           district: memberDetails.district,
           state: memberDetails.state,
@@ -84,12 +89,22 @@ const StartMembership = (props) => {
           const dataForMembersTable = {
             id: memberDetails.uid,
             payload: {
+              ...memberDetails,
+              subscription: {
+                id: currentPayment.id,
+                plan_id: currentPayment.plan_id,
+                short_url: currentPayment.short_url,
+                status: "active",
+                start_date: currentPayment.created_at,
+                amount: memberDetails.donate_amount,
+                total_count: currentPayment.total_count,
+                remaining_count: currentPayment.remaining_count,
+              },
               payment: {
-                ...currentPayment,
-                plan_amount: memberDetails.donate_amount,
-                amount: currentPayment.amount + 100,
+                amount: currentPayment.amount + memberDetails.addonAmount,
                 payment_id: payment_id,
-                status: "Completed",
+                status: "completed",
+                created_at: currentPayment.created_at,
               },
             },
           };
@@ -254,7 +269,6 @@ const StartMembership = (props) => {
                 ₹100
               </Typography>
             </Box>
-            {/* <Box sx={{ textAlign: "left", mt: 2 }}></Box> */}
           </Container>
         </Paper>
       </Grid>
@@ -276,7 +290,6 @@ const StartMembership = (props) => {
                 ₹200
               </Typography>
             </Box>
-            {/* <Box sx={{ textAlign: "left", mt: 2 }}></Box> */}
           </Container>
         </Paper>
       </Grid>
@@ -298,16 +311,45 @@ const StartMembership = (props) => {
                 ₹500
               </Typography>
             </Box>
-            {/* <Box sx={{ textAlign: "left", mt: 2 }}></Box> */}
           </Container>
         </Paper>
       </Grid>
       <Grid item xs={12}>
         {Number(memberDetails.donate_amount) >= 60 && (
-          <Typography variant="body1" className="mt-2">
-            ₹{memberDetails.donate_amount} (+ ₹100 सदस्यता ग्रहण शुल्क) अभी
-            भुकतान करें और प्रति माह ₹{memberDetails.donate_amount} दान करें{" "}
-          </Typography>
+          <>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  defaultChecked
+                  onChange={(e) => {
+                    console.log("checked:" + e.currentTarget.checked);
+                    if (e.currentTarget.checked) {
+                      setMemberDetails({
+                        ...memberDetails,
+                        addonAmount: 100,
+                      });
+                    } else {
+                      setMemberDetails({
+                        ...memberDetails,
+                        addonAmount: 0,
+                      });
+                    }
+                  }}
+                  color="success"
+                />
+              }
+              label="+100 सदस्यता ग्रहण शुल्क"
+            />
+
+            <Typography variant="body1" className="mt-2">
+              ₹{memberDetails.donate_amount}{" "}
+              {memberDetails.addonAmount === 100
+                ? "(+ ₹" + memberDetails.addonAmount + " सदस्यता ग्रहण शुल्क)"
+                : ""}{" "}
+              अभी भुकतान करें और प्रति माह ₹{memberDetails.donate_amount} दान
+              करें{" "}
+            </Typography>
+          </>
         )}
 
         <CheckoutButton
